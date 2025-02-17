@@ -1,6 +1,7 @@
 # contactos
 [![pub package](https://img.shields.io/pub/v/contactos.svg)](https://pub.dartlang.org/packages/contactos)
-[![Coverage Status](https://coveralls.io/repos/github/ziqq/contacts/badge.svg?branch=main)](https://coveralls.io/github/ziqq/contacts?branch=main)
+[![codecov](https://codecov.io/gh/ziqq/contactos/graph/badge.svg?token=S5CVNZKDAE)](https://codecov.io/gh/ziqq/contactos)
+[![style: flutter lints](https://img.shields.io/badge/style-flutter__lints-blue)](https://pub.dev/packages/flutter_lints)
 
 ##  Description
 
@@ -13,7 +14,7 @@ To use this plugin, add `contactos` as a [dependency in your `pubspec.yaml` file
 For example:
 ```yaml
 dependencies:
-    contactos: ^0.7.0
+    contactos: ^0.0.1
 ```
 
 
@@ -59,37 +60,37 @@ If you do not request user permission or have it granted, the application will f
 import 'package:contactos/contactos.dart';
 
 // Get all contacts on device/
-List<Contact> contacts = await ContactsService.getContacts();
+List<Contact> contacts = await Contactos.getContacts();
 
 // Get all contacts without thumbnail (faster)
-List<Contact> contacts = await ContactsService.getContacts(withThumbnails: false);
+List<Contact> contacts = await Contactos.getContacts(withThumbnails: false);
 
 // Android only: Get thumbnail for an avatar afterwards (only necessary if `withThumbnails: false` is used).
-Uint8List avatar = await ContactsService.getAvatar(contact);
+Uint8List avatar = await Contactos.getAvatar(contact);
 
 // Get contacts matching a string.
-List<Contact> johns = await ContactsService.getContacts(query : "john");
+List<Contact> johns = await Contactos.getContacts(query : "john");
 
 // Add a contact.
 // The contact must have a firstName / lastName to be successfully added.
-await ContactsService.addContact(newContact);
+await Contactos.addContact(newContact);
 
 // Delete a contact.
 // The contact must have a valid identifier.
-await ContactsService.deleteContact(contact);
+await Contactos.deleteContact(contact);
 
 // Update a contact.
 // The contact must have a valid identifier.
-await ContactsService.updateContact(contact);
+await Contactos.updateContact(contact);
 
 // Usage of the native device form for creating a Contact.
 // Throws a error if the Form could not be open or the Operation is canceled by the User.
-await ContactsService.openContactForm();
+await Contactos.openContactForm();
 
 // Usage of the native device form for editing a Contact.
 // The contact must have a valid identifier.
 // Throws a error if the Form could not be open or the Operation is canceled by the User.
-await ContactsService.openExistingContact(contact);
+await Contactos.openExistingContact(contact);
 
 
 ```

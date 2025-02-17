@@ -1,8 +1,25 @@
 name: contactos
 description: A Flutter plugin to retrieve and manage contacts on Android and iOS devices.
-version: 0.0.1-pre0.1
+version: 0.0.1
+
 homepage: https://github.com/ziqq/contactos
-maintainer: Anton Ustinoff (a.a.ustinoff@gmail.com)
+
+repository: https://github.com/ziqq/contactos
+
+issue_tracker: https://github.com/ziqq/contactos/issues
+
+funding:
+  - https://www.buymeacoffee.com/ziqq
+  - https://www.patreon.com/ziqq
+  - https://boosty.to/ziqq
+
+platforms:
+  android:
+  ios:
+
+#screenshots:
+#  - description: 'Example of using the library to check app version.'
+#    path: example.png
 
 environment:
   sdk: '>=3.6.0 <4.0.0'
