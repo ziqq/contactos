@@ -48,4 +48,4 @@ coverage/
 # FVM Version Cache
 .fvm/
 
-.cxx/
+**/.cxx/
