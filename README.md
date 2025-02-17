@@ -1,9 +1,6 @@
+# contactos
 [![pub package](https://img.shields.io/pub/v/contactos.svg)](https://pub.dartlang.org/packages/contactos)
 [![Coverage Status](https://coveralls.io/repos/github/ziqq/contacts/badge.svg?branch=main)](https://coveralls.io/github/ziqq/contacts?branch=main)
-
-
-# contactos
-
 
 ##  Description
 
