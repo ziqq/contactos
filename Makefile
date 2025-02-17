@@ -38,27 +38,27 @@ clean: ## Clean flutter
 .PHONY: get
 get: ## Get dependencies
 				@echo "╠ RUN GET DEPENDENCIES..."
-				@flutter pub get || (echo "▓▓ Get dependencies error ▓▓"; exit 1)
+				@fvm flutter pub get || (echo "▓▓ Get dependencies error ▓▓"; exit 1)
 				@echo "╠ DEPENDENCIES GETED SUCCESSFULLY"
 
 .PHONY: analyze
 analyze: get format ## Analyze code
 				@echo "╠ RUN ANALYZE THE CODE..."
-				@dart analyze --fatal-infos --fatal-warnings
+				@fvm dart analyze --fatal-infos --fatal-warnings
 				@echo "╠ ANALYZED CODE SUCCESSFULLY"
 
 .PHONY: check
 check: analyze ## Check code
 				@echo "╠ RUN CECK CODE..."
-				@dart pub publish --dry-run
-				@dart pub global activate pana
+				@fvm dart pub publish --dry-run
+				@fvm dart pub global activate pana
 				@pana --json --no-warning --line-length 80 > log.pana.json
 				@echo "╠ CECKED CODE SUCCESSFULLY"
 
 .PHONY: publish
 publish: ## Publish package
 				@echo "╠ RUN PUBLISHING..."
-				@dart pub publish --server=https://pub.dartlang.org || (echo "▓▓ Publish error ▓▓"; exit 1)
+				@fvm dart pub publish --server=https://pub.dartlang.org || (echo "▓▓ Publish error ▓▓"; exit 1)
 				@echo "╠ PUBLISH PACKAGE SUCCESSFULLY"
 
 .PHONY: coverage
@@ -72,7 +72,7 @@ run-genhtml: ## Runs generage coverage html
 .PHONY: test-unit
 test-unit: ## Runs unit tests
 				@echo "╠ RUNNING UNIT TESTS..."
-				@flutter test --coverage || (echo "Error while running tests"; exit 1)
+				@fvm flutter test --coverage || (echo "Error while running tests"; exit 1)
 				@genhtml coverage/lcov.info --output=coverage -o coverage/html || (echo "Error while running genhtml with coverage"; exit 2)
 				@echo "╠ UNIT TESTS SUCCESSFULLY"
 
