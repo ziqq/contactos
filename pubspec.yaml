@@ -13,8 +13,8 @@ dependencies:
     sdk: flutter
 
   # Utilities
-  collection: any
-  meta: any
+  collection: ^1.19.1
+  meta: ^1.16.0
 
 dev_dependencies:
   # Integration tests for Flutter
