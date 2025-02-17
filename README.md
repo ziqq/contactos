@@ -153,7 +153,6 @@ If you want to support the development of our library, there are several ways yo
 - [Subscribe through Boosty](https://boosty.to/ziqq)
 
 
-
 ##  Coverage
 
 <img  src="https://codecov.io/gh/ziqq/contactos/graphs/sunburst.svg?token=S5CVNZKDAE"  width="375">
