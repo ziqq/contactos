@@ -1,6 +1,5 @@
 [![pub package](https://img.shields.io/pub/v/contactos.svg)](https://pub.dartlang.org/packages/contactos)
-[![Build Status](https://travis-ci.com/lukasgit/contacts.svg?branch=master)](https://travis-ci.com/lukasgit/contacts)
-[![Coverage Status](https://coveralls.io/repos/github/clovisnicolas/contacts/badge.svg?branch=master)](https://coveralls.io/github/clovisnicolas/contacts?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/ziqq/contacts/badge.svg?branch=main)](https://coveralls.io/github/ziqq/contacts?branch=main)
 
 
 # contactos
