@@ -4,7 +4,7 @@ import Contacts
 import ContactsUI
 
 @available(iOS 9.0, *)
-public class SwiftContactsServicePlugin: NSObject, FlutterPlugin, CNContactViewControllerDelegate, CNContactPickerDelegate {
+public class SwiftContactosPlugin: NSObject, FlutterPlugin, CNContactViewControllerDelegate, CNContactPickerDelegate {
     private var result: FlutterResult? = nil
     private var localizedLabels: Bool = true
     private let rootViewController: UIViewController
@@ -14,7 +14,7 @@ public class SwiftContactsServicePlugin: NSObject, FlutterPlugin, CNContactViewC
     public static func register(with registrar: FlutterPluginRegistrar) {
         let channel = FlutterMethodChannel(name: "github.com/ziqq/contactos", binaryMessenger: registrar.messenger())
         let rootViewController = UIApplication.shared.delegate!.window!!.rootViewController!;
-        let instance = SwiftContactsServicePlugin(rootViewController)
+        let instance = SwiftContactosPlugin(rootViewController)
         registrar.addMethodCallDelegate(instance, channel: channel)
         instance.preLoadContactView()
     }
@@ -252,7 +252,7 @@ public class SwiftContactsServicePlugin: NSObject, FlutterPlugin, CNContactViewC
         if let result = self.result {
             let viewController : UIViewController? = UIApplication.shared.delegate?.window??.rootViewController
             viewController?.dismiss(animated: true, completion: nil)
-            result(SwiftContactsServicePlugin.FORM_OPERATION_CANCELED)
+            result(SwiftContactosPlugin.FORM_OPERATION_CANCELED)
             self.result = nil
         }
     }
@@ -263,7 +263,7 @@ public class SwiftContactsServicePlugin: NSObject, FlutterPlugin, CNContactViewC
             if let contact = contact {
                 result(contactToDictionary(contact: contact, localizedLabels: localizedLabels))
             } else {
-                result(SwiftContactsServicePlugin.FORM_OPERATION_CANCELED)
+                result(SwiftContactosPlugin.FORM_OPERATION_CANCELED)
             }
             self.result = nil
         }
@@ -274,7 +274,7 @@ public class SwiftContactsServicePlugin: NSObject, FlutterPlugin, CNContactViewC
          do {
             // Check to make sure dictionary has an identifier
              guard let identifier = contact["identifier"] as? String else{
-                 result(SwiftContactsServicePlugin.FORM_COULD_NOT_BE_OPEN)
+                 result(SwiftContactosPlugin.FORM_COULD_NOT_BE_OPEN)
                  return nil;
              }
             let backTitle = contact["backTitle"] as? String
@@ -312,7 +312,7 @@ public class SwiftContactsServicePlugin: NSObject, FlutterPlugin, CNContactViewC
             return nil
          } catch {
             NSLog(error.localizedDescription)
-            result(SwiftContactsServicePlugin.FORM_COULD_NOT_BE_OPEN)
+            result(SwiftContactosPlugin.FORM_COULD_NOT_BE_OPEN)
             return nil
          }
      }
@@ -340,7 +340,7 @@ public class SwiftContactsServicePlugin: NSObject, FlutterPlugin, CNContactViewC
 
     public func contactPickerDidCancel(_ picker: CNContactPickerViewController) {
         if let result = self.result {
-            result(SwiftContactsServicePlugin.FORM_OPERATION_CANCELED)
+            result(SwiftContactosPlugin.FORM_OPERATION_CANCELED)
             self.result = nil
         }
     }
