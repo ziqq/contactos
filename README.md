@@ -8,6 +8,9 @@
 A Flutter plugin to access and manage the device's contacts.
 
 
+<!-- <img src="https://raw.githubusercontent.com/ziqq/contactos/refs/heads/main/.docs/images/full_example_light.png" width="385px"> <img src="https://raw.githubusercontent.com/ziqq/contactos/refs/heads/main/.docs/images/full_example_dark.png"  width="385px"> <img src="https://raw.githubusercontent.com/ziqq/contactos/refs/heads/main/.docs/images/filtered_example_light.png" width="385px">  <img src="https://raw.githubusercontent.com/ziqq/contactos/refs/heads/main/.docs/images/filtered_example_dark.png" width="385px"> -->
+
+
 ## Installation
 
 To use this plugin, add `contactos` as a [dependency in your `pubspec.yaml` file](https://flutter.io/platform-plugins/).
@@ -48,7 +51,7 @@ end
 ```
 
 **Note**
-`contactos` does not handle the process of asking and checking for permissions. To check and request user permission to access contacts, try using the following plugins: [flutter_simple_permissions](https://github.com/AppleEducate/flutter_simple_permissions)  or [permission_handler](https://pub.dartlang.org/packages/permission_handler).
+`contactos` does not handle the process of asking and checking for permissions. To check and request user permission to access contacts, try using the following plugins: [permission_handler](https://pub.dartlang.org/packages/permission_handler).
 
 If you do not request user permission or have it granted, the application will fail. For testing purposes, you can manually set the permissions for your test app in Settings for your app on the device that you are using. For Android, go to "Settings" - "Apps" - select your test app - "Permissions" - then turn "on" the slider for contacts.
 
@@ -59,10 +62,10 @@ If you do not request user permission or have it granted, the application will f
 // Import package
 import 'package:contactos/contactos.dart';
 
-// Get all contacts on device/
+// Get all contacts on device.
 List<Contact> contacts = await Contactos.getContacts();
 
-// Get all contacts without thumbnail (faster)
+// Get all contacts without thumbnail (faster).
 List<Contact> contacts = await Contactos.getContacts(withThumbnails: false);
 
 // Android only: Get thumbnail for an avatar afterwards (only necessary if `withThumbnails: false` is used).
@@ -116,7 +119,22 @@ Uint8List avatar;
 
 ```
 
-![Example](doc/example.gif "Example screenshot")
+![Example](https://raw.githubusercontent.com/ziqq/contactos/refs/heads/main/.docs/example.gif "Example screenshot")
+
+
+## Changelog
+
+Refer to the [Changelog](https://github.com/ziqq/contactos/blob/main/CHANGELOG.md) to get all release notes.
+
+
+## Maintainers
+
+[Anton Ustinoff (ziqq)](https://github.com/ziqq)
+
+
+## License
+
+[MIT](https://github.com/ziqq/contactos/blob/main/LICENSE)
 
 
 ## Contributions
@@ -126,6 +144,16 @@ Contributions are welcome! If you find a bug or want a feature, please fill an i
 If you want to contribute code please create a pull request under the master branch.
 
 
-## Credits
+## Funding
 
-Heavily inspired from rt2zz's react native [plugin](https://github.com/rt2zz/react-native-contacts)
+If you want to support the development of our library, there are several ways you can do it:
+
+- [Buy me a coffee](https://www.buymeacoffee.com/ziqq)
+- [Support on Patreon](https://www.patreon.com/ziqq)
+- [Subscribe through Boosty](https://boosty.to/ziqq)
+
+
+
+##  Coverage
+
+<img  src="https://codecov.io/gh/ziqq/contactos/graphs/sunburst.svg?token=S5CVNZKDAE"  width="375">
