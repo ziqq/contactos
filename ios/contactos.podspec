@@ -3,14 +3,14 @@
 #
 Pod::Spec.new do |s|
   s.name             = 'contactos'
-  s.version          = '0.2.2'
-  s.summary          = "A Flutter plugin to access and manage the device's contacts."
+  s.version          = '0.0.5'
+  s.summary          = "A Flutter plugin to retrieve and manage contacts on Android and iOS devices"
   s.description      = <<-DESC
 A new Flutter plugin.
                        DESC
   s.homepage         = 'http://example.com'
   s.license          = { :file => '../LICENSE' }
-  s.author           = { 'Your Company' => 'email@example.com' }
+  s.author           = { 'Anton Ustinoff' => 'a.a.ustinoff@gmail.com' }
   s.source           = { :path => '.' }
   s.source_files = 'Classes/**/*'
   s.public_header_files = 'Classes/**/*.h'
