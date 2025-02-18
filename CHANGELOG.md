@@ -1,5 +1,9 @@
+## 0.0.4
+- **CHANGED**: `collection` version `>=1.19.0`
+
+
 ## 0.0.3
-- **FIXED**: `meta` version `>=1.15.0 <2.0.0
+- **CHANGED**: `meta` version `>=1.15.0`
 
 
 ## 0.0.2
