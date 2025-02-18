@@ -1,3 +1,7 @@
+## 0.0.5
+- **FIXED**: Formating wrong contact birthday
+
+
 ## 0.0.4
 - **CHANGED**: `collection` version `>=1.19.0`
 

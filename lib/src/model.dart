@@ -48,38 +48,48 @@ class Contact {
     this.androidAccountName,
   });
 
-  factory Contact.fromMap(JSON json) => Contact(
-        identifier: json['identifier'].toString(),
-        displayName: json['displayName'].toString(),
-        givenName: json['givenName'].toString(),
-        middleName: json['middleName'].toString(),
-        prefix: json['prefix'].toString(),
-        suffix: json['suffix'].toString(),
-        familyName: json['familyName'].toString(),
-        company: json['company'].toString(),
-        jobTitle: json['jobTitle'].toString(),
-        androidAccountType: AndroidAccountType.fromString(
-          json['androidAccountType'].toString(),
-        ),
-        androidAccountTypeRaw: json['androidAccountType'].toString(),
-        androidAccountName: json['androidAccountName'].toString(),
-        emails: (json['emails'] as List?)
-            ?.map((e) => Item.fromMap(e as JSON))
-            .toList(),
-        phones: (json['phones'] as List?)
-            ?.map((e) => Item.fromMap(e as JSON))
-            .toList(),
-        postalAddresses: (json['postalAddresses'] as List?)
-            ?.map((e) => PostalAddress.fromMap(e as JSON))
-            .toList(),
-        avatar: json['avatar'] is List<int>
-            ? Uint8List.fromList(json['avatar'] as List<int>)
-            : null,
-        birthday:
-            json['birthday'] != null && json['birthday'].toString().isNotEmpty
-                ? DateTime.parse(json['birthday'].toString())
-                : null,
-      );
+  factory Contact.fromMap(JSON json) {
+    final rawBirthday = json['birthday'];
+
+    DateTime? birthday;
+    if (rawBirthday is String &&
+        rawBirthday.isNotEmpty &&
+        RegExp(r'^\d{4}-\d{2}-\d{2}$').hasMatch(rawBirthday)) {
+      birthday = DateTime.tryParse(rawBirthday);
+    } else {
+      birthday = null;
+    }
+
+    return Contact(
+      identifier: json['identifier'].toString(),
+      displayName: json['displayName'].toString(),
+      givenName: json['givenName'].toString(),
+      middleName: json['middleName'].toString(),
+      prefix: json['prefix'].toString(),
+      suffix: json['suffix'].toString(),
+      familyName: json['familyName'].toString(),
+      company: json['company'].toString(),
+      jobTitle: json['jobTitle'].toString(),
+      androidAccountType: AndroidAccountType.fromString(
+        json['androidAccountType'].toString(),
+      ),
+      androidAccountTypeRaw: json['androidAccountType'].toString(),
+      androidAccountName: json['androidAccountName'].toString(),
+      emails: (json['emails'] as List?)
+          ?.map((e) => Item.fromMap(e as JSON))
+          .toList(),
+      phones: (json['phones'] as List?)
+          ?.map((e) => Item.fromMap(e as JSON))
+          .toList(),
+      postalAddresses: (json['postalAddresses'] as List?)
+          ?.map((e) => PostalAddress.fromMap(e as JSON))
+          .toList(),
+      avatar: json['avatar'] is List<int>
+          ? Uint8List.fromList(json['avatar'] as List<int>)
+          : null,
+      birthday: birthday,
+    );
+  }
 
   /// The unique identifier for the contact.
   final String? identifier;
