@@ -3,6 +3,7 @@
 [![codecov](https://codecov.io/gh/ziqq/contactos/graph/badge.svg?token=S5CVNZKDAE)](https://codecov.io/gh/ziqq/contactos)
 [![style: flutter lints](https://img.shields.io/badge/style-flutter__lints-blue)](https://pub.dev/packages/flutter_lints)
 
+
 ##  Description
 
 A Flutter plugin to access and manage the device's contacts.
@@ -17,11 +18,12 @@ To use this plugin, add `contactos` as a [dependency in your `pubspec.yaml` file
 For example:
 ```yaml
 dependencies:
-    contactos: ^0.0.1
+    contactos: ^0.0.6
 ```
 
 
 ## Permissions
+
 ### Android
 Add the following permissions to your AndroidManifest.xml:
 
@@ -49,6 +51,7 @@ target.build_configurations.each do |config|
     ]
 end
 ```
+
 
 **Note**
 `contactos` does not handle the process of asking and checking for permissions. To check and request user permission to access contacts, try using the following plugins: [permission_handler](https://pub.dartlang.org/packages/permission_handler).
@@ -116,7 +119,6 @@ List<PostalAddress> postalAddresses = [];
 
 // Contact avatar/thumbnail
 Uint8List avatar;
-
 ```
 
 ![Example](https://raw.githubusercontent.com/ziqq/contactos/refs/heads/main/.docs/example.gif "Example screenshot")

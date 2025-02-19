@@ -1,3 +1,6 @@
+## 0.0.6
+- **CHANGED**: Refactoring
+
 ## 0.0.5
 - **FIXED**: Formating wrong contact birthday
 
@@ -11,8 +14,8 @@
 
 
 ## 0.0.2
-- Refactoring
+- **CHANGED**: Refactoring
 
 
 ## 0.0.1
-- Initial release
+- **ADDED**: Initial release
