@@ -30,8 +30,8 @@ dependencies:
     sdk: flutter
 
   # Utilities
-  collection: '>=1.19.0'
-  meta: '>=1.15.0'
+  collection: '>=1.19.0 <2.0.0'
+  meta: '>=1.15.0 <2.0.0'
 
 dev_dependencies:
   # Integration tests for Flutter
@@ -40,6 +40,9 @@ dev_dependencies:
   # Unit & Widget tests for Flutter
   flutter_test:
     sdk: flutter
+
+  # Logging
+  l: ^5.0.0
 
   # Linting
   flutter_lints: ^5.0.0
