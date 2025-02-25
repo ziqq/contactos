@@ -1,5 +1,10 @@
+## 0.1.0
+- **REMOVED**: deprecated API for `Android`
+
+
 ## 0.0.6
 - **CHANGED**: Refactoring
+
 
 ## 0.0.5
 - **FIXED**: Formating wrong contact birthday
