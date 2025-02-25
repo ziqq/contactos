@@ -63,12 +63,9 @@ analyze: get format ## Analyze code
 				@echo "╠ ANALYZED CODE SUCCESSFULLY"
 
 .PHONY: check
-check: analyze ## Check code
-				@echo "╠ RUN CECK CODE..."
-				@fvm dart pub publish --dry-run
-				@fvm dart pub global activate pana
-				@pana --json --no-warning --line-length 80 > log.pana.json
-				@echo "╠ CECKED CODE SUCCESSFULLY"
+check: analyze publish-check ## Check the code
+	@dart pub global activate pana
+	@pana --json --no-warning --line-length 120 > log.pana.json
 
 .PHONY: publish
 publish: ## Publish package
