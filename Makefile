@@ -1,3 +1,19 @@
+SHELL :=/bin/bash -e -o pipefail
+PWD   :=$(shell pwd)
+
+.DEFAULT_GOAL := all
+.PHONY: all
+all: ## build pipeline
+all: format check test-unit
+
+.PHONY: ci
+ci: ## CI build pipeline
+ci: all
+
+.PHONY: precommit
+precommit: ## validate the branch before commit
+precommit: all
+
 .PHONY: help
 help: ## Help dialog
 				@echo 'Usage: make <OPTIONS> ... <TARGETS>'
@@ -5,18 +21,17 @@ help: ## Help dialog
 				@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
 .PHONY: doctor
-doctor: ## Check fvm flutter doctor
+doctor: ## Check flutter doctor
 				@fvm flutter doctor
 
 .PHONY: version
-version: ## Check fvm flutter version
+version: ## Check flutter version
 				@fvm flutter --version
-
 
 .PHONY: format
 format: ## Format code
 				@echo "╠ RUN FORMAT THE CODE"
-				@fvm dart format --fix -l 80 . || (echo "👀 Format code error 👀"; exit 1)
+				@fvm dart format -l 80 lib test || (echo "¯\_(ツ)_/¯ Format code error"; exit 1)
 				@echo "╠ CODE FORMATED SUCCESSFULLY"
 
 .PHONY: fix
@@ -38,7 +53,7 @@ clean: ## Clean flutter
 .PHONY: get
 get: ## Get dependencies
 				@echo "╠ RUN GET DEPENDENCIES..."
-				@fvm flutter pub get || (echo "▓▓ Get dependencies error ▓▓"; exit 1)
+				@fvm flutter pub get || (echo "¯\_(ツ)_/¯ Get dependencies error"; exit 1)
 				@echo "╠ DEPENDENCIES GETED SUCCESSFULLY"
 
 .PHONY: analyze
@@ -58,7 +73,7 @@ check: analyze ## Check code
 .PHONY: publish
 publish: ## Publish package
 				@echo "╠ RUN PUBLISHING..."
-				@fvm dart pub publish --server=https://pub.dartlang.org || (echo "▓▓ Publish error ▓▓"; exit 1)
+				@fvm dart pub publish --server=https://pub.dartlang.org || (echo "¯\_(ツ)_/¯ Publish error"; exit 1)
 				@echo "╠ PUBLISH PACKAGE SUCCESSFULLY"
 
 .PHONY: coverage
@@ -72,13 +87,17 @@ run-genhtml: ## Runs generage coverage html
 .PHONY: test-unit
 test-unit: ## Runs unit tests
 				@echo "╠ RUNNING UNIT TESTS..."
-				@fvm flutter test --coverage || (echo "Error while running tests"; exit 1)
-				@genhtml coverage/lcov.info --output=coverage -o coverage/html || (echo "Error while running genhtml with coverage"; exit 2)
+				@fvm flutter test --coverage || (echo "¯\_(ツ)_/¯ Error while running test-unit"; exit 1)
+				@genhtml coverage/lcov.info --output=coverage -o coverage/html || (echo "¯\_(ツ)_/¯ Error while running genhtml with coverage"; exit 2)
 				@echo "╠ UNIT TESTS SUCCESSFULLY"
 
+.PHONY: tag
+tag: ## Add a tag to the current commit
+	@dart run tool/tag.dart
+
 .PHONY: tag-add
-tag-add: ## Make command to add TAG. E.g: make tag-add TAG=v1.0.0
-				@if [ -z "$(TAG)" ]; then echo "TAG is not set"; exit 1; fi
+tag-add: ## Add TAG. E.g: make tag-add TAG=v1.0.0
+				@if [ -z "$(TAG)" ]; then echo "¯\_(ツ)_/¯ TAG is not set"; exit 1; fi
 				@echo ""
 				@echo "START ADDING TAG: $(TAG)"
 				@echo ""
@@ -89,8 +108,8 @@ tag-add: ## Make command to add TAG. E.g: make tag-add TAG=v1.0.0
 				@echo ""
 
 .PHONY: tag-remove
-tag-remove: ## Make command to delete TAG. E.g: make tag-delete TAG=v1.0.0
-				@if [ -z "$(TAG)" ]; then echo "TAG is not set"; exit 1; fi
+tag-remove: ## Delete TAG. E.g: make tag-delete TAG=v1.0.0
+				@if [ -z "$(TAG)" ]; then echo "¯\_(ツ)_/¯ TAG is not set"; exit 1; fi
 				@echo ""
 				@echo "START REMOVING TAG: $(TAG)"
 				@echo ""
@@ -99,17 +118,3 @@ tag-remove: ## Make command to delete TAG. E.g: make tag-delete TAG=v1.0.0
 				@echo ""
 				@echo "DELETED TAG $(TAG) LOCALLY AND REMOTELY"
 				@echo ""
-
-.PHONY: build
-build: clean analyze test-unit ## Build test apk for android on example apps
-				@echo "╠ START BUILD EXAMPLES..."
-				@echo "║"
-				@echo "╠ START BUILD ANDROID APK & IOS IPA FOR GRADLE < 8..."
-				@cd example && fvm flutter clean && fvm flutter pub get && fvm flutter build apk --release && fvm flutter build ios --release --no-codesign
-				@echo "╠ FINISHED BUILD ANDROID APK FOR GRADLE < 8..."
-				@echo "║"
-				@echo "╠ START BUILD ANDROID APK & IOS IPA FOR GRADLE > 8..."
-				@cd example_gradle_8 && fvm flutter clean && fvm flutter pub get && fvm flutter build apk --release && fvm flutter build ios --release --no-codesign
-				@echo "╠ FINISH BUILD ANDROID APK FOR GRADLE > 8..."
-				@echo "║"
-				@echo "╠ FINISH BUILD EXAMPLES..."
