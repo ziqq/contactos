@@ -16,7 +16,7 @@ precommit: all
 
 .PHONY: help
 help: ## Help dialog
-				@echo 'Usage: make <OPTIONS> ... <TARGETS>'
+				@echo 'Usage: make <OPTIONS>  <TARGETS>'
 				@echo ''
 				@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
@@ -52,24 +52,34 @@ clean: ## Clean flutter
 
 .PHONY: get
 get: ## Get dependencies
-				@echo "╠ RUN GET DEPENDENCIES..."
+				@echo "╠ RUN GET DEPENDENCIES"
 				@fvm flutter pub get || (echo "¯\_(ツ)_/¯ Get dependencies error"; exit 1)
 				@echo "╠ DEPENDENCIES GETED SUCCESSFULLY"
 
 .PHONY: analyze
 analyze: get format ## Analyze code
-				@echo "╠ RUN ANALYZE THE CODE..."
+				@echo "╠ RUN ANALYZE THE CODE"
 				@fvm dart analyze --fatal-infos --fatal-warnings
 				@echo "╠ ANALYZED CODE SUCCESSFULLY"
 
 .PHONY: check
 check: analyze publish-check ## Check the code
-	@dart pub global activate pana
-	@pana --json --no-warning --line-length 120 > log.pana.json
+				@echo "╠ RUN CECK CODE"
+				@dart pub global activate pana
+				@pana --json --no-warning --line-length 80 > log.pana.json
+				@echo "╠ CECKED CODE SUCCESSFULLY"
+
+.PHONY: publish-check
+publish-check: ## Check the code before publish
+				@echo "╠ RUN PUBLISH CHECK"
+				@fvm dart pub publish --dry-run
+				@fvm dart pub global activate pana
+				@pana --json --no-warning --line-length 80 > log.pana.json
+				@echo "╠ PUBLISH CHECK SUCCESSFULLY"
 
 .PHONY: publish
 publish: ## Publish package
-				@echo "╠ RUN PUBLISHING..."
+				@echo "╠ RUN PUBLISHING"
 				@fvm dart pub publish --server=https://pub.dartlang.org || (echo "¯\_(ツ)_/¯ Publish error"; exit 1)
 				@echo "╠ PUBLISH PACKAGE SUCCESSFULLY"
 
@@ -83,7 +93,7 @@ run-genhtml: ## Runs generage coverage html
 
 .PHONY: test-unit
 test-unit: ## Runs unit tests
-				@echo "╠ RUNNING UNIT TESTS..."
+				@echo "╠ RUNNING UNIT TESTS"
 				@fvm flutter test --coverage || (echo "¯\_(ツ)_/¯ Error while running test-unit"; exit 1)
 				@genhtml coverage/lcov.info --output=coverage -o coverage/html || (echo "¯\_(ツ)_/¯ Error while running genhtml with coverage"; exit 2)
 				@echo "╠ UNIT TESTS SUCCESSFULLY"
