@@ -1,0 +1,32 @@
+name: contactos_example
+description: Demonstrates how to use the contactos plugin.
+publish_to: 'none'
+version: 0.0.1
+
+
+environment:
+  sdk: '>=3.6.0 <4.0.0'
+  flutter: ">=3.29.0"
+
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: any
+  collection: any
+  intl: any
+
+  permission_handler: ^11.4.0
+
+  contactos:
+    path: ../
+
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+
+flutter:
+  uses-material-design: true
