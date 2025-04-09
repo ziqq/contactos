@@ -3,6 +3,7 @@ ignore:
   - integration_test
   - flutter_lints
   - collection
+  - l
 
 exclude:
   - "example/**"

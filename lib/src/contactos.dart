@@ -2,12 +2,8 @@
 
 import 'dart:async';
 
-import 'package:contactos/src/exception.dart';
-import 'package:contactos/src/model.dart';
-import 'package:contactos/src/typedef.dart';
+import 'package:contactos/src/types.dart';
 import 'package:flutter/services.dart';
-
-export 'share.dart';
 
 /// {@template contactos}
 /// A service that provides access to the device contacts.
@@ -47,9 +43,11 @@ final class Contactos {
         'androidLocalizedLabels': androidLocalizedLabels,
       },
     );
-    return (contacts as Iterable<dynamic>)
-        .map((c) => Contact.fromMap(c as JSON))
-        .toList();
+    if (contacts is! Iterable<dynamic>) return const <Contact>[];
+    return contacts
+        .whereType<JSON>()
+        .map(Contact.fromJson)
+        .toList(growable: false);
   }
 
   /// Fetches all contacts, or when specified, the contacts with the phone
@@ -62,31 +60,36 @@ final class Contactos {
     bool iOSLocalizedLabels = true,
     bool androidLocalizedLabels = true,
   }) async {
-    if (phone == null || phone.isEmpty) return List.empty();
-
-    final contacts =
-        await _channel.invokeMethod('getContactsForPhone', <String, dynamic>{
-      'phone': phone,
-      'withThumbnails': withThumbnails,
-      'photoHighResolution': photoHighResolution,
-      'orderByGivenName': orderByGivenName,
-      'iOSLocalizedLabels': iOSLocalizedLabels,
-      'androidLocalizedLabels': androidLocalizedLabels,
-    });
-    return (contacts as Iterable<dynamic>)
-        .map((c) => Contact.fromMap(c as JSON))
-        .toList();
+    if (phone == null || phone.isEmpty) return const <Contact>[];
+    final contacts = await _channel.invokeMethod(
+      'getContactsForPhone',
+      <String, dynamic>{
+        'phone': phone,
+        'withThumbnails': withThumbnails,
+        'photoHighResolution': photoHighResolution,
+        'orderByGivenName': orderByGivenName,
+        'iOSLocalizedLabels': iOSLocalizedLabels,
+        'androidLocalizedLabels': androidLocalizedLabels,
+      },
+    );
+    if (contacts is! Iterable<dynamic>) return const <Contact>[];
+    return contacts
+        .whereType<JSON>()
+        .map(Contact.fromJson)
+        .toList(growable: false);
   }
 
   /// Fetches all contacts, or when specified, the contacts with the email
   /// matching [email]
   /// Works only on iOS
-  static Future<List<Contact>> getContactsForEmail(String email,
-      {bool withThumbnails = true,
-      bool photoHighResolution = true,
-      bool orderByGivenName = true,
-      bool iOSLocalizedLabels = true,
-      bool androidLocalizedLabels = true}) async {
+  static Future<List<Contact>> getContactsForEmail(
+    String email, {
+    bool withThumbnails = true,
+    bool photoHighResolution = true,
+    bool orderByGivenName = true,
+    bool iOSLocalizedLabels = true,
+    bool androidLocalizedLabels = true,
+  }) async {
     final contacts = await _channel.invokeMethod(
       'getContactsForEmail',
       <String, dynamic>{
@@ -98,8 +101,11 @@ final class Contactos {
         'androidLocalizedLabels': androidLocalizedLabels,
       },
     );
-    if (contacts is! List) return const [];
-    return contacts.map((c) => Contact.fromMap(c as JSON)).toList();
+    if (contacts is! Iterable<dynamic>) return const <Contact>[];
+    return contacts
+        .whereType<JSON>()
+        .map(Contact.fromJson)
+        .toList(growable: false);
   }
 
   /// Loads the avatar for the given contact and returns it. If the user does
@@ -112,7 +118,7 @@ final class Contactos {
       _channel.invokeMethod(
         'getAvatar',
         <String, dynamic>{
-          'contact': contact.toMap(),
+          'contact': contact.toJson(),
           'identifier': contact.identifier,
           'photoHighResolution': photoHighRes,
         },
@@ -120,29 +126,29 @@ final class Contactos {
 
   /// Adds the [contact] to the device contact list
   static Future<void> addContact(Contact contact) =>
-      _channel.invokeMethod('addContact', contact.toMap());
+      _channel.invokeMethod('addContact', contact.toJson());
 
   /// Deletes the [contact] if it has a valid identifier
   static Future<void> deleteContact(Contact contact) =>
-      _channel.invokeMethod('deleteContact', contact.toMap());
+      _channel.invokeMethod('deleteContact', contact.toJson());
 
   /// Updates the [contact] if it has a valid identifier
   static Future<void> updateContact(Contact contact) =>
-      _channel.invokeMethod('updateContact', contact.toMap());
+      _channel.invokeMethod('updateContact', contact.toJson());
 
   /// Opens the contact form with the fields prefilled with the values from the
   static Future<Contact> openContactForm({
     bool iOSLocalizedLabels = true,
     bool androidLocalizedLabels = true,
   }) async {
-    final result = await _channel.invokeMethod(
+    final response = await _channel.invokeMethod(
       'openContactForm',
       <String, dynamic>{
         'iOSLocalizedLabels': iOSLocalizedLabels,
         'androidLocalizedLabels': androidLocalizedLabels,
       },
     );
-    return _handleFormOperation(result);
+    return _convertResponse(response);
   }
 
   /// Opens the contact form with the fields prefilled with the values from the
@@ -152,62 +158,53 @@ final class Contactos {
     bool iOSLocalizedLabels = true,
     bool androidLocalizedLabels = true,
   }) async {
-    dynamic result = await _channel.invokeMethod(
+    dynamic response = await _channel.invokeMethod(
       'openExistingContact',
       <String, dynamic>{
-        'contact': contact.toMap(),
+        'contact': contact.toJson(),
         'iOSLocalizedLabels': iOSLocalizedLabels,
         'androidLocalizedLabels': androidLocalizedLabels,
       },
     );
-    return _handleFormOperation(result);
+    return _convertResponse(response);
   }
 
-  // Displays the device/native contact picker dialog and returns the contact selected by the user
+  /// Displays the device/native contact picker dialog
+  /// and returns the contact selected by the user
   static Future<Contact?> openDeviceContactPicker({
     bool iOSLocalizedLabels = true,
     bool androidLocalizedLabels = true,
   }) async {
-    var result = await _channel.invokeMethod(
+    var response = await _channel.invokeMethod(
       'openDeviceContactPicker',
       <String, dynamic>{
         'iOSLocalizedLabels': iOSLocalizedLabels,
         'androidLocalizedLabels': androidLocalizedLabels,
       },
     );
-    // result contains either :
+    // response contains either :
     // - an List of contacts containing 0 or 1 contact
     // - a FormOperationErrorCode value
-    if (result is List) {
-      if (result.isEmpty) return null;
-      result = result.first;
+    if (response is Iterable<dynamic>) {
+      if (response.isEmpty) return null;
+      response = response.first;
     }
-    return _handleFormOperation(result);
+    return _convertResponse(response);
   }
+}
 
-  // ignore: avoid_annotating_with_dynamic
-  static Contact _handleFormOperation(dynamic result) {
-    if (result is int) {
-      switch (result) {
-        case 1:
-          throw const FormOperationException(
-            errorCode: FormOperationErrorCode.FORM_OPERATION_CANCELED,
-          );
-        case 2:
-          throw const FormOperationException(
-            errorCode: FormOperationErrorCode.FORM_COULD_NOT_BE_OPEN,
-          );
-        default:
-          throw const FormOperationException(
-            errorCode: FormOperationErrorCode.FORM_OPERATION_UNKNOWN_ERROR,
-          );
-      }
-    } else if (result is JSON) {
-      return Contact.fromMap(result);
-    } else {
-      throw const FormOperationException(
-        errorCode: FormOperationErrorCode.FORM_OPERATION_UNKNOWN_ERROR,
-      );
+Contact _convertResponse(Object? response) {
+  if (response case JSON json) return Contact.fromJson(json);
+  if (response case int res) {
+    switch (res) {
+      case 1:
+        throw const FormOperationException$Canceled();
+      case 2:
+        throw const FormOperationException$CouldNotBeOpen();
+      default:
+        throw const FormOperationException$Unknown();
     }
+  } else {
+    throw const FormOperationException$Unknown();
   }
 }
