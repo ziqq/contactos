@@ -1,3 +1,11 @@
+## 0.2.0
+- **BREAKING CHANGES**: `FormOperationErrorCode` change options
+                        `FormOperationErrorCode.FORM_OPERATION_CANCELED` => `FormOperationErrorCode.canceled`,
+                        `FormOperationErrorCode.FORM_COULD_NOT_BE_OPEN` => `FormOperationErrorCode.couldNotBeOpen`,
+                        `FormOperationErrorCode.FORM_OPERATION_UNKNOWN_ERROR` => `FormOperationErrorCode.unknown`
+- **CHANGED**: Refactoring
+
+
 ## 0.1.0
 - **REMOVED**: deprecated API for `Android`
 
