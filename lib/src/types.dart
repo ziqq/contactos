@@ -1,15 +1,27 @@
+import 'dart:typed_data';
+
 import 'package:collection/collection.dart';
-import 'package:contactos/src/typedef.dart';
-import 'package:flutter/foundation.dart';
 import 'package:meta/meta.dart';
+
+/// Json type.
+@internal
+typedef JSON = Map<Object?, Object?>;
 
 /// Android account types
 enum AndroidAccountType {
+  /// The contact is associated with a Facebook account.
   facebook,
+
+  /// The contact is associated with a Google account.
   google,
+
+  /// The contact is associated with a WhatsApp account.
   whatsapp,
+
+  /// The contact is associated with an account type other than the ones listed.
   other;
 
+  /// Converts a string to an [AndroidAccountType].
   static AndroidAccountType? fromString(String? androidAccountType) {
     if (androidAccountType == null) return null;
     if (androidAccountType.startsWith('com.google')) {
@@ -26,8 +38,12 @@ enum AndroidAccountType {
   }
 }
 
+/// {@template contact_model}
+/// A model representing a contact.
+/// {@endtemplate}
 @immutable
 class Contact {
+  /// {@macro contact_model}
   const Contact({
     this.identifier,
     this.displayName,
@@ -48,7 +64,8 @@ class Contact {
     this.androidAccountName,
   });
 
-  factory Contact.fromMap(JSON json) {
+  /// Creates a [Contact] from a `Map<String, Object?>`.
+  factory Contact.fromJson(JSON json) {
     final rawBirthday = json['birthday'];
 
     DateTime? birthday;
@@ -76,13 +93,13 @@ class Contact {
       androidAccountTypeRaw: json['androidAccountType'].toString(),
       androidAccountName: json['androidAccountName'].toString(),
       emails: (json['emails'] as List?)
-          ?.map((e) => Item.fromMap(e as JSON))
+          ?.map((e) => Item.fromJson(e as JSON))
           .toList(),
       phones: (json['phones'] as List?)
-          ?.map((e) => Item.fromMap(e as JSON))
+          ?.map((e) => Item.fromJson(e as JSON))
           .toList(),
       postalAddresses: (json['postalAddresses'] as List?)
-          ?.map((e) => PostalAddress.fromMap(e as JSON))
+          ?.map((e) => PostalAddress.fromJson(e as JSON))
           .toList(),
       avatar: json['avatar'] is List<int>
           ? Uint8List.fromList(json['avatar'] as List<int>)
@@ -142,6 +159,8 @@ class Contact {
   /// The birthday of the contact.
   final DateTime? birthday;
 
+  /// Creates a copy of this contact
+  /// with the given fields replaced with the new values.
   @useResult
   Contact copyWith({
     String? identifier,
@@ -183,24 +202,37 @@ class Contact {
         birthday: birthday ?? this.birthday,
       );
 
-  static JSON _toMap(Contact contact) {
-    var emails = <JSON>[];
-
-    for (final Item email in contact.emails ?? []) {
-      emails.add(Item._toMap(email));
-    }
-    var phones = <JSON>[];
-    for (final Item phone in contact.phones ?? []) {
-      phones.add(Item._toMap(phone));
-    }
-    var postalAddresses = <JSON>[];
-    for (final PostalAddress address in contact.postalAddresses ?? []) {
-      postalAddresses.add(PostalAddress._toMap(address));
+  static JSON _toJson(Contact contact) {
+    final emails = contact.emails;
+    var $emails = <JSON>[];
+    if (emails != null) {
+      for (final email in emails) {
+        $emails.add(Item._toJson(email));
+      }
     }
 
-    final birthday = contact.birthday == null
+    final phones = contact.phones;
+    var $phones = <JSON>[];
+    if (phones != null) {
+      for (final phone in phones) {
+        $phones.add(Item._toJson(phone));
+      }
+    }
+
+    final postalAddresses = contact.postalAddresses;
+    var $postalAddresses = <JSON>[];
+    if (postalAddresses != null) {
+      for (final address in postalAddresses) {
+        $postalAddresses.add(PostalAddress._toJson(address));
+      }
+    }
+
+    final contactBirthday = contact.birthday;
+    final birthday = contactBirthday == null
         ? null
-        : "${contact.birthday!.year.toString()}-${contact.birthday!.month.toString().padLeft(2, '0')}-${contact.birthday!.day.toString().padLeft(2, '0')}";
+        : '${contactBirthday.year.toString()}-'
+            '${contactBirthday.month.toString().padLeft(2, '0')}-'
+            '${contactBirthday.day.toString().padLeft(2, '0')}';
 
     return {
       'identifier': contact.identifier,
@@ -208,28 +240,30 @@ class Contact {
       'givenName': contact.givenName,
       'middleName': contact.middleName,
       'familyName': contact.familyName,
+      'avatar': contact.avatar,
       'prefix': contact.prefix,
       'suffix': contact.suffix,
       'company': contact.company,
       'jobTitle': contact.jobTitle,
       'androidAccountType': contact.androidAccountTypeRaw,
       'androidAccountName': contact.androidAccountName,
-      'emails': emails,
-      'phones': phones,
-      'postalAddresses': postalAddresses,
-      'avatar': contact.avatar,
-      'birthday': birthday
+      'birthday': birthday,
+      'emails': $emails,
+      'phones': $phones,
+      'postalAddresses': $postalAddresses,
     };
   }
 
-  JSON toMap() => Contact._toMap(this);
+  /// Converts this contact to a `Map<String, Object?>`.
+  JSON toJson() => Contact._toJson(this);
 
   /// The contact's initials.
   String initials() => ((givenName?.isNotEmpty == true ? givenName![0] : '') +
           (familyName?.isNotEmpty == true ? familyName![0] : ''))
       .toUpperCase();
 
-  /// The [+] operator fills in this contact's empty fields with the fields from [other]
+  /// The [+] operator fills in this contact's empty fields
+  /// with the fields from [other]
   Contact operator +(Contact other) => Contact(
         givenName: givenName ?? other.givenName,
         middleName: middleName ?? other.middleName,
@@ -295,8 +329,12 @@ class Contact {
       ].where((s) => s != null));
 }
 
+/// {@template postal_address}
+/// A model representing a postal address.
+/// {@endtemplate}
 @immutable
 class PostalAddress {
+  /// {@macro postal_address}
   const PostalAddress({
     this.label,
     this.street,
@@ -306,7 +344,9 @@ class PostalAddress {
     this.country,
   });
 
-  factory PostalAddress.fromMap(JSON json) => PostalAddress(
+  /// Creates a [PostalAddress] from a `Map<String, Object?>`.
+  /// {@macro postal_address}
+  factory PostalAddress.fromJson(JSON json) => PostalAddress(
         label: json['label'].toString(),
         street: json['street'].toString(),
         city: json['city'].toString(),
@@ -315,24 +355,25 @@ class PostalAddress {
         country: json['country'].toString(),
       );
 
-  // The label of the postal address (e.g., "home", "work")
+  /// The label of the postal address (e.g., "home", "work")
   final String? label;
 
-  // The street name and number of the postal address
+  /// The street name and number of the postal address
   final String? street;
 
-  // The city of the postal address
+  /// The city of the postal address
   final String? city;
 
-  // The postal code of the postal address
+  /// The postal code of the postal address
   final String? postcode;
 
-  // The region or state of the postal address
+  /// The region or state of the postal address
   final String? region;
 
-  // The country of the postal address
+  /// The country of the postal address
   final String? country;
 
+  /// Creates a copy of this postal address
   @useResult
   PostalAddress copyWith({
     String? label,
@@ -371,7 +412,7 @@ class PostalAddress {
         postcode,
       ].where((s) => s != null));
 
-  static JSON _toMap(PostalAddress address) => {
+  static JSON _toJson(PostalAddress address) => {
         'label': address.label,
         'street': address.street,
         'city': address.city,
@@ -382,54 +423,61 @@ class PostalAddress {
 
   @override
   String toString() {
-    String finalString = '';
-    if (street != null) {
-      finalString += street!;
-    }
+    var finalString = StringBuffer();
+    if (street != null) finalString.write(street);
     if (city != null) {
       if (finalString.isNotEmpty) {
-        finalString += ', $city';
+        finalString.write(', $city');
       } else {
-        finalString += city!;
+        finalString.write(city);
       }
     }
     if (region != null) {
       if (finalString.isNotEmpty) {
-        finalString += ', $region';
+        finalString.write(', $region');
       } else {
-        finalString += region!;
+        finalString.write(region);
       }
     }
     if (postcode != null) {
       if (finalString.isNotEmpty) {
-        finalString += ' $postcode';
+        finalString.write(' $postcode');
       } else {
-        finalString += postcode!;
+        finalString.write(postcode);
       }
     }
     if (country != null) {
       if (finalString.isNotEmpty) {
-        finalString += ', ${country!}';
+        finalString.write(', $country');
       } else {
-        finalString += country!;
+        finalString.write(country);
       }
     }
-    return finalString;
+    return finalString.toString();
   }
 }
 
+/// {@template item}
 /// Item class used for contact fields which only have a [label] and
 /// a [value], such as emails and phone numbers
+/// {@endtemplate}
 @immutable
 class Item {
+  /// {@macro item}
   const Item({this.label, this.value});
 
-  factory Item.fromMap(JSON json) => Item(
+  /// Creates an [Item] from a `Map<String, Object?>`.
+  /// {@macro item}
+  factory Item.fromJson(JSON json) => Item(
         label: json['label'].toString(),
         value: json['value'].toString(),
       );
 
-  final String? label, value;
+  /// The label of the item (e.g., "home", "work")
+  final String? label;
+
+  /// The value of the item (e.g., an email address, phone number)
+  final String? value;
 
   @override
   bool operator ==(Object other) =>
@@ -438,5 +486,83 @@ class Item {
   @override
   int get hashCode => Object.hash(label, value);
 
-  static JSON _toMap(Item item) => {'label': item.label, 'value': item.value};
+  static JSON _toJson(Item item) => {'label': item.label, 'value': item.value};
+}
+
+/// {@template form_operation_error_code}
+/// Error codes for form operations
+/// {@endtemplate}
+enum FormOperationErrorCode {
+  /// The form operation was canceled
+  canceled,
+
+  /// The form operation could not be open
+  couldNotBeOpen,
+
+  /// An unknown error occurred
+  unknown,
+}
+
+/// {@template form_operation_exception}
+/// Exception thrown when a form operation fails
+/// {@endtemplate}
+@immutable
+class FormOperationException implements Exception {
+  /// {@macro form_operation_exception}
+  const FormOperationException({this.errorCode});
+
+  /// Creates a [FormOperationException]
+  /// with a [FormOperationErrorCode.canceled]
+  /// {@macro form_operation_exception}
+  const factory FormOperationException.canceled() =
+      FormOperationException$Canceled;
+
+  /// Creates a [FormOperationException]
+  /// with a [FormOperationErrorCode.couldNotBeOpen]
+  /// {@macro form_operation_exception}
+  const factory FormOperationException.couldNotBeOpen() =
+      FormOperationException$Canceled;
+
+  /// Creates a [FormOperationException]
+  /// with a [FormOperationErrorCode.unknown]
+  /// {@macro form_operation_exception}
+  const factory FormOperationException.unknown() =
+      FormOperationException$Canceled;
+
+  /// The error code associated with this exception
+  final FormOperationErrorCode? errorCode;
+
+  @override
+  String toString() => 'FormOperationException: $errorCode';
+}
+
+/// Exception thrown when a form operation is canceled
+/// {@macro form_operation_exception}
+@immutable
+class FormOperationException$Canceled extends FormOperationException {
+  /// {@macro form_operation_exception}
+  const FormOperationException$Canceled()
+      : super(errorCode: FormOperationErrorCode.canceled);
+}
+
+/// Exception thrown when a form operation could not be open
+/// {@macro form_operation_exception}
+@immutable
+class FormOperationException$CouldNotBeOpen extends FormOperationException {
+  /// {@macro form_operation_exception}
+  const FormOperationException$CouldNotBeOpen()
+      : super(
+          errorCode: FormOperationErrorCode.couldNotBeOpen,
+        );
+}
+
+/// Exception thrown when a form operation fails with an unknown error
+/// {@macro form_operation_exception}
+@immutable
+class FormOperationException$Unknown extends FormOperationException {
+  /// {@macro form_operation_exception}
+  const FormOperationException$Unknown()
+      : super(
+          errorCode: FormOperationErrorCode.unknown,
+        );
 }

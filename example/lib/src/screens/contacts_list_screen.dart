@@ -6,13 +6,18 @@ import 'package:contactos_example/main.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+/// {@template contacts_list_screen}
+/// A screen that displays a list of contacts.
+/// {@endtemplate}
 class ContactsListScreen extends StatefulWidget {
+  /// {@macro contacts_list_screen}
   const ContactsListScreen({super.key});
 
   @override
   State<ContactsListScreen> createState() => _ContactsListPageState();
 }
 
+/// State for widget [ContactsListScreen].
 class _ContactsListPageState extends State<ContactsListScreen> {
   List<Contact>? _contacts;
 
@@ -27,14 +32,16 @@ class _ContactsListPageState extends State<ContactsListScreen> {
 
     // Load without thumbnails initially.
     final contacts = await Contactos.getContacts(
-      iOSLocalizedLabels: iOSLocalizedLabels,
+      iOSLocalizedLabels: kiOSLocalizedLabels,
       withThumbnails: false,
     );
 
     setState(() => _contacts = contacts);
 
+    if (_contacts == null) return;
+
     // Lazy load thumbnails after rendering initial contacts.
-    for (var contact in _contacts ?? contacts) {
+    for (var contact in _contacts!) {
       await Contactos.getAvatar(contact).then((avatar) {
         setState(() => contact = contact.copyWith(avatar: avatar));
       });
@@ -42,7 +49,7 @@ class _ContactsListPageState extends State<ContactsListScreen> {
   }
 
   Future<void> updateContact() async {
-    Contact? ninja = _contacts
+    var ninja = _contacts
         ?.firstWhereOrNull((c) => c.familyName?.startsWith('Ninja') ?? false);
     if (ninja == null) return;
     await Contactos.updateContact(ninja);
@@ -52,14 +59,14 @@ class _ContactsListPageState extends State<ContactsListScreen> {
   Future<void> _openContactForm() async {
     try {
       var _ = await Contactos.openContactForm(
-        iOSLocalizedLabels: iOSLocalizedLabels,
+        iOSLocalizedLabels: kiOSLocalizedLabels,
       );
       await refreshContacts();
     } on FormOperationException catch (e) {
       switch (e.errorCode) {
-        case FormOperationErrorCode.FORM_OPERATION_CANCELED:
-        case FormOperationErrorCode.FORM_COULD_NOT_BE_OPEN:
-        case FormOperationErrorCode.FORM_OPERATION_UNKNOWN_ERROR:
+        case FormOperationErrorCode.canceled:
+        case FormOperationErrorCode.couldNotBeOpen:
+        case FormOperationErrorCode.unknown:
         default:
           log(e.errorCode.toString());
       }
@@ -97,12 +104,12 @@ class _ContactsListPageState extends State<ContactsListScreen> {
               ? ListView.builder(
                   itemCount: _contacts?.length ?? 0,
                   itemBuilder: (context, index) {
-                    Contact? c = _contacts?.elementAt(index);
+                    var c = _contacts?.elementAt(index);
                     if (c == null) return const SizedBox.shrink();
                     return ListTile(
                       onTap: () {
                         final route = MaterialPageRoute<void>(
-                          builder: (context) => ContactDetailsPage(
+                          builder: (context) => _ContactDetailsPage(
                             c,
                             onContactDeviceSave: contactOnDeviceHasBeenUpdated,
                           ),
@@ -122,11 +129,11 @@ class _ContactsListPageState extends State<ContactsListScreen> {
       );
 }
 
-class ContactDetailsPage extends StatelessWidget {
-  const ContactDetailsPage(
+class _ContactDetailsPage extends StatelessWidget {
+  const _ContactDetailsPage(
     this._contact, {
     this.onContactDeviceSave,
-    super.key,
+    super.key, // ignore: unused_element_parameter
   });
 
   final Contact _contact;
@@ -136,7 +143,7 @@ class ContactDetailsPage extends StatelessWidget {
     try {
       var contact = await Contactos.openExistingContact(
         _contact,
-        iOSLocalizedLabels: iOSLocalizedLabels,
+        iOSLocalizedLabels: kiOSLocalizedLabels,
       );
       if (onContactDeviceSave != null) {
         onContactDeviceSave?.call(contact);
@@ -145,9 +152,9 @@ class ContactDetailsPage extends StatelessWidget {
       Navigator.of(context).pop();
     } on FormOperationException catch (e) {
       switch (e.errorCode) {
-        case FormOperationErrorCode.FORM_OPERATION_CANCELED:
-        case FormOperationErrorCode.FORM_COULD_NOT_BE_OPEN:
-        case FormOperationErrorCode.FORM_OPERATION_UNKNOWN_ERROR:
+        case FormOperationErrorCode.canceled:
+        case FormOperationErrorCode.couldNotBeOpen:
+        case FormOperationErrorCode.unknown:
         default:
           log(e.toString());
       }
@@ -171,7 +178,7 @@ class ContactDetailsPage extends StatelessWidget {
               icon: const Icon(Icons.update),
               onPressed: () => Navigator.of(context).push(
                 MaterialPageRoute<void>(
-                  builder: (context) => UpdateContactsPage(
+                  builder: (context) => _UpdateContactsPage(
                     contact: _contact,
                   ),
                 ),
@@ -225,97 +232,30 @@ class ContactDetailsPage extends StatelessWidget {
                     ? _contact.androidAccountType.toString()
                     : ''),
               ),
-              AddressesTile(_contact.postalAddresses!),
-              ItemsTile('Phones', _contact.phones!),
-              ItemsTile('Emails', _contact.emails!)
+              _AddressesTile(_contact.postalAddresses!),
+              _ItemsTile('Phones', _contact.phones!),
+              _ItemsTile('Emails', _contact.emails!)
             ],
           ),
         ),
       );
 }
 
-@immutable
-class AddressesTile extends StatelessWidget {
-  const AddressesTile(this._addresses, {super.key});
-
-  final List<PostalAddress> _addresses;
-
-  @override
-  Widget build(BuildContext context) => Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          const ListTile(title: Text('Addresses')),
-          Column(
-            children: [
-              for (final a in _addresses)
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Column(
-                    children: <Widget>[
-                      ListTile(
-                        title: const Text('Street'),
-                        trailing: Text(a.street ?? ''),
-                      ),
-                      ListTile(
-                        title: const Text('Postcode'),
-                        trailing: Text(a.postcode ?? ''),
-                      ),
-                      ListTile(
-                        title: const Text('City'),
-                        trailing: Text(a.city ?? ''),
-                      ),
-                      ListTile(
-                        title: const Text('Region'),
-                        trailing: Text(a.region ?? ''),
-                      ),
-                      ListTile(
-                        title: const Text('Country'),
-                        trailing: Text(a.country ?? ''),
-                      ),
-                    ],
-                  ),
-                ),
-            ],
-          ),
-        ],
-      );
-}
-
-class ItemsTile extends StatelessWidget {
-  const ItemsTile(this._title, this._items, {super.key});
-
-  final List<Item> _items;
-  final String _title;
+/// {@template add_contacts_screen}
+/// Body of the template
+/// {@endtemplate}
+class AddContactScreen extends StatefulWidget {
+  /// {@macro add_contacts_screen}
+  const AddContactScreen({
+    super.key, // ignore: unused_element_parameter
+  });
 
   @override
-  Widget build(BuildContext context) => Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          ListTile(title: Text(_title)),
-          Column(
-            children: [
-              for (final i in _items)
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: ListTile(
-                    title: Text(i.label ?? ''),
-                    trailing: Text(i.value ?? ''),
-                  ),
-                ),
-            ],
-          ),
-        ],
-      );
+  State<StatefulWidget> createState() => _AddContactScreenState();
 }
 
-class AddContactPage extends StatefulWidget {
-  const AddContactPage({super.key});
-
-  @override
-  State<StatefulWidget> createState() => _AddContactPageState();
-}
-
-class _AddContactPageState extends State<AddContactPage> {
+/// State for widget [AddContactScreen].
+class _AddContactScreenState extends State<AddContactScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   PostalAddress address = const PostalAddress(label: 'Home');
   Contact contact = const Contact();
@@ -411,16 +351,101 @@ class _AddContactPageState extends State<AddContactPage> {
 }
 
 @immutable
-class UpdateContactsPage extends StatefulWidget {
-  const UpdateContactsPage({@required this.contact, super.key});
+class _AddressesTile extends StatelessWidget {
+  const _AddressesTile(
+    this._addresses, {
+    super.key, // ignore: unused_element_parameter
+  });
+
+  final List<PostalAddress> _addresses;
+
+  @override
+  Widget build(BuildContext context) => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          const ListTile(title: Text('Addresses')),
+          Column(
+            children: [
+              for (final a in _addresses)
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Column(
+                    children: <Widget>[
+                      ListTile(
+                        title: const Text('Street'),
+                        trailing: Text(a.street ?? ''),
+                      ),
+                      ListTile(
+                        title: const Text('Postcode'),
+                        trailing: Text(a.postcode ?? ''),
+                      ),
+                      ListTile(
+                        title: const Text('City'),
+                        trailing: Text(a.city ?? ''),
+                      ),
+                      ListTile(
+                        title: const Text('Region'),
+                        trailing: Text(a.region ?? ''),
+                      ),
+                      ListTile(
+                        title: const Text('Country'),
+                        trailing: Text(a.country ?? ''),
+                      ),
+                    ],
+                  ),
+                ),
+            ],
+          ),
+        ],
+      );
+}
+
+class _ItemsTile extends StatelessWidget {
+  const _ItemsTile(
+    this._title,
+    this._items, {
+    super.key, // ignore: unused_element_parameter
+  });
+
+  final List<Item> _items;
+  final String _title;
+
+  @override
+  Widget build(BuildContext context) => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          ListTile(title: Text(_title)),
+          Column(
+            children: [
+              for (final i in _items)
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: ListTile(
+                    title: Text(i.label ?? ''),
+                    trailing: Text(i.value ?? ''),
+                  ),
+                ),
+            ],
+          ),
+        ],
+      );
+}
+
+@immutable
+class _UpdateContactsPage extends StatefulWidget {
+  const _UpdateContactsPage({
+    @required this.contact,
+    super.key, // ignore: unused_element_parameter
+  });
 
   final Contact? contact;
 
   @override
-  State<UpdateContactsPage> createState() => _UpdateContactsPageState();
+  State<_UpdateContactsPage> createState() => __UpdateContactsPageState();
 }
 
-class _UpdateContactsPageState extends State<UpdateContactsPage> {
+/// State for widget [_UpdateContactsPage].
+class __UpdateContactsPageState extends State<_UpdateContactsPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   PostalAddress address = const PostalAddress(label: 'Home');
   Contact? contact;

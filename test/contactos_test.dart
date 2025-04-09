@@ -1,15 +1,14 @@
 import 'package:contactos/src/contactos.dart';
-import 'package:contactos/src/model.dart';
+import 'package:contactos/src/types.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() => group(
       'Unit_tests -',
       () => group('Contactos -', () {
-        const MethodChannel channel =
-            MethodChannel('github.com/ziqq/contactos');
+        const channel = MethodChannel('github.com/ziqq/contactos');
 
-        final List<MethodCall> log = <MethodCall>[];
+        final log = <MethodCall>[];
 
         setUp(() {
           TestWidgetsFlutterBinding.ensureInitialized();
@@ -67,7 +66,7 @@ void main() => group(
 
           expect(log, <Matcher>[
             isMethodCall('getAvatar', arguments: <String, dynamic>{
-              'contact': contact.toMap(),
+              'contact': contact.toJson(),
               'identifier': contact.identifier,
               'photoHighResolution': true,
             })
@@ -85,8 +84,8 @@ void main() => group(
           /// Tests whether phone number argument is not null and plugin call is
           /// fired.
           ///
-          /// Whether contact is returned or not depends on the plaform implementation
-          /// which cannot be tested in unit tests.
+          /// Whether contact is returned or not depends on the plaform
+          /// implementation which cannot be tested in unit tests.
           test('returns contacts if phone number supplied', () async {
             final contacts = await Contactos.getContactsForPhone('1234567890');
             expect(contacts.length, equals(2));
@@ -114,7 +113,7 @@ void main() => group(
 
           expect(log, <Matcher>[
             isMethodCall('getAvatar', arguments: <String, dynamic>{
-              'contact': contact.toMap(),
+              'contact': contact.toJson(),
               'identifier': contact.identifier,
               'photoHighResolution': false,
             })
@@ -142,13 +141,13 @@ void main() => group(
         });
 
         test('should provide initials for contact', () {
-          Contact contact1 = const Contact(
+          var contact1 = const Contact(
             givenName: 'givenName',
             familyName: 'familyName',
           );
-          Contact contact2 = const Contact(givenName: 'givenName');
-          Contact contact3 = const Contact(familyName: 'familyName');
-          Contact contact4 = const Contact();
+          var contact2 = const Contact(givenName: 'givenName');
+          var contact3 = const Contact(familyName: 'familyName');
+          var contact4 = const Contact();
 
           expect(contact1.initials(), 'GF');
           expect(contact2.initials(), 'G');
@@ -167,7 +166,7 @@ void main() => group(
         });
 
         test('should show contacts are equal', () {
-          Contact contact1 = const Contact(
+          var contact1 = const Contact(
             givenName: 'givenName',
             familyName: 'familyName',
             emails: [
@@ -175,7 +174,7 @@ void main() => group(
               Item(label: 'Work', value: 'work@example.com'),
             ],
           );
-          Contact contact2 = const Contact(
+          var contact2 = const Contact(
             givenName: 'givenName',
             familyName: 'familyName',
             emails: [
@@ -188,14 +187,14 @@ void main() => group(
         });
 
         test('should show contacts are not equal', () {
-          Contact contact1 = const Contact(
+          var contact1 = const Contact(
               givenName: 'givenName',
               familyName: 'familyName',
               emails: [
                 Item(label: 'Home', value: 'home@example.com'),
                 Item(label: 'Work', value: 'work@example.com'),
               ]);
-          Contact contact2 = const Contact(
+          var contact2 = const Contact(
               givenName: 'givenName',
               familyName: 'familyName',
               emails: [
@@ -207,7 +206,7 @@ void main() => group(
         });
 
         test('should produce a valid merged contact', () {
-          Contact contact1 = const Contact(
+          var contact1 = const Contact(
               givenName: 'givenName',
               familyName: 'familyName',
               emails: [
@@ -216,7 +215,7 @@ void main() => group(
               ],
               phones: [],
               postalAddresses: []);
-          Contact contact2 = const Contact(familyName: 'familyName', phones: [
+          var contact2 = const Contact(familyName: 'familyName', phones: [
             Item(label: 'Mobile', value: '111-222-3344')
           ], emails: [
             Item(label: 'Mobile', value: 'mobile@example.com'),
@@ -229,7 +228,7 @@ void main() => group(
                 region: null,
                 country: null)
           ]);
-          Contact mergedContact = const Contact(
+          var mergedContact = const Contact(
               givenName: 'givenName',
               familyName: 'familyName',
               emails: [
@@ -254,15 +253,15 @@ void main() => group(
         });
 
         test('should provide a valid merged contact, with no extra info', () {
-          Contact contact1 = const Contact(familyName: 'familyName');
-          Contact contact2 = const Contact();
+          var contact1 = const Contact(familyName: 'familyName');
+          var contact2 = const Contact();
           expect(contact1 + contact2, contact1);
         });
 
         test('should provide a map of the contact', () {
-          Contact contact =
+          var contact =
               const Contact(givenName: 'givenName', familyName: 'familyName');
-          expect(contact.toMap(), {
+          expect(contact.toJson(), {
             'identifier': null,
             'displayName': null,
             'givenName': 'givenName',

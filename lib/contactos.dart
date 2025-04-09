@@ -1,3 +1,2 @@
 export 'src/contactos.dart';
-export 'src/exception.dart';
-export 'src/model.dart';
+export 'src/types.dart' hide JSON;
