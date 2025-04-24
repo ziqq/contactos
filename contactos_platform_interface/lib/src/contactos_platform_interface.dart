@@ -35,7 +35,7 @@ abstract class ContactosPlatform extends PlatformInterface {
   /// Platform-specific plugins should set this with their own platform-specific
   /// class that extends [ContactosPlatform] when they register themselves.
   static set instance(ContactosPlatform instance) {
-    if (!instance.isMock) PlatformInterface.verify(instance, _token);
+    PlatformInterface.verify(instance, _token);
     _instance = instance;
   }
 
