@@ -54,7 +54,7 @@ packages:
       path: "../../contactos_platform_interface"
       relative: true
     source: path
-    version: "0.2.0"
+    version: "1.0.0"
   cupertino_icons:
     dependency: "direct main"
     description:
@@ -340,4 +340,4 @@ packages:
     version: "3.0.4"
 sdks:
   dart: ">=3.7.0-0 <4.0.0"
-  flutter: ">=3.29.0"
+  flutter: ">=3.29.3"

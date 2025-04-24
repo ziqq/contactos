@@ -5,38 +5,48 @@
 import 'dart:async';
 
 import 'package:contactos_platform_interface/contactos_platform_interface.dart';
-import 'package:contactos_platform_interface/types.dart';
+import 'package:contactos_platform_interface/src/types.dart';
 import 'package:flutter/services.dart';
-
-/// The [MethodChannel] used to interact with the platform side of the plugin.
-const MethodChannel _kChannel = MethodChannel('github.com/ziqq/contactos');
 
 /// Wraps NSUserDefaults (on iOS) and SharedPreferences (on Android), providing
 /// a persistent store for simple data.
 ///
 /// Data is persisted to disk asynchronously.
 class MethodChannelContactos extends ContactosPlatform {
+  /// Create an instance of [MethodChannelContactos].
+  MethodChannelContactos._();
+
+  /// Returns a stub instance to allow the platform interface to access
+  /// the class instance statically.
+  // ignore: prefer_constructors_over_static_methods
+  static MethodChannelContactos get instance => MethodChannelContactos._();
+
+  /// The [MethodChannel] used to interact with the platform side of the plugin.
+  static const MethodChannel _channel = MethodChannel(
+    'github.com/ziqq/contactos',
+  );
+
   @override
   Future<void> addContact(Contact contact) =>
-      _kChannel.invokeMethod('addContact', contact.toMap());
+      _channel.invokeMethod('addContact', contact.toJson());
 
   @override
   Future<void> deleteContact(Contact contact) =>
-      _kChannel.invokeMethod('deleteContact', contact.toMap());
+      _channel.invokeMethod('deleteContact', contact.toJson());
 
   @override
   Future<void> updateContact(Contact contact) =>
-      _kChannel.invokeMethod('updateContact', contact.toMap());
+      _channel.invokeMethod('updateContact', contact.toJson());
 
   @override
   Future<Uint8List?> getAvatar(
     Contact contact, {
     bool photoHighRes = true,
   }) =>
-      _kChannel.invokeMethod(
+      _channel.invokeMethod(
         'getAvatar',
         <String, dynamic>{
-          'contact': contact.toMap(),
+          'contact': contact.toJson(),
           'identifier': contact.identifier,
           'photoHighResolution': photoHighRes,
         },
@@ -51,7 +61,7 @@ class MethodChannelContactos extends ContactosPlatform {
     bool iOSLocalizedLabels = true,
     bool androidLocalizedLabels = true,
   }) async {
-    final result = await _kChannel.invokeMethod(
+    final contacts = await _channel.invokeMethod(
       'getContacts',
       <String, dynamic>{
         'query': query,
@@ -62,13 +72,11 @@ class MethodChannelContactos extends ContactosPlatform {
         'androidLocalizedLabels': androidLocalizedLabels,
       },
     );
-    if (result case List<JSON> contacts) {
-      return contacts
-          .whereType<JSON>()
-          .map(Contact.fromJson)
-          .toList(growable: false);
-    }
-    return <Contact>[];
+    if (contacts is! Iterable<dynamic>) return const <Contact>[];
+    return contacts
+        .whereType<JSON>()
+        .map(Contact.fromJson)
+        .toList(growable: false);
   }
 
   @override
@@ -80,7 +88,7 @@ class MethodChannelContactos extends ContactosPlatform {
     bool iOSLocalizedLabels = true,
     bool androidLocalizedLabels = true,
   }) async {
-    final result = await _kChannel.invokeMethod(
+    final contacts = await _channel.invokeMethod(
       'getContactsForEmail',
       <String, dynamic>{
         'email': email,
@@ -91,13 +99,11 @@ class MethodChannelContactos extends ContactosPlatform {
         'androidLocalizedLabels': androidLocalizedLabels,
       },
     );
-    if (result case List<JSON> contacts) {
-      return contacts
-          .whereType<JSON>()
-          .map(Contact.fromJson)
-          .toList(growable: false);
-    }
-    return <Contact>[];
+    if (contacts is! Iterable<dynamic>) return const <Contact>[];
+    return contacts
+        .whereType<JSON>()
+        .map(Contact.fromJson)
+        .toList(growable: false);
   }
 
   @override
@@ -109,8 +115,8 @@ class MethodChannelContactos extends ContactosPlatform {
     bool iOSLocalizedLabels = true,
     bool androidLocalizedLabels = true,
   }) async {
-    if (phone == null || phone.isEmpty) return List.empty();
-    final result = await _kChannel.invokeMethod(
+    if (phone == null || phone.isEmpty) return const <Contact>[];
+    final contacts = await _channel.invokeMethod(
       'getContactsForPhone',
       <String, dynamic>{
         'phone': phone,
@@ -121,13 +127,11 @@ class MethodChannelContactos extends ContactosPlatform {
         'androidLocalizedLabels': androidLocalizedLabels,
       },
     );
-    if (result case List<JSON> contacts) {
-      return contacts
-          .whereType<JSON>()
-          .map(Contact.fromJson)
-          .toList(growable: false);
-    }
-    return <Contact>[];
+    if (contacts is! Iterable<dynamic>) return const <Contact>[];
+    return contacts
+        .whereType<JSON>()
+        .map(Contact.fromJson)
+        .toList(growable: false);
   }
 
   @override
@@ -135,7 +139,7 @@ class MethodChannelContactos extends ContactosPlatform {
     bool iOSLocalizedLabels = true,
     bool androidLocalizedLabels = true,
   }) async {
-    final result = await _kChannel.invokeMethod(
+    final result = await _channel.invokeMethod(
       'openContactForm',
       <String, dynamic>{
         'iOSLocalizedLabels': iOSLocalizedLabels,
@@ -150,7 +154,7 @@ class MethodChannelContactos extends ContactosPlatform {
     bool iOSLocalizedLabels = true,
     bool androidLocalizedLabels = true,
   }) async {
-    var result = await _kChannel.invokeMethod(
+    var result = await _channel.invokeMethod(
       'openDeviceContactPicker',
       <String, dynamic>{
         'iOSLocalizedLabels': iOSLocalizedLabels,
@@ -173,10 +177,10 @@ class MethodChannelContactos extends ContactosPlatform {
     bool iOSLocalizedLabels = true,
     bool androidLocalizedLabels = true,
   }) async {
-    dynamic result = await _kChannel.invokeMethod(
+    final result = await _channel.invokeMethod(
       'openExistingContact',
       <String, dynamic>{
-        'contact': contact.toMap(),
+        'contact': contact.toJson(),
         'iOSLocalizedLabels': iOSLocalizedLabels,
         'androidLocalizedLabels': androidLocalizedLabels,
       },
@@ -185,8 +189,7 @@ class MethodChannelContactos extends ContactosPlatform {
   }
 }
 
-// ignore: avoid_annotating_with_dynamic
-Contact _handleFormOperation(dynamic result) {
+Contact _handleFormOperation(Object? result) {
   if (result case int resultInt) {
     switch (resultInt) {
       case 1:

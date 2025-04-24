@@ -6,9 +6,15 @@
       "type": "dart",
       "request": "launch",
       "cwd": "${workspaceFolder}/example",
-      "args": [
-        // "--dart-define-from-file=config/development.json",
-      ],
+      "args": [],
+      "env": {}
+    },
+    {
+      "name": "Run iOS Example",
+      "type": "dart",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/contactos_ios/example",
+      "args": [],
       "env": {}
     },
     {

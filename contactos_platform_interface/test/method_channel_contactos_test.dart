@@ -1,14 +1,13 @@
-import 'package:contactos_platform_interface/method_channel_contactos.dart';
-import 'package:contactos_platform_interface/types.dart';
+import 'package:contactos_platform_interface/contactos_platform_interface.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('MethodChannelContactos -', () {
-    const MethodChannel channel = MethodChannel('github.com/ziqq/contactos');
+    const channel = MethodChannel('github.com/ziqq/contactos');
 
-    final List<MethodCall> log = <MethodCall>[];
     late MethodChannelContactos contactos;
+    final log = <MethodCall>[];
 
     setUp(() {
       TestWidgetsFlutterBinding.ensureInitialized();
@@ -60,7 +59,7 @@ void main() {
         }
       });
 
-      contactos = MethodChannelContactos();
+      contactos = MethodChannelContactos.instance;
       log.clear();
     });
 
@@ -99,26 +98,26 @@ void main() {
     });
 
     test('getAvatar should return Uint8List', () async {
-      final avatar = await contactos.getAvatar(Contact(identifier: '1'));
+      final avatar = await contactos.getAvatar(const Contact(identifier: '1'));
       expect(avatar, isNotNull);
       expect(avatar, isA<Uint8List>());
       expect(log.single.method, 'getAvatar');
     });
 
     test('addContact should call method channel', () async {
-      await contactos
-          .addContact(Contact(identifier: '4', displayName: 'New Contact'));
+      await contactos.addContact(
+          const Contact(identifier: '4', displayName: 'New Contact'));
       expect(log.single.method, 'addContact');
     });
 
     test('deleteContact should call method channel', () async {
-      await contactos.deleteContact(Contact(identifier: '5'));
+      await contactos.deleteContact(const Contact(identifier: '5'));
       expect(log.single.method, 'deleteContact');
     });
 
     test('updateContact should call method channel', () async {
       await contactos.updateContact(
-          Contact(identifier: '6', displayName: 'Updated Contact'));
+          const Contact(identifier: '6', displayName: 'Updated Contact'));
       expect(log.single.method, 'updateContact');
     });
   });

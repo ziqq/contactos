@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:contactos_platform_interface/types.dart';
+import 'package:contactos_platform_interface/contactos_platform_interface.dart';
 import 'package:pigeon/pigeon.dart';
 
 @ConfigurePigeon(PigeonOptions(
   dartOut: 'lib/src/messages.g.dart',
   dartTestOut: 'test/test_api.g.dart',
-  swiftOut:
-      'darwin/shared_preferences_foundation/Sources/shared_preferences_foundation/messages.g.swift',
+  swiftOut: 'ios/contactos/Sources/contactos/messages.g.swift',
   copyrightHeader: 'pigeons/copyright_header.txt',
 ))
 class SharedPreferencesPigeonOptions {

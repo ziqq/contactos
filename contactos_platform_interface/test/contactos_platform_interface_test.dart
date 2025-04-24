@@ -5,7 +5,6 @@
 import 'dart:typed_data';
 
 import 'package:contactos_platform_interface/contactos_platform_interface.dart';
-import 'package:contactos_platform_interface/types.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
@@ -122,6 +121,11 @@ class IllegalImplementation implements ContactosPlatform {
   Future<void> updateContact(Contact contact) {
     throw UnimplementedError();
   }
+
+  @override
+  ContactosPlatform delegateFor({required MethodChannelContactos channel}) {
+    throw UnimplementedError();
+  }
 }
 
 class MockContactosPlatformImplementation
@@ -208,6 +212,11 @@ class MockContactosPlatformImplementation
 
   @override
   Future<void> updateContact(Contact contact) {
+    throw UnimplementedError();
+  }
+
+  @override
+  ContactosPlatform delegateFor({required MethodChannelContactos channel}) {
     throw UnimplementedError();
   }
 }

@@ -1,12 +1,16 @@
 import 'dart:developer';
 
 import 'package:collection/collection.dart';
-import 'package:contactos/contactos.dart';
 import 'package:contactos_example/main.dart';
+import 'package:contactos_ios/contactos_ios.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+/// {@template contacts_list_screen}
+/// Contacts list screen widget.
+/// {@endtemplate}
 class ContactsListScreen extends StatefulWidget {
+  /// {@macro contacts_list_screen}
   const ContactsListScreen({super.key});
 
   @override
@@ -26,7 +30,7 @@ class _ContactsListPageState extends State<ContactsListScreen> {
     // var contacts = (await Contactos.getContactsForPhone("8554964652"));
 
     // Load without thumbnails initially.
-    final contacts = await Contactos.getContacts(
+    final contacts = await ContactosIos.instance.getContacts(
       iOSLocalizedLabels: iOSLocalizedLabels,
       withThumbnails: false,
     );
@@ -35,31 +39,31 @@ class _ContactsListPageState extends State<ContactsListScreen> {
 
     // Lazy load thumbnails after rendering initial contacts.
     for (var contact in _contacts ?? contacts) {
-      await Contactos.getAvatar(contact).then((avatar) {
+      await ContactosIos.instance.getAvatar(contact).then((avatar) {
         setState(() => contact = contact.copyWith(avatar: avatar));
       });
     }
   }
 
   Future<void> updateContact() async {
-    Contact? ninja = _contacts
+    var ninja = _contacts
         ?.firstWhereOrNull((c) => c.familyName?.startsWith('Ninja') ?? false);
     if (ninja == null) return;
-    await Contactos.updateContact(ninja);
+    await ContactosIos.instance.updateContact(ninja);
     await refreshContacts();
   }
 
   Future<void> _openContactForm() async {
     try {
-      var _ = await Contactos.openContactForm(
+      var _ = await ContactosIos.instance.openContactForm(
         iOSLocalizedLabels: iOSLocalizedLabels,
       );
       await refreshContacts();
     } on FormOperationException catch (e) {
       switch (e.errorCode) {
-        case FormOperationErrorCode.FORM_OPERATION_CANCELED:
-        case FormOperationErrorCode.FORM_COULD_NOT_BE_OPEN:
-        case FormOperationErrorCode.FORM_OPERATION_UNKNOWN_ERROR:
+        case FormOperationErrorCode.unknown:
+        case FormOperationErrorCode.canceled:
+        case FormOperationErrorCode.couldNotBeOpen:
         default:
           log(e.errorCode.toString());
       }
@@ -97,23 +101,25 @@ class _ContactsListPageState extends State<ContactsListScreen> {
               ? ListView.builder(
                   itemCount: _contacts?.length ?? 0,
                   itemBuilder: (context, index) {
-                    Contact? c = _contacts?.elementAt(index);
-                    if (c == null) return const SizedBox.shrink();
+                    final contact = _contacts?.elementAt(index);
+                    if (contact == null) return const SizedBox.shrink();
                     return ListTile(
                       onTap: () {
                         final route = MaterialPageRoute<void>(
-                          builder: (context) => ContactDetailsPage(
-                            c,
+                          builder: (context) => _ContactDetailsPage(
+                            contact,
                             onContactDeviceSave: contactOnDeviceHasBeenUpdated,
                           ),
                         );
                         Navigator.of(context).push(route);
                       },
-                      leading: (c.avatar != null && (c.avatar?.length ?? 0) > 0)
+                      leading: (contact.avatar != null &&
+                              (contact.avatar?.length ?? 0) > 0)
                           ? CircleAvatar(
-                              backgroundImage: MemoryImage(c.avatar!))
-                          : CircleAvatar(child: Text(c.initials())),
-                      title: Text(c.displayName ?? ''),
+                              backgroundImage: MemoryImage(contact.avatar!),
+                            )
+                          : CircleAvatar(child: Text(contact.initials())),
+                      title: Text(contact.displayName ?? ''),
                     );
                   },
                 )
@@ -122,32 +128,37 @@ class _ContactsListPageState extends State<ContactsListScreen> {
       );
 }
 
-class ContactDetailsPage extends StatelessWidget {
-  const ContactDetailsPage(
+class _ContactDetailsPage extends StatefulWidget {
+  const _ContactDetailsPage(
     this._contact, {
     this.onContactDeviceSave,
-    super.key,
+    super.key, // ignore: unused_element_parameter
   });
 
   final Contact _contact;
   final void Function(Contact)? onContactDeviceSave;
 
+  @override
+  State<_ContactDetailsPage> createState() => _ContactDetailsPageState();
+}
+
+class _ContactDetailsPageState extends State<_ContactDetailsPage> {
   Future<void> _openExistingContactOnDevice(BuildContext context) async {
     try {
-      var contact = await Contactos.openExistingContact(
-        _contact,
+      final contact = await ContactosIos.instance.openExistingContact(
+        widget._contact,
         iOSLocalizedLabels: iOSLocalizedLabels,
       );
-      if (onContactDeviceSave != null) {
-        onContactDeviceSave?.call(contact);
+      if (widget.onContactDeviceSave != null) {
+        widget.onContactDeviceSave?.call(contact);
       }
       if (!context.mounted) return;
       Navigator.of(context).pop();
     } on FormOperationException catch (e) {
       switch (e.errorCode) {
-        case FormOperationErrorCode.FORM_OPERATION_CANCELED:
-        case FormOperationErrorCode.FORM_COULD_NOT_BE_OPEN:
-        case FormOperationErrorCode.FORM_OPERATION_UNKNOWN_ERROR:
+        case FormOperationErrorCode.unknown:
+        case FormOperationErrorCode.canceled:
+        case FormOperationErrorCode.couldNotBeOpen:
         default:
           log(e.toString());
       }
@@ -157,22 +168,24 @@ class ContactDetailsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Scaffold(
         appBar: AppBar(
-          title: Text(_contact.displayName ?? ''),
+          title: Text(widget._contact.displayName ?? ''),
           actions: <Widget>[
-//          IconButton(
-//            icon: Icon(Icons.share),
-//            onPressed: () => shareVCFCard(context, contact: _contact),
-//          ),
+            /* IconButton(
+              icon: Icon(Icons.share),
+              onPressed: () => shareVCFCard(context, contact: _contact),
+            ), */
             IconButton(
               icon: const Icon(Icons.delete),
-              onPressed: () => Contactos.deleteContact(_contact),
+              onPressed: () {
+                ContactosIos.instance.deleteContact(widget._contact);
+              },
             ),
             IconButton(
               icon: const Icon(Icons.update),
               onPressed: () => Navigator.of(context).push(
                 MaterialPageRoute<void>(
-                  builder: (context) => UpdateContactsPage(
-                    contact: _contact,
+                  builder: (context) => _UpdateContactsPage(
+                    contact: widget._contact,
                   ),
                 ),
               ),
@@ -187,47 +200,47 @@ class ContactDetailsPage extends StatelessWidget {
             children: <Widget>[
               ListTile(
                 title: const Text('Name'),
-                trailing: Text(_contact.givenName ?? ''),
+                trailing: Text(widget._contact.givenName ?? ''),
               ),
               ListTile(
                 title: const Text('Middle name'),
-                trailing: Text(_contact.middleName ?? ''),
+                trailing: Text(widget._contact.middleName ?? ''),
               ),
               ListTile(
                 title: const Text('Family name'),
-                trailing: Text(_contact.familyName ?? ''),
+                trailing: Text(widget._contact.familyName ?? ''),
               ),
               ListTile(
                 title: const Text('Prefix'),
-                trailing: Text(_contact.prefix ?? ''),
+                trailing: Text(widget._contact.prefix ?? ''),
               ),
               ListTile(
                 title: const Text('Suffix'),
-                trailing: Text(_contact.suffix ?? ''),
+                trailing: Text(widget._contact.suffix ?? ''),
               ),
               ListTile(
                 title: const Text('Birthday'),
-                trailing: Text(_contact.birthday != null
-                    ? DateFormat('dd-MM-yyyy').format(_contact.birthday!)
+                trailing: Text(widget._contact.birthday != null
+                    ? DateFormat('dd-MM-yyyy').format(widget._contact.birthday!)
                     : ''),
               ),
               ListTile(
                 title: const Text('Company'),
-                trailing: Text(_contact.company ?? ''),
+                trailing: Text(widget._contact.company ?? ''),
               ),
               ListTile(
                 title: const Text('Job'),
-                trailing: Text(_contact.jobTitle ?? ''),
+                trailing: Text(widget._contact.jobTitle ?? ''),
               ),
               ListTile(
                 title: const Text('Account Type'),
-                trailing: Text((_contact.androidAccountType != null)
-                    ? _contact.androidAccountType.toString()
+                trailing: Text((widget._contact.androidAccountType != null)
+                    ? widget._contact.androidAccountType.toString()
                     : ''),
               ),
-              AddressesTile(_contact.postalAddresses!),
-              ItemsTile('Phones', _contact.phones!),
-              ItemsTile('Emails', _contact.emails!)
+              _AddressesTile(widget._contact.postalAddresses!),
+              _ItemsTile('Phones', widget._contact.phones!),
+              _ItemsTile('Emails', widget._contact.emails!)
             ],
           ),
         ),
@@ -235,10 +248,13 @@ class ContactDetailsPage extends StatelessWidget {
 }
 
 @immutable
-class AddressesTile extends StatelessWidget {
-  const AddressesTile(this._addresses, {super.key});
+class _AddressesTile extends StatelessWidget {
+  const _AddressesTile(
+    this._addresses, {
+    super.key, // ignore: unused_element_parameter
+  });
 
-  final List<PostalAddress> _addresses;
+  final List<Contact$PostalAddress> _addresses;
 
   @override
   Widget build(BuildContext context) => Column(
@@ -281,10 +297,14 @@ class AddressesTile extends StatelessWidget {
       );
 }
 
-class ItemsTile extends StatelessWidget {
-  const ItemsTile(this._title, this._items, {super.key});
+class _ItemsTile extends StatelessWidget {
+  const _ItemsTile(
+    this._title,
+    this._items, {
+    super.key, // ignore: unused_element_parameter
+  });
 
-  final List<Item> _items;
+  final List<Contact$Field> _items;
   final String _title;
 
   @override
@@ -308,16 +328,23 @@ class ItemsTile extends StatelessWidget {
       );
 }
 
-class AddContactPage extends StatefulWidget {
-  const AddContactPage({super.key});
+/// {@template add_contact_screen}
+/// Add contact screen.
+/// {@endtemplate}
+class AddContactScreen extends StatefulWidget {
+  /// {@macro add_contact_screen}
+  const AddContactScreen({
+    super.key, // ignore: unused_element_parameter
+  });
 
   @override
-  State<StatefulWidget> createState() => _AddContactPageState();
+  State<StatefulWidget> createState() => _AddContactScreenState();
 }
 
-class _AddContactPageState extends State<AddContactPage> {
+class _AddContactScreenState extends State<AddContactScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  PostalAddress address = const PostalAddress(label: 'Home');
+
+  Contact$PostalAddress address = const Contact$PostalAddress(label: 'Home');
   Contact contact = const Contact();
 
   @override
@@ -329,7 +356,7 @@ class _AddContactPageState extends State<AddContactPage> {
               onPressed: () {
                 _formKey.currentState?.save();
                 final newContact = contact.copyWith(postalAddresses: [address]);
-                Contactos.addContact(newContact);
+                ContactosIos.instance.addContact(newContact);
                 Navigator.of(context).pop();
               },
               child: const Icon(Icons.save, color: Colors.white),
@@ -364,14 +391,18 @@ class _AddContactPageState extends State<AddContactPage> {
                 ),
                 TextFormField(
                   decoration: const InputDecoration(labelText: 'Phone'),
-                  onSaved: (v) => contact = contact
-                      .copyWith(phones: [Item(label: 'mobile', value: v)]),
+                  onSaved: (v) => contact = contact.copyWith(phones: [
+                    Contact$Field(
+                      label: 'mobile',
+                      value: v,
+                    )
+                  ]),
                   keyboardType: TextInputType.phone,
                 ),
                 TextFormField(
                   decoration: const InputDecoration(labelText: 'E-mail'),
                   onSaved: (v) => contact = contact.copyWith(
-                    emails: [Item(label: 'work', value: v)],
+                    emails: [Contact$Field(label: 'work', value: v)],
                   ),
                   keyboardType: TextInputType.emailAddress,
                 ),
@@ -410,19 +441,22 @@ class _AddContactPageState extends State<AddContactPage> {
       );
 }
 
-@immutable
-class UpdateContactsPage extends StatefulWidget {
-  const UpdateContactsPage({@required this.contact, super.key});
+class _UpdateContactsPage extends StatefulWidget {
+  const _UpdateContactsPage({
+    @required this.contact,
+    super.key, // ignore: unused_element_parameter
+  });
 
   final Contact? contact;
 
   @override
-  State<UpdateContactsPage> createState() => _UpdateContactsPageState();
+  State<_UpdateContactsPage> createState() => __UpdateContactsPageState();
 }
 
-class _UpdateContactsPageState extends State<UpdateContactsPage> {
+class __UpdateContactsPageState extends State<_UpdateContactsPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  PostalAddress address = const PostalAddress(label: 'Home');
+
+  Contact$PostalAddress address = const Contact$PostalAddress(label: 'Home');
   Contact? contact;
 
   @override
@@ -447,7 +481,7 @@ class _UpdateContactsPageState extends State<UpdateContactsPage> {
                 final newContact =
                     contact?.copyWith(postalAddresses: [address]);
                 if (newContact == null) return;
-                await Contactos.updateContact(newContact);
+                await ContactosIos.instance.updateContact(newContact);
                 await navigator.pushReplacement(
                   MaterialPageRoute<void>(
                     builder: (_) => const ContactsListScreen(),
@@ -490,14 +524,14 @@ class _UpdateContactsPageState extends State<UpdateContactsPage> {
                 ),
                 TextFormField(
                   decoration: const InputDecoration(labelText: 'Phone'),
-                  onSaved: (v) => contact = contact
-                      ?.copyWith(phones: [Item(label: 'mobile', value: v)]),
+                  onSaved: (v) => contact = contact?.copyWith(
+                      phones: [Contact$Field(label: 'mobile', value: v)]),
                   keyboardType: TextInputType.phone,
                 ),
                 TextFormField(
                   decoration: const InputDecoration(labelText: 'E-mail'),
                   onSaved: (v) => contact = contact?.copyWith(
-                    emails: [Item(label: 'work', value: v)],
+                    emails: [Contact$Field(label: 'work', value: v)],
                   ),
                   keyboardType: TextInputType.emailAddress,
                 ),

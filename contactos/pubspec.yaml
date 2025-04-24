@@ -1,12 +1,14 @@
 name: contactos
 description: A Flutter plugin to retrieve and manage contacts on Android and iOS devices.
-version: 0.1.0
+version: 1.0.0
 
 homepage: https://github.com/ziqq/contactos
 
 repository: https://github.com/ziqq/contactos
 
 issue_tracker: https://github.com/ziqq/contactos/issues
+
+publish_to: 'none'
 
 funding:
   - https://www.buymeacoffee.com/ziqq
@@ -21,6 +23,14 @@ platforms:
 #  - description: 'Example of using the library to check app version.'
 #    path: example.png
 
+flutter:
+  plugin:
+    platforms:
+      android:
+        default_package: contactos_android
+      ios:
+        default_package: contactos_ios
+
 environment:
   sdk: '>=3.6.0 <4.0.0'
   flutter: ">=3.27.1"
@@ -32,6 +42,18 @@ dependencies:
   # Utilities
   collection: '>=1.19.0 <2.0.0'
   meta: '>=1.15.0 <2.0.0'
+
+  # contactos_android: ^1.0.0
+  contactos_android:
+    path: ../contactos_android
+
+  # contactos_ios: ^1.0.0
+  contactos_ios:
+    path: ../contactos_ios
+
+  # contactos_platform_interface: ^1.0.0
+  contactos_platform_interface:
+    path: ../contactos_platform_interface
 
 dev_dependencies:
   # Integration tests for Flutter
@@ -46,12 +68,3 @@ dev_dependencies:
 
   # Linting
   flutter_lints: ^5.0.0
-
-flutter:
-  plugin:
-    platforms:
-      android:
-        package: flutter.plugins.contactos
-        pluginClass: ContactosPlugin
-      ios:
-        pluginClass: ContactosPlugin

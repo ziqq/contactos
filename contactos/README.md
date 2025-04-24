@@ -18,7 +18,7 @@ To use this plugin, add `contactos` as a [dependency in your `pubspec.yaml` file
 For example:
 ```yaml
 dependencies:
-    contactos: ^0.0.6
+    contactos: ^1.0.0
 ```
 
 

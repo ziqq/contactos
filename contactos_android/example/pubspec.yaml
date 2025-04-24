@@ -6,7 +6,7 @@ version: 0.0.1
 
 environment:
   sdk: '>=3.6.0 <4.0.0'
-  flutter: ">=3.29.0"
+  flutter: ">=3.29.3"
 
 
 dependencies:
@@ -19,7 +19,7 @@ dependencies:
     # The example app is bundled with the plugin so we use a path dependency on
     # the parent directory to use the current plugin's version.
     path: ../
-  # contactos_platform_interface: ^0.2.0
+  # contactos_platform_interface: ^1.0.0
   contactos_platform_interface:
     path: ../../contactos_platform_interface
 
