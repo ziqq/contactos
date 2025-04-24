@@ -9,9 +9,7 @@ help: ## Help dialog
 
 .PHONY: format
 format: ## Format code
-				@echo "╠ RUN FORMAT THE CODE"
 				@fvm dart format -l 80 lib test || (echo "¯\_(ツ)_/¯ Format code error"; exit 1)
-				@echo "╠ CODE FORMATED SUCCESSFULLY"
 
 .PHONY: fix
 fix: format ## Fix code
@@ -19,22 +17,17 @@ fix: format ## Fix code
 
 .PHONY: get
 get: ## Get dependencies
-				@echo "╠ RUN GET DEPENDENCIES"
 				@fvm flutter pub get || (echo "¯\_(ツ)_/¯ Get dependencies error"; exit 1)
-				@echo "╠ DEPENDENCIES GETED SUCCESSFULLY"
 
 .PHONY: analyze
 analyze: get format ## Analyze code
-				@echo "╠ RUN ANALYZE THE CODE"
 				@fvm dart analyze --fatal-infos --fatal-warnings
-				@echo "╠ ANALYZED CODE SUCCESSFULLY"
 
 .PHONY: check
-check: analyze publish-check ## Check the code
-				@echo "╠ RUN CECK CODE"
+check: analyze ## Check the code
 				@dart pub global activate pana
 				@pana --json --no-warning --line-length 80 > log.pana.json
-				@echo "╠ CECKED CODE SUCCESSFULLY"
+				@dart pub publish --dry-run
 
 .PHONY: coverage
 coverage: ## Runs get coverage
@@ -46,7 +39,5 @@ run-genhtml: ## Runs generage coverage html
 
 .PHONY: test-unit
 test-unit: ## Runs unit tests
-				@echo "╠ RUNNING UNIT TESTS FOR CONTACTOS PLATFORM INTERFACE"
 				@flutter test --coverage || (echo "¯\_(ツ)_/¯ Error while running test-unit"; exit 1)
 				@genhtml coverage/lcov.info --output=coverage -o coverage/html || (echo "¯\_(ツ)_/¯ Error while running genhtml with coverage"; exit 2)
-				@echo "╠ CONTACTOS PLATFORM INTERFACE UNIT TESTS SUCCESSFULLY"
