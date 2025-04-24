@@ -2,25 +2,18 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Run Example",
+      "name": "Run Android or iOS Example",
       "type": "dart",
       "request": "launch",
-      "cwd": "${workspaceFolder}/example",
-      "args": [],
-      "env": {}
-    },
-    {
-      "name": "Run iOS Example",
-      "type": "dart",
-      "request": "launch",
-      "cwd": "${workspaceFolder}/contactos_ios/example",
+      "cwd": "${workspaceFolder}/contactos/example",
       "args": [],
       "env": {}
     },
     {
       "name": "Flutter Test",
-      "request": "launch",
       "type": "dart",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/contactos",
       "program": "test/contacts_test.dart",
       "env": {
         "ENVIRONMENT": "test"

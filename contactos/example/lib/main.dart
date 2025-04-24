@@ -5,32 +5,40 @@ import 'package:permission_handler/permission_handler.dart';
 
 void main() => runApp(const ContactsExampleApp());
 
-// iOS only: Localized labels language setting is equal to CFBundleDevelopmentRegion value (Info.plist) of the iOS project
-// Set iOSLocalizedLabels=false if you always want english labels whatever is the CFBundleDevelopmentRegion value.
+/// iOS only: Localized labels language setting
+/// is equal to CFBundleDevelopmentRegion value (Info.plist) of the iOS project
+/// Set iOSLocalizedLabels=false if you always want english labels
+/// whatever is the CFBundleDevelopmentRegion value.
 const iOSLocalizedLabels = false;
 
+/// {@template main}
+/// Example app for the `contactos` plugin.
+/// {@endtemplate}
 class ContactsExampleApp extends StatelessWidget {
+  /// {@macro main}
   const ContactsExampleApp({super.key});
 
   @override
   Widget build(BuildContext context) => MaterialApp(
-        home: const HomePage(),
+        home: const _HomePage(),
         routes: <String, WidgetBuilder>{
-          '/add': (_) => const AddContactPage(),
+          '/add': (_) => const AddContactScreen(),
           '/contacts-list': (_) => const ContactsListScreen(),
           '/native-contacts-picker': (_) => const NativeContactsPickerScreen(),
         },
       );
 }
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+class _HomePage extends StatefulWidget {
+  const _HomePage({
+    super.key, // ignore: unused_element_parameter
+  });
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<_HomePage> createState() => __HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class __HomePageState extends State<_HomePage> {
   @override
   void initState() {
     super.initState();
@@ -48,10 +56,10 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<PermissionStatus> _getContactPermission() async {
-    PermissionStatus permission = await Permission.contacts.status;
+    final permission = await Permission.contacts.status;
     if (permission != PermissionStatus.granted &&
         permission != PermissionStatus.permanentlyDenied) {
-      PermissionStatus permissionStatus = await Permission.contacts.request();
+      final permissionStatus = await Permission.contacts.request();
       return permissionStatus;
     } else {
       return permission;

@@ -4,19 +4,26 @@
 Pod::Spec.new do |s|
   s.name             = 'contactos'
   s.version          = '1.0.0'
-  s.summary          = "A Flutter plugin to retrieve and manage contacts on Android and iOS devices"
+  s.summary          = "A Flutter plugin to retrieve and manage contacts on iOS devices"
   s.description      = <<-DESC
-A new Flutter plugin.
+  A Flutter plugin to retrieve and manage contacts on iOS devices.
                        DESC
-  s.homepage         = 'http://example.com'
-  s.license          = { :file => '../LICENSE' }
+  s.homepage         = 'https://github.com/ziqq/contactos/contactos'
+  s.license          = { :type => 'BSD', :file => '../LICENSE' }
   s.author           = { 'Anton Ustinoff' => 'a.a.ustinoff@gmail.com' }
-  s.source           = { :path => '.' }
-  s.source_files = 'Classes/**/*'
-  s.public_header_files = 'Classes/**/*.h'
-  s.dependency 'Flutter'
-
+  s.source           = { :http => 'https://github.com/ziqq/contactos/contactos' }
+  s.public_header_files = 'contactos/Sources/contactos/**/*.h'
+  s.source_files = 'contactos/Sources/contactos/**/*.{swift,m,h}'
+  s.ios.dependency 'Flutter'
+  s.osx.dependency 'FlutterMacOS'
   s.ios.deployment_target = '12.0'
-  s.swift_version         = '4.2'
+  s.osx.deployment_target = '10.14'
+  s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES' }
+  s.xcconfig = {
+    'LIBRARY_SEARCH_PATHS' => '$(TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)/ $(SDKROOT)/usr/lib/swift',
+    'LD_RUNPATH_SEARCH_PATHS' => '/usr/lib/swift',
+ }
+ s.swift_version = '5.0'
+ s.resource_bundles = {'contactos_privacy' => ['contactos/Sources/contactos/Resources/PrivacyInfo.xcprivacy']}
 end
 

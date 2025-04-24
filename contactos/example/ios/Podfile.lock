@@ -1,13 +1,17 @@
 PODS:
-  - contactos (0.2.2):
+  - contactos (1.0.0):
     - Flutter
+    - FlutterMacOS
   - Flutter (1.0.0)
+  - integration_test (0.0.1):
+    - Flutter
   - permission_handler_apple (9.3.0):
     - Flutter
 
 DEPENDENCIES:
   - contactos (from `.symlinks/plugins/contactos/ios`)
   - Flutter (from `Flutter`)
+  - integration_test (from `.symlinks/plugins/integration_test/ios`)
   - permission_handler_apple (from `.symlinks/plugins/permission_handler_apple/ios`)
 
 EXTERNAL SOURCES:
@@ -15,14 +19,17 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/contactos/ios"
   Flutter:
     :path: Flutter
+  integration_test:
+    :path: ".symlinks/plugins/integration_test/ios"
   permission_handler_apple:
     :path: ".symlinks/plugins/permission_handler_apple/ios"
 
 SPEC CHECKSUMS:
-  contactos: ba4d2ba7ad428c2e8417a18552b1ac3f2f5efee3
+  contactos: ad2d4b2c77fd220de4195d7c0b0e4f4af4e133e6
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
+  integration_test: 252f60fa39af5e17c3aa9899d35d908a0721b573
   permission_handler_apple: 9878588469a2b0d0fc1e048d9f43605f92e6cec2
 
-PODFILE CHECKSUM: 976fbd61d3587c3aa57026180fbf531c37194bf6
+PODFILE CHECKSUM: 416875362fcf5afc06d97b5005ca488806e87cf2
 
 COCOAPODS: 1.16.2
