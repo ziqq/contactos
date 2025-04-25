@@ -47,9 +47,7 @@ clean: ## Clean flutter
 .PHONY: get
 get: ## Get dependencies
 				@cd contactos && fvm flutter pub get || (echo "¯\_(ツ)_/¯ Get contactos dependencies error"; exit 1)
-				@cd contactos_android && fvm flutter pub get || (echo "¯\_(ツ)_/¯ Get contactos_android dependencies error"; exit 2)
-				@cd contactos_ios && fvm flutter pub get || (echo "¯\_(ツ)_/¯ Get contactos_ios dependencies error"; exit 3)
-				@cd contactos_platform_interface && fvm flutter pub get || (echo "¯\_(ツ)_/¯ Get contactos_platform_interface dependencies error"; exit 4)
+				@cd contactos_platform_interface && fvm flutter pub get || (echo "¯\_(ツ)_/¯ Get contactos_platform_interface dependencies error"; exit 2)
 
 .PHONY: analyze
 analyze: get format ## Analyze code
