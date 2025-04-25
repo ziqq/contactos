@@ -19,9 +19,6 @@ flutter:
       ios:
         pluginClass: ContactosPlugin
         dartPluginClass: Contactos
-      macos:
-        pluginClass: ContactosPlugin
-        dartPluginClass: Contactos
 
 dependencies:
   flutter:
