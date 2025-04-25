@@ -54,7 +54,7 @@ analyze: get format ## Analyze code
 
 .PHONY: check
 check: analyze ## Check the code
-				@dart pub global activate pana
+				@fvm dart pub global activate pana
 				@pana --json --no-warning --line-length 80 > log.pana.json
 
 .PHONY: publish-check
@@ -80,7 +80,7 @@ test-unit: ## Runs unit tests
 
 .PHONY: tag
 tag: ## Add a tag to the current commit
-	@dart run tool/tag.dart
+	@fvm dart run tool/tag.dart
 
 .PHONY: tag-add
 tag-add: ## Add TAG. E.g: make tag-add TAG=v1.0.0
