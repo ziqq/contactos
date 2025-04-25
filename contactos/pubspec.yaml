@@ -29,9 +29,7 @@ dependencies:
   flutter:
     sdk: flutter
 
-  # contactos_platform_interface: ^1.0.0
-  contactos_platform_interface:
-    path: ../contactos_platform_interface
+  contactos_platform_interface: ^1.0.0-pre.1
 
 dev_dependencies:
   flutter_test:
