@@ -4,7 +4,7 @@ PWD   :=$(shell pwd)
 .DEFAULT_GOAL := all
 .PHONY: all
 all: ## build pipeline
-all: format check test-unit
+all: format check test-unit publish-check
 
 .PHONY: ci
 ci: ## CI build pipeline
