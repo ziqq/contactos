@@ -4,8 +4,6 @@ repository: https://github.com/ziqq/contactos/contactos
 issue_tracker: https://github.com/ziqq/contactos/issues?q=is%3Aissue+is%3Aopen+label%3A%22p%3A+contactos%22
 version: 1.0.0-pre.1
 
-publish_to: 'none'
-
 environment:
   sdk: '>=3.6.0 <4.0.0'
   flutter: ">=3.29.3"
