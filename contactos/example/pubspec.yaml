@@ -19,7 +19,7 @@ dependencies:
     # The example app is bundled with the plugin so we use a path dependency on
     # the parent directory to use the current plugin's version.
     path: ../
-  contactos_platform_interface: ^1.0.0-pre.1
+  contactos_platform_interface: ^1.0.0
 
   cupertino_icons: any
   collection: any
