@@ -52,7 +52,7 @@ packages:
     dependency: "direct main"
     description:
       name: contactos_platform_interface
-      sha256: b8cac85f493b25f11921babf8699bc72ced62d992c3c4740f2b5790d9506603b
+      sha256: "91cb1912e5b6f5126d43e1eb21a8385f837e6b637642449a526fc60038214529"
       url: "https://pub.dev"
     source: hosted
     version: "1.0.0"
