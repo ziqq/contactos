@@ -2,7 +2,7 @@
 - **ADDED**: `iOS` Support for new versions
 
 ## 1.0.1
-- **FIXED**: Syntax error `!!` intro IOS Plugin
+- **FIXED**: Syntax error
 
 ## 1.0.0
 - **BREAKING CHANGES**: `FormOperationErrorCode` change options:
