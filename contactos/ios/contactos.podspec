@@ -3,7 +3,7 @@
 #
 Pod::Spec.new do |s|
   s.name             = 'contactos'
-  s.version          = '1.0.2'
+  s.version          = '1.0.3'
   s.summary          = "A Flutter plugin to retrieve and manage contacts on iOS devices"
   s.description      = <<-DESC
   A Flutter plugin to retrieve and manage contacts on iOS devices.

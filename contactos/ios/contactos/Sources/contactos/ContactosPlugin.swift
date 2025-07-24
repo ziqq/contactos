@@ -247,7 +247,7 @@ public class SwiftContactosPlugin: NSObject, FlutterPlugin, CNContactViewControl
         } */
         DispatchQueue.main.async {
             let navigation = UINavigationController(rootViewController: controller)
-            getRootViewController()?.present(navigation, animated: true)
+            self.getRootViewController()?.present(navigation, animated: true)
         }
         return nil
     }
@@ -269,7 +269,7 @@ public class SwiftContactosPlugin: NSObject, FlutterPlugin, CNContactViewControl
     } */
     @objc func cancelContactForm() {
         if let result = self.result {
-            getRootViewController()?.dismiss(animated: true, completion: nil)
+            self.getRootViewController()?.dismiss(animated: true, completion: nil)
             result(SwiftContactosPlugin.FORM_OPERATION_CANCELED)
             self.result = nil
         }
