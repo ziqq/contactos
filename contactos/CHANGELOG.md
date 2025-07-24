@@ -1,3 +1,7 @@
+## 1.0.1
+- **FIXED**: Syntax error `!!` intro IOS Plugin
+
+
 ## 1.0.0
 - **BREAKING CHANGES**: `FormOperationErrorCode` change options:
                         `FormOperationErrorCode.FORM_OPERATION_CANCELED` => `FormOperationErrorCode.canceled`,
