@@ -13,7 +13,14 @@ public class SwiftContactosPlugin: NSObject, FlutterPlugin, CNContactViewControl
 
     public static func register(with registrar: FlutterPluginRegistrar) {
         let channel = FlutterMethodChannel(name: "github.com/ziqq/contactos", binaryMessenger: registrar.messenger())
-        let rootViewController = UIApplication.shared.delegate!.window!.rootViewController!;
+        // let rootViewController = UIApplication.shared.delegate?.window??.rootViewController;
+
+        let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene
+        let window = windowScene?.windows.first(where: { $0.isKeyWindow })
+        guard let rootViewController = window?.rootViewController else {
+            fatalError("No rootViewController found")
+        }
+
         let instance = SwiftContactosPlugin(rootViewController)
         registrar.addMethodCallDelegate(instance, channel: channel)
         instance.preLoadContactView()
@@ -233,10 +240,14 @@ public class SwiftContactosPlugin: NSObject, FlutterPlugin, CNContactViewControl
         let contact = CNMutableContact.init()
         let controller = CNContactViewController.init(forNewContact:contact)
         controller.delegate = self
-        DispatchQueue.main.async {
+        /* DispatchQueue.main.async {
          let navigation = UINavigationController .init(rootViewController: controller)
          let viewController : UIViewController? = UIApplication.shared.delegate?.window??.rootViewController
             viewController?.present(navigation, animated:true, completion: nil)
+        } */
+        DispatchQueue.main.async {
+            let navigation = UINavigationController(rootViewController: controller)
+            getRootViewController()?.present(navigation, animated: true)
         }
         return nil
     }
@@ -248,10 +259,17 @@ public class SwiftContactosPlugin: NSObject, FlutterPlugin, CNContactViewControl
         }
     }
 
-    @objc func cancelContactForm() {
+    /* @objc func cancelContactForm() {
         if let result = self.result {
             let viewController : UIViewController? = UIApplication.shared.delegate?.window??.rootViewController
             viewController?.dismiss(animated: true, completion: nil)
+            result(SwiftContactosPlugin.FORM_OPERATION_CANCELED)
+            self.result = nil
+        }
+    } */
+    @objc func cancelContactForm() {
+        if let result = self.result {
+            getRootViewController()?.dismiss(animated: true, completion: nil)
             result(SwiftContactosPlugin.FORM_OPERATION_CANCELED)
             self.result = nil
         }
@@ -630,4 +648,12 @@ public class SwiftContactosPlugin: NSObject, FlutterPlugin, CNContactViewControl
         }
     }
 
+    /// Returns the root view controller of the application.
+    func getRootViewController() -> UIViewController? {
+        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+        let window = windowScene.windows.first(where: { $0.isKeyWindow }) {
+            return window.rootViewController
+        }
+        return nil
+    }
 }
