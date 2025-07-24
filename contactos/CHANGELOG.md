@@ -1,10 +1,7 @@
-## 1.0.3
+## 1.0.1 - 1.0.5
 - **CHANGED**: Refactoring
-
-- **ADDED**: `iOS` Support for new versions
-
-## 1.0.1
 - **FIXED**: Syntax error
+- **ADDED**: `iOS` Support for new versions
 
 ## 1.0.0
 - **BREAKING CHANGES**: `FormOperationErrorCode` change options:
