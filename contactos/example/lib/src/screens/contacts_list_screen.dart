@@ -27,7 +27,7 @@ class _ContactsListPageState extends State<ContactsListScreen> {
   }
 
   Future<void> refreshContacts() async {
-    // var contacts = (await Contactos.getContactsForPhone("8554964652"));
+    // final contacts = (await Contactos.getContactsForPhone("8554964652"));
 
     // Load without thumbnails initially.
     final contacts = await Contactos.instance.getContacts(
@@ -35,21 +35,24 @@ class _ContactsListPageState extends State<ContactsListScreen> {
       withThumbnails: false,
     );
 
-    setState(() => _contacts = contacts);
+    _contacts = contacts;
+    if (!mounted) return;
+    setState(() {});
 
     // Lazy load thumbnails after rendering initial contacts.
     for (var contact in _contacts ?? contacts) {
-      await Contactos.instance.getAvatar(contact).then((avatar) {
-        setState(() => contact = contact.copyWith(avatar: avatar));
-      });
+      Contactos.instance.getAvatar(contact).then((avatar) {
+        contact = contact.copyWith(avatar: avatar);
+        if (mounted) setState(() {});
+      }).ignore();
     }
   }
 
   Future<void> updateContact() async {
-    var ninja = _contacts
+    var contact = _contacts
         ?.firstWhereOrNull((c) => c.familyName?.startsWith('Ninja') ?? false);
-    if (ninja == null) return;
-    await Contactos.instance.updateContact(ninja);
+    if (contact == null) return;
+    await Contactos.instance.updateContact(contact);
     await refreshContacts();
   }
 
@@ -71,7 +74,8 @@ class _ContactsListPageState extends State<ContactsListScreen> {
   }
 
   void contactOnDeviceHasBeenUpdated(Contact contact) {
-    var id = _contacts?.indexWhere((c) => c.identifier == contact.identifier);
+    if (!mounted) return;
+    final id = _contacts?.indexWhere((c) => c.identifier == contact.identifier);
     if (id == null || id < 0) return;
     _contacts?[id] = contact;
     setState(() {});
