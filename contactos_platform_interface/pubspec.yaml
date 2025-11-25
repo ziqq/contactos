@@ -1,12 +1,26 @@
 name: contactos_platform_interface
 description: A common platform interface for the contactos plugin.
+version: 1.0.1
+
+homepage: https://github.com/ziqq/contactos/contactos_platform_interface
+
 repository: https://github.com/ziqq/contactos/contactos_platform_interface
+
 issue_tracker: https://github.com/ziqq/contactos/issues?q=is%3Aissue+is%3Aopen+label%3A%22p%3A+contactos%22
-version: 1.0.0
+
+funding:
+  - https://www.buymeacoffee.com/ziqq
+  - https://www.patreon.com/ziqq
+  - https://boosty.to/ziqq
+
+topics:
+  - contacts
+
 
 environment:
   sdk: '>=3.6.0 <4.0.0'
   flutter: ">=3.29.3"
+
 
 dependencies:
   flutter:
@@ -17,15 +31,13 @@ dependencies:
   collection: '>=1.19.0 <2.0.0'
   meta: '>=1.15.0 <2.0.0'
 
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
   # Linting
-  flutter_lints: ^5.0.0
+  flutter_lints: ^6.0.0
 
   # Logging
-  l: ^5.0.0
-
-topics:
-  - contacts
+  l: ^5.0.1
