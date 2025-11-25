@@ -1,0 +1,34 @@
+name: contactos_example
+description: Testbed for the contactos foundation implementation.
+publish_to: none
+version: 0.0.1
+
+
+environment:
+  sdk: '>=3.10.0 <4.0.0'
+  flutter: ">=3.38.3"
+
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  contactos_foundation:
+    path: ../
+
+  cupertino_icons: any
+  collection: any
+  intl: any
+
+  permission_handler: ^11.4.0
+
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  integration_test:
+    sdk: flutter
+
+
+flutter:
+  uses-material-design: true
