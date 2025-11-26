@@ -2,51 +2,54 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// ignore_for_file: sort_constructors_first
-
 import 'package:contactos_platform_interface/contactos_platform_interface.dart';
 import 'package:flutter/foundation.dart';
 
-/// {@template contactos}
 /// The iOS implementation of [ContactosPlatform].
 ///
 /// This class implements the `package:contactos` functionality for iOS.
-/// {@endtemplate}
 class Contactos extends ContactosPlatform {
-  /// Use [SharePlus.instance] to access the [share] method.
-  /// {@macro contactos}
-  Contactos._(this._platform);
+  Contactos._({@visibleForTesting MethodChannelContactos? channel})
+      : channel = channel ?? MethodChannelContactos.instance,
+        super();
 
-  /// Platform interface
-  final ContactosPlatform _platform;
+  /// Underlying channel-based implementation.
+  final MethodChannelContactos channel;
 
-  /// Singleton instance (instance API).
   static Contactos? _instance;
 
-  /// The default instance of [Contactos].
-  static final Contactos instance =
-      _instance ??= Contactos._(ContactosPlatform.instance);
+  /// Returns the [Contactos] singleton instance.
+  /// Also registers this as the default platform implementation.
+  // ignore: prefer_constructors_over_static_methods
+  static Contactos get instance => _instance ??= Contactos._();
 
-  /// Create a custom instance of [Contactos].
-  /// Use this constructor for testing purposes only.
-  @visibleForTesting
-  factory Contactos.custom(ContactosPlatform platform) => Contactos._(platform);
+  /// Registers this class as the default instance of [Contactos].
+  static void registerWith() {
+    ContactosPlatform.instance = Contactos.instance;
+  }
+
+  @protected
+  @override
+  ContactosPlatform delegateFor({
+    required MethodChannelContactos channel,
+  }) =>
+      Contactos._(channel: channel);
 
   @override
-  Future<void> addContact(Contact c) => _platform.addContact(c);
+  Future<void> addContact(Contact c) => channel.addContact(c);
 
   @override
-  Future<void> deleteContact(Contact c) => _platform.deleteContact(c);
+  Future<void> deleteContact(Contact c) => channel.deleteContact(c);
 
   @override
-  Future<void> updateContact(Contact c) => _platform.updateContact(c);
+  Future<void> updateContact(Contact c) => channel.updateContact(c);
 
   @override
   Future<Uint8List?> getAvatar(
     Contact contact, {
     bool photoHighRes = true,
   }) =>
-      _platform.getAvatar(contact, photoHighRes: photoHighRes);
+      channel.getAvatar(contact, photoHighRes: photoHighRes);
 
   @override
   Future<List<Contact>> getContacts({
@@ -57,7 +60,7 @@ class Contactos extends ContactosPlatform {
     bool iOSLocalizedLabels = true,
     bool androidLocalizedLabels = true,
   }) =>
-      _platform.getContacts(
+      channel.getContacts(
         query: query,
         withThumbnails: withThumbnails,
         photoHighResolution: photoHighResolution,
@@ -75,7 +78,7 @@ class Contactos extends ContactosPlatform {
     bool iOSLocalizedLabels = true,
     bool androidLocalizedLabels = true,
   }) =>
-      _platform.getContactsForEmail(
+      channel.getContactsForEmail(
         email,
         withThumbnails: withThumbnails,
         photoHighResolution: photoHighResolution,
@@ -93,7 +96,7 @@ class Contactos extends ContactosPlatform {
     bool iOSLocalizedLabels = true,
     bool androidLocalizedLabels = true,
   }) =>
-      _platform.getContactsForPhone(
+      channel.getContactsForPhone(
         phone,
         withThumbnails: withThumbnails,
         photoHighResolution: photoHighResolution,
@@ -107,7 +110,7 @@ class Contactos extends ContactosPlatform {
     bool iOSLocalizedLabels = true,
     bool androidLocalizedLabels = true,
   }) =>
-      _platform.openContactForm(
+      channel.openContactForm(
         iOSLocalizedLabels: iOSLocalizedLabels,
         androidLocalizedLabels: androidLocalizedLabels,
       );
@@ -117,7 +120,7 @@ class Contactos extends ContactosPlatform {
     bool iOSLocalizedLabels = true,
     bool androidLocalizedLabels = true,
   }) =>
-      _platform.openDeviceContactPicker(
+      channel.openDeviceContactPicker(
         iOSLocalizedLabels: iOSLocalizedLabels,
         androidLocalizedLabels: androidLocalizedLabels,
       );
@@ -128,7 +131,7 @@ class Contactos extends ContactosPlatform {
     bool iOSLocalizedLabels = true,
     bool androidLocalizedLabels = true,
   }) =>
-      _platform.openExistingContact(
+      channel.openExistingContact(
         contact,
         iOSLocalizedLabels: iOSLocalizedLabels,
         androidLocalizedLabels: androidLocalizedLabels,

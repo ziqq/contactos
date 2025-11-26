@@ -18,7 +18,7 @@ To use this plugin, add `contactos` as a [dependency in your `pubspec.yaml` file
 For example:
 ```yaml
 dependencies:
-    contactos: ^1.0.0
+    contactos: <version>
 ```
 
 
@@ -121,7 +121,7 @@ List<Contact$PostalAddress> postalAddresses = [];
 Uint8List avatar;
 ```
 
-![Example](https://raw.githubusercontent.com/ziqq/contactos/refs/heads/main/.docs/example.gif "Example screenshot")
+![Example](https://raw.githubusercontent.com/ziqq/contactos/refs/heads/main/.github/images/example.gif "Example screenshot")
 
 
 ## Changelog
@@ -142,7 +142,6 @@ Refer to the [Changelog](https://github.com/ziqq/contactos/blob/main/CHANGELOG.m
 ## Contributions
 
 Contributions are welcome! If you find a bug or want a feature, please fill an issue.
-
 If you want to contribute code please create a pull request under the master branch.
 
 

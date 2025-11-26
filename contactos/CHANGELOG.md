@@ -1,3 +1,6 @@
+## 2.0.0-pre.1
+- **CHANGED**: Migrate to platform implementations
+
 ## 1.0.1 - 1.0.6
 - **CHANGED**: Refactoring
 - **FIXED**: Syntax error

@@ -46,20 +46,21 @@ clean: ## Clean flutter
 
 .PHONY: get
 get: ## Get dependencies
-				@fvm flutter pub get || (echo "¯\_(ツ)_/¯ Get contactos dependencies error"; exit 1)
+				@fvm flutter pub get || (echo "¯\_(ツ)_/¯ Get contactos_platform_interface dependencies error"; exit 1)
 
 .PHONY: analyze
 analyze: get format ## Analyze code
-				@fvm dart analyze --fatal-infos --fatal-warnings
+				@fvm dart analyze --fatal-infos --fatal-warnings || (echo "¯\_(ツ)_/¯ Analyze code error"; exit 1)
 
 .PHONY: check
 check: analyze ## Check the code
+				@fvm dart pub global deactivate pana > /dev/null 2>&1 || true
 				@fvm dart pub global activate pana
-				@pana --json --no-warning --line-length 80 > log.pana.json
+				@fvm dart pub global run pana --json > log.pana.json || (echo "¯\_(ツ)_/¯ Pana analysis error"; exit 1)
 
 .PHONY: publish-check
 publish-check: check ## Check the code before publish
-				@fvm dart pub publish --dry-run
+				@fvm dart pub publish --dry-run || (echo "¯\_(ツ)_/¯ Publish check error"; exit 1)
 
 .PHONY: publish
 publish: ## Publish package
@@ -75,7 +76,7 @@ run-genhtml: ## Runs generage coverage html
 
 .PHONY: test-unit
 test-unit: ## Runs unit tests
-				@fvm flutter test --coverage || (echo "¯\_(ツ)_/¯ Error while running test-unit"; exit 1)
+				@fvm flutter test --coverage test/contactos_test.dart || (echo "¯\_(ツ)_/¯ Error while running test-unit"; exit 1)
 				@genhtml coverage/lcov.info --output=coverage -o coverage/html || (echo "¯\_(ツ)_/¯ Error while running genhtml with coverage"; exit 2)
 
 .PHONY: tag
