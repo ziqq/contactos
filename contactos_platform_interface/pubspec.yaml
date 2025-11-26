@@ -10,7 +10,6 @@ issue_tracker: https://github.com/ziqq/contactos/issues?q=is%3Aissue+is%3Aopen+l
 
 funding:
   - https://www.buymeacoffee.com/ziqq
-  - https://www.patreon.com/ziqq
   - https://boosty.to/ziqq
 
 topics:
@@ -25,11 +24,11 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  plugin_platform_interface: ^2.1.7
+  plugin_platform_interface: ^2.1.8
 
   # Utilities
-  collection: '>=1.19.0 <2.0.0'
-  meta: '>=1.15.0 <2.0.0'
+  collection: '^1.16.0'
+  meta: '^1.16.0'
 
 
 dev_dependencies:
