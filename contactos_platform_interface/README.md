@@ -1,29 +1,40 @@
 # contactos_platform_interface
 
-A common platform interface for the [`contactos`][1] plugin.
+[![pub package](https://img.shields.io/pub/v/contactos_platform_interface.svg)](https://pub.dev/packages/contactos_platform_interface)
+[![License: BSD-3-Clause](https://img.shields.io/badge/license-BSD--3--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
+[![style: very_good_analysis](https://img.shields.io/badge/style-very_good_analysis-B22C11.svg)](https://pub.dev/packages/very_good_analysis)
+
+A common platform interface for the [`contactos`](https://pub.dev/packages/contactos) plugin.
 
 This interface allows platform-specific implementations of the `contactos`
 plugin, as well as the plugin itself, to ensure they are supporting the
 same interface.
 
-# Usage
+## Architecture
+
+The `contactos` plugin uses the [federated plugin architecture](https://flutter.dev/go/federated-plugins).
+
+- **`contactos`**: The app-facing package that developers depend on.
+- **`contactos_platform_interface`**: This package. It declares the interface that platform packages must implement.
+- **`contactos_android`**, **`contactos_foundation`**: Platform-specific implementations.
+
+## Usage
 
 To implement a new platform-specific implementation of `contactos`, extend
-[`ContactosPlatform`][2] with implementations that perform the platform-specific behaviors,
-and when you register your plugin.
+[`ContactosPlatform`](lib/src/contactos_platform_interface.dart) with implementations that perform the platform-specific behaviors.
 
-Please note that the plugin tooling only registers the native and/or Dart classes
-listed in your package's `pubspec.yaml`, so if you intend to implement more than
-one class, you will need to manually register the second class
-(as can be seen in the Android and iOS implementations).
+### Example
 
-# Note on breaking changes
+```dart
+class ContactosWindows extends ContactosPlatform {
+  static void registerWith() {
+    ContactosPlatform.instance = ContactosWindows();
+  }
 
-Strongly prefer non-breaking changes (such as adding a method to the interface)
-over breaking changes for this package.
+  @override
+  Future<List<Contact>> getContacts({String? query, ...}) {
+    // Implementation for Windows
+  }
 
-See https://flutter.dev/go/platform-interface-breaking-changes for a discussion
-on why a less-clean interface is preferable to a breaking change.
-
-[1]: ../contactos
-[2]: lib/contactos_platform_interface.dart
+  // ... implement other methods
+}
