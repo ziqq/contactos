@@ -2,7 +2,7 @@
 
 [![Don't depend on me](https://img.shields.io/badge/platform-internal-lightgrey.svg)](https://github.com/ziqq/contactos)
 
-This package is the Darwin (iOS and macOS) implementation of the [`contactos`](https://github.com/ziqq/contactos/tree/main/contactos) plugin.
+This package is the Darwin (iOS and ~~macOS~~) implementation of the [`contactos`](https://github.com/ziqq/contactos/tree/main/contactos) plugin.
 
 ## Usage
 
