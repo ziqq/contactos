@@ -1,3 +1,8 @@
+/*
+ * Author: Anton Ustinoff <https://github.com/ziqq> | <a.a.ustinoff@gmail.com>
+ * Date: 25 November 2025
+ */
+
 import 'dart:developer';
 
 import 'package:collection/collection.dart';
@@ -447,7 +452,7 @@ class _AddContactScreenState extends State<AddContactScreen> {
 
 class _UpdateContactsPage extends StatefulWidget {
   const _UpdateContactsPage({
-    @required this.contact,
+    required this.contact,
     super.key, // ignore: unused_element_parameter
   });
 
