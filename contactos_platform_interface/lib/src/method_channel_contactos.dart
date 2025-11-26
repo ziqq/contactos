@@ -164,7 +164,7 @@ class MethodChannelContactos extends ContactosPlatform {
     // result contains either :
     // - an List of contacts containing 0 or 1 contact
     // - a FormOperationErrorCode value
-    if (result case List<Contact?> resultList) {
+    if (result case List<dynamic> resultList) {
       if (resultList.isEmpty) return null;
       result = resultList.first;
     }
