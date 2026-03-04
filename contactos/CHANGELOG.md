@@ -1,4 +1,6 @@
-## 2.0.0-pre.1
+# Changelog
+
+## 2.0.0
 - **CHANGED**: Migrate to platform implementations
 
 ## 1.0.1 - 1.0.6

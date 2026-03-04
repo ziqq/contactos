@@ -1,9 +1,12 @@
 SHELL :=/bin/bash -e -o pipefail
 PWD   :=$(shell pwd)
 
+# All packages in dependency order
+PACKAGES := contactos_platform_interface contactos_android contactos_foundation contactos
+
 .DEFAULT_GOAL := all
 .PHONY: all
-all: ## build pipeline
+all: ## Full pipeline: format + check + test-unit
 all: format check test-unit
 
 .PHONY: ci
@@ -11,12 +14,12 @@ ci: ## CI build pipeline
 ci: all
 
 .PHONY: precommit
-precommit: ## validate the branch before commit
+precommit: ## Validate the branch before commit
 precommit: all
 
 .PHONY: help
 help: ## Help dialog
-				@echo 'Usage: make <OPTIONS>  <TARGETS>'
+				@echo 'Usage: make <OPTIONS> <TARGETS>'
 				@echo ''
 				@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
@@ -29,55 +32,66 @@ version: ## Check flutter version
 				@fvm flutter --version
 
 .PHONY: format
-format: ## Format code
-				@fvm dart format -l 80 lib test || (echo "¯\_(ツ)_/¯ Format code error"; exit 1)
+format: ## Format all packages
+				@for pkg in $(PACKAGES); do \
+					echo "Formatting $$pkg..."; \
+					cd $(PWD)/$$pkg && fvm dart format -l 80 lib test || (echo "¯\_(ツ)_/¯ Format $$pkg error"; exit 1); \
+				done
 
 .PHONY: fix
-fix: format ## Fix code
-				@fvm dart fix --apply lib
+fix: ## Fix all packages
+				@for pkg in $(PACKAGES); do \
+					echo "Fixing $$pkg..."; \
+					cd $(PWD)/$$pkg && fvm dart fix --apply lib || (echo "¯\_(ツ)_/¯ Fix $$pkg error"; exit 1); \
+				done
 
 .PHONY: clean-cache
 clean-cache: ## Clean the pub cache
 				@fvm flutter pub cache repair
 
 .PHONY: clean
-clean: ## Clean flutter
-				@fvm flutter clean
+clean: ## Clean all packages
+				@for pkg in $(PACKAGES); do \
+					echo "Cleaning $$pkg..."; \
+					cd $(PWD)/$$pkg && fvm flutter clean || true; \
+				done
 
 .PHONY: get
-get: ## Get dependencies
-				@cd contactos && fvm flutter pub get || (echo "¯\_(ツ)_/¯ Get contactos dependencies error"; exit 1)
-				@cd contactos_platform_interface && fvm flutter pub get || (echo "¯\_(ツ)_/¯ Get contactos_platform_interface dependencies error"; exit 2)
+get: ## Get dependencies for all packages
+				@for pkg in $(PACKAGES); do \
+					echo "Getting dependencies for $$pkg..."; \
+					cd $(PWD)/$$pkg && fvm flutter pub get || (echo "¯\_(ツ)_/¯ Get $$pkg dependencies error"; exit 1); \
+				done
 
 .PHONY: analyze
-analyze: get format ## Analyze code
-				@fvm dart analyze --fatal-infos --fatal-warnings
+analyze: get ## Analyze all packages
+				@for pkg in $(PACKAGES); do \
+					echo "Analyzing $$pkg..."; \
+					cd $(PWD)/$$pkg && fvm dart analyze --fatal-infos --fatal-warnings || (echo "¯\_(ツ)_/¯ Analyze $$pkg error"; exit 1); \
+				done
 
 .PHONY: check
-check: analyze ## Check the code
-				@dart pub global activate pana
-				@pana --json --no-warning --line-length 80 > log.pana.json
+check: analyze ## Analyze + pana for all packages
+				@fvm dart pub global deactivate pana > /dev/null 2>&1 || true
+				@fvm dart pub global activate pana
+				@for pkg in $(PACKAGES); do \
+					echo "Running pana for $$pkg..."; \
+					cd $(PWD)/$$pkg && fvm dart pub global run pana --json > log.pana.json || (echo "¯\_(ツ)_/¯ Pana $$pkg error"; exit 1); \
+				done
 
 .PHONY: publish-check
-publish-check: check ## Check the code before publish
-				@fvm dart pub publish --dry-run
-
-.PHONY: publish
-publish: ## Publish package
-				@fvm dart pub publish --server=https://pub.dartlang.org || (echo "¯\_(ツ)_/¯ Publish error"; exit 1)
-
-.PHONY: coverage
-coverage: ## Runs get coverage
-				@lcov --summary coverage/lcov.info
-
-.PHONY: run-genhtml
-run-genhtml: ## Runs generage coverage html
-				@genhtml coverage/lcov.info -o coverage/html
+publish-check: ## Dry-run publish for all packages
+				@for pkg in $(PACKAGES); do \
+					echo "Publish check $$pkg..."; \
+					cd $(PWD)/$$pkg && fvm dart pub publish --dry-run || (echo "¯\_(ツ)_/¯ Publish check $$pkg error"; exit 1); \
+				done
 
 .PHONY: test-unit
-test-unit: ## Runs unit tests
-				@fvm flutter test --coverage || (echo "¯\_(ツ)_/¯ Error while running test-unit"; exit 1)
-				@genhtml coverage/lcov.info --output=coverage -o coverage/html || (echo "¯\_(ツ)_/¯ Error while running genhtml with coverage"; exit 2)
+test-unit: ## Run unit tests for all packages
+				@for pkg in $(PACKAGES); do \
+					echo "Testing $$pkg..."; \
+					cd $(PWD)/$$pkg && fvm flutter test --coverage || (echo "¯\_(ツ)_/¯ Test $$pkg error"; exit 1); \
+				done
 
 .PHONY: tag
 tag: ## Add a tag to the current commit
@@ -96,7 +110,7 @@ tag-add: ## Add TAG. E.g: make tag-add TAG=v1.0.0
 				@echo ""
 
 .PHONY: tag-remove
-tag-remove: ## Delete TAG. E.g: make tag-delete TAG=v1.0.0
+tag-remove: ## Delete TAG. E.g: make tag-remove TAG=v1.0.0
 				@if [ -z "$(TAG)" ]; then echo "¯\_(ツ)_/¯ TAG is not set"; exit 1; fi
 				@echo ""
 				@echo "START REMOVING TAG: $(TAG)"

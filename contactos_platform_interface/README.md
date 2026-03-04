@@ -1,8 +1,8 @@
 # contactos_platform_interface
 
 [![pub package](https://img.shields.io/pub/v/contactos_platform_interface.svg)](https://pub.dev/packages/contactos_platform_interface)
-[![License: BSD-3-Clause](https://img.shields.io/badge/license-BSD--3--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
-[![style: very_good_analysis](https://img.shields.io/badge/style-very_good_analysis-B22C11.svg)](https://pub.dev/packages/very_good_analysis)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![style: flutter lints](https://img.shields.io/badge/style-flutter__lints-blue)](https://pub.dev/packages/flutter_lints)
 
 A common platform interface for the [`contactos`](https://pub.dev/packages/contactos) plugin.
 
@@ -38,3 +38,14 @@ class ContactosWindows extends ContactosPlatform {
 
   // ... implement other methods
 }
+```
+
+
+## Maintainers
+
+[Anton Ustinoff (ziqq)](https://github.com/ziqq)
+
+
+## License
+
+[MIT](https://github.com/ziqq/contactos/blob/main/LICENSE)

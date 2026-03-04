@@ -46,7 +46,7 @@ clean: ## Clean flutter
 
 .PHONY: get
 get: ## Get dependencies
-				@fvm flutter pub get || (echo "¯\_(ツ)_/¯ Get contactos_platform_interface dependencies error"; exit 1)
+				@fvm flutter pub get || (echo "¯\_(ツ)_/¯ Get contactos dependencies error"; exit 1)
 
 .PHONY: analyze
 analyze: get format ## Analyze code

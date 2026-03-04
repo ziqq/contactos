@@ -1,5 +1,5 @@
 # Contactos Plugin for Flutter
-[![pub package](https://img.shields.io/pub/v/contactos.svg)](https://pub.dartlang.org/packages/contactos)
+[![pub package](https://img.shields.io/pub/v/contactos.svg)](https://pub.dev/packages/contactos)
 [![codecov](https://codecov.io/gh/ziqq/contactos/graph/badge.svg?token=S5CVNZKDAE)](https://codecov.io/gh/ziqq/contactos)
 [![style: flutter lints](https://img.shields.io/badge/style-flutter__lints-blue)](https://pub.dev/packages/flutter_lints)
 
@@ -14,11 +14,11 @@ A Flutter plugin to access and manage the device's contacts.
 
 ## Installation
 
-To use this plugin, add `contactos` as a [dependency in your `pubspec.yaml` file](https://flutter.io/platform-plugins/).
+To use this plugin, add `contactos` as a [dependency in your `pubspec.yaml` file](https://flutter.dev/to/using-packages).
 For example:
 ```yaml
 dependencies:
-    contactos: <version>
+    contactos: ^latest_version
 ```
 
 
@@ -54,7 +54,7 @@ end
 
 
 **Note**
-`contactos` does not handle the process of asking and checking for permissions. To check and request user permission to access contacts, try using the following plugins: [permission_handler](https://pub.dartlang.org/packages/permission_handler).
+`contactos` does not handle the process of asking and checking for permissions. To check and request user permission to access contacts, try using the following plugins: [permission_handler](https://pub.dev/packages/permission_handler).
 
 If you do not request user permission or have it granted, the application will fail. For testing purposes, you can manually set the permissions for your test app in Settings for your app on the device that you are using. For Android, go to "Settings" - "Apps" - select your test app - "Permissions" - then turn "on" the slider for contacts.
 
@@ -75,7 +75,7 @@ List<Contact> contacts = await Contactos.instance.getContacts(withThumbnails: fa
 Uint8List avatar = await Contactos.instance.getAvatar(contact);
 
 // Get contacts matching a string.
-List<Contact> johns = await Contactos.instance.getContacts(query : "john");
+List<Contact> johns = await Contactos.instance.getContacts(query: "john");
 
 // Add a contact.
 // The contact must have a firstName / lastName to be successfully added.
@@ -90,14 +90,13 @@ await Contactos.instance.deleteContact(contact);
 await Contactos.instance.updateContact(contact);
 
 // Usage of the native device form for creating a Contact.
-// Throws a error if the Form could not be open or the Operation is canceled by the User.
+// Throws an error if the form could not be opened or the operation is canceled by the user.
 await Contactos.instance.openContactForm();
 
 // Usage of the native device form for editing a Contact.
 // The contact must have a valid identifier.
-// Throws a error if the Form could not be open or the Operation is canceled by the User.
+// Throws an error if the form could not be opened or the operation is canceled by the user.
 await Contactos.instance.openExistingContact(contact);
-
 
 ```
 **Contact Model**
@@ -126,7 +125,7 @@ Uint8List avatar;
 
 ## Changelog
 
-Refer to the [Changelog](https://github.com/ziqq/contactos/blob/main/CHANGELOG.md) to get all release notes.
+Refer to the [Changelog](https://github.com/ziqq/contactos/blob/main/contactos/CHANGELOG.md) to get all release notes.
 
 
 ## Maintainers
@@ -142,7 +141,7 @@ Refer to the [Changelog](https://github.com/ziqq/contactos/blob/main/CHANGELOG.m
 ## Contributions
 
 Contributions are welcome! If you find a bug or want a feature, please fill an issue.
-If you want to contribute code please create a pull request under the master branch.
+If you want to contribute code please create a pull request.
 
 
 ## Funding
@@ -150,10 +149,9 @@ If you want to contribute code please create a pull request under the master bra
 If you want to support the development of our library, there are several ways you can do it:
 
 - [Buy me a coffee](https://www.buymeacoffee.com/ziqq)
-- [Support on Patreon](https://www.patreon.com/ziqq)
 - [Subscribe through Boosty](https://boosty.to/ziqq)
 
 
-##  Coverage
+## Coverage
 
-<img  src="https://codecov.io/gh/ziqq/contactos/graphs/sunburst.svg?token=S5CVNZKDAE"  width="375">
+<img src="https://codecov.io/gh/ziqq/contactos/graphs/sunburst.svg?token=S5CVNZKDAE" width="375">

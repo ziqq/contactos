@@ -1,3 +1,5 @@
+# Changelog
+
 ## 0.0.2
 - **CHANGED**: Package metadata
 
