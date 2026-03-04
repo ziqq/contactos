@@ -108,26 +108,49 @@ jobs:
         with:
           path: coverage_parts
           pattern: coverage-*
-          merge-multiple: true
       - name: Merge lcov
         run: |
           sudo apt-get update && sudo apt-get install -y lcov
-          mkdir merged || true
-          FILES=$(find coverage_parts -name "lcov.info")
-          if [ -z "$FILES" ]; then
-            echo "No coverage files"; exit 0
+          mkdir -p merged
+
+          # Map artifact names back to package paths
+          declare -A ARTIFACT_TO_PATH=(
+            ["coverage-plugin"]="contactos"
+            ["coverage-android"]="contactos_android"
+            ["coverage-foundation"]="contactos_foundation"
+            ["coverage-interface"]="contactos_platform_interface"
+          )
+
+          FIRST=true
+          for dir in coverage_parts/coverage-*/; do
+            ARTIFACT_NAME=$(basename "$dir")
+            PKG_PATH="${ARTIFACT_TO_PATH[$ARTIFACT_NAME]}"
+            LCOV_FILE="$dir/lcov.info"
+
+            if [ ! -f "$LCOV_FILE" ]; then
+              echo "No lcov.info in $dir, skipping"
+              continue
+            fi
+
+            # Prefix SF: paths with the package directory
+            # so Codecov maps files correctly in the monorepo
+            if [ -n "$PKG_PATH" ]; then
+              sed -i "s|^SF:|SF:${PKG_PATH}/|" "$LCOV_FILE"
+            fi
+
+            if $FIRST; then
+              cp "$LCOV_FILE" merged/lcov.info
+              FIRST=false
+            else
+              lcov -a merged/lcov.info -a "$LCOV_FILE" -o merged/lcov.tmp
+              mv merged/lcov.tmp merged/lcov.info
+            fi
+          done
+
+          if [ ! -f merged/lcov.info ]; then
+            echo "No coverage files found"; exit 0
           fi
-          # Начальный файл
-            FIRST=true
-            for f in $FILES; do
-              if $FIRST; then
-                cp "$f" merged/lcov.info
-                FIRST=false
-              else
-                lcov -a merged/lcov.info -a "$f" -o merged/lcov.tmp
-                mv merged/lcov.tmp merged/lcov.info
-              fi
-            done
+
           lcov --remove merged/lcov.info '*_test.dart' -o merged/lcov.info || true
           echo "Merged coverage:"
           lcov --summary merged/lcov.info || true
