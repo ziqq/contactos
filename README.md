@@ -1,6 +1,6 @@
 # Contactos Plugin for Flutter
 [![pub package](https://img.shields.io/pub/v/contactos.svg)](https://pub.dev/packages/contactos)
-[![codecov](https://codecov.io/gh/ziqq/contactos/graph/badge.svg?token=S5CVNZKDAE)](https://codecov.io/gh/ziqq/contactos)
+[![codecov](https://codecov.io/gh/ziqq/contactos/graph/badge.svg?token=KRHRN8QVXJ)](https://codecov.io/gh/ziqq/contactos)
 [![style: flutter lints](https://img.shields.io/badge/style-flutter__lints-blue)](https://pub.dev/packages/flutter_lints)
 
 
@@ -225,4 +225,4 @@ If you want to support the development of our library, there are several ways yo
 
 ## Coverage
 
-<img src="https://codecov.io/gh/ziqq/contactos/graphs/sunburst.svg?token=S5CVNZKDAE" width="375">
+<img src="https://codecov.io/gh/ziqq/contactos/graphs/sunburst.svg?token=KRHRN8QVXJ" width="375">
