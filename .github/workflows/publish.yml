@@ -2,16 +2,160 @@ name: Publish to pub.dev
 
 on:
   workflow_dispatch:
+    inputs:
+      packages:
+        description: "Packages to publish (comma-separated: android,ios,interface,main)"
+        required: false
+        default: "android,ios,interface,main"
   push:
     tags:
       - "v[0-9]+.[0-9]+.[0-9]+*"
+      - "contactos-v[0-9]+.[0-9]+.[0-9]+*"
+      - "contactos-android-v[0-9]+.[0-9]+.[0-9]+*"
+      - "contactos-foundation-v[0-9]+.[0-9]+.[0-9]+*"
+      - "contactos-platform-interface-v[0-9]+.[0-9]+.[0-9]+*"
+
+permissions:
+  contents: read
+  id-token: write # Required for authentication with Google Cloud/Pub
 
 jobs:
-  publish:
-    uses: ziqq/flutter_ci_workflows/.github/workflows/publish_to_pub.yml@main
-    with:
-      PANA_TOTAL: '110'
-    secrets:
-      PUB_CREDENTIAL_JSON: ${{ secrets.PUB_CREDENTIAL_JSON }}
-      PUB_OAUTH_ACCESS_TOKEN: ${{ secrets.PUB_OAUTH_ACCESS_TOKEN }}
-      PUB_OAUTH_REFRESH_TOKEN: ${{ secrets.PUB_OAUTH_REFRESH_TOKEN }}
+  prepare:
+    name: "Prepare publish configuration"
+    runs-on: ubuntu-latest
+    outputs:
+      publish_android: ${{ steps.determine_packages.outputs.publish_android }}
+      publish_foundation: ${{ steps.determine_packages.outputs.publish_foundation }}
+      publish_interface: ${{ steps.determine_packages.outputs.publish_interface }}
+      publish_main: ${{ steps.determine_packages.outputs.publish_main }}
+    steps:
+      - name: Determine packages to publish
+        id: determine_packages
+        shell: bash
+        run: |
+          PACKAGES=""
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            if [[ "${{ github.event.inputs.packages }}" != "" ]]; then
+              PACKAGES="${{ github.event.inputs.packages }}"
+            else
+              PACKAGES="android,ios,interface,main"
+            fi
+          elif [[ "${{ github.ref }}" =~ ^refs/tags/(.*)-v.*$ ]]; then
+            PACKAGE_NAME="${BASH_REMATCH[1]}"
+            if [[ "$PACKAGE_NAME" == "contactos" ]]; then
+              PACKAGES="main"
+            elif [[ "$PACKAGE_NAME" == "contactos_android" ]]; then
+              PACKAGES="android"
+            elif [[ "$PACKAGE_NAME" == "contactos_foundation" ]]; then
+              PACKAGES="ios"
+            elif [[ "$PACKAGE_NAME" == "contactos_platform_interface" ]]; then
+              PACKAGES="interface"
+            fi
+          fi
+
+          echo "Selected packages: $PACKAGES"
+
+          if [[ "$PACKAGES" == *"android"* ]]; then echo "publish_android=true" >> $GITHUB_OUTPUT; else echo "publish_android=false" >> $GITHUB_OUTPUT; fi
+          if [[ "$PACKAGES" == *"ios"* ]]; then echo "publish_foundation=true" >> $GITHUB_OUTPUT; else echo "publish_foundation=false" >> $GITHUB_OUTPUT; fi
+          if [[ "$PACKAGES" == *"interface"* ]]; then echo "publish_interface=true" >> $GITHUB_OUTPUT; else echo "publish_interface=false" >> $GITHUB_OUTPUT; fi
+          if [[ "$PACKAGES" == *"main"* ]]; then echo "publish_main=true" >> $GITHUB_OUTPUT; else echo "publish_main=false" >> $GITHUB_OUTPUT; fi
+
+  publish_interface:
+    needs: prepare
+    if: needs.prepare.outputs.publish_interface == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+      - name: Setup Pub Credentials
+        shell: bash
+        env:
+          PUB_CREDENTIAL_JSON: ${{ secrets.PUB_CREDENTIAL_JSON }}
+        run: |
+          mkdir -p ~/.config/dart
+          echo "$PUB_CREDENTIAL_JSON" > ~/.config/dart/pub-credentials.json
+      - name: Publish
+        working-directory: contactos_platform_interface
+        run: |
+          flutter pub get
+          dart pub publish --force
+
+  publish_foundation:
+    needs: prepare
+    if: needs.prepare.outputs.publish_foundation == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+      - name: Setup Pub Credentials
+        shell: bash
+        env:
+          PUB_CREDENTIAL_JSON: ${{ secrets.PUB_CREDENTIAL_JSON }}
+        run: |
+          mkdir -p ~/.config/dart
+          echo "$PUB_CREDENTIAL_JSON" > ~/.config/dart/pub-credentials.json
+      - name: Publish
+        working-directory: contactos_foundation
+        run: |
+          flutter pub get
+          dart pub publish --force
+
+  publish_android:
+    needs: prepare
+    if: needs.prepare.outputs.publish_android == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+      - name: Setup Pub Credentials
+        shell: bash
+        env:
+          PUB_CREDENTIAL_JSON: ${{ secrets.PUB_CREDENTIAL_JSON }}
+        run: |
+          mkdir -p ~/.config/dart
+          echo "$PUB_CREDENTIAL_JSON" > ~/.config/dart/pub-credentials.json
+      - name: Publish
+        working-directory: contactos_android
+        run: |
+          flutter pub get
+          dart pub publish --force
+
+  publish_main:
+    needs: prepare
+    if: needs.prepare.outputs.publish_main == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+      - name: Setup Pub Credentials
+        shell: bash
+        env:
+          PUB_CREDENTIAL_JSON: ${{ secrets.PUB_CREDENTIAL_JSON }}
+        run: |
+          mkdir -p ~/.config/dart
+          echo "$PUB_CREDENTIAL_JSON" > ~/.config/dart/pub-credentials.json
+      - name: Publish
+        working-directory: contactos
+        run: |
+          flutter pub get
+          dart pub publish --force

@@ -1,3 +1,7 @@
+// Copyright 2025 Anton Ustinoff<a.a.ustinoff@gmail.com>. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 import 'dart:typed_data';
 
 import 'package:collection/collection.dart';
@@ -522,13 +526,13 @@ class FormOperationException implements Exception {
   /// with a [FormOperationErrorCode.couldNotBeOpen]
   /// {@macro form_operation_exception}
   const factory FormOperationException.couldNotBeOpen() =
-      FormOperationException$Canceled;
+      FormOperationException$CouldNotBeOpen;
 
   /// Creates a [FormOperationException]
   /// with a [FormOperationErrorCode.unknown]
   /// {@macro form_operation_exception}
   const factory FormOperationException.unknown() =
-      FormOperationException$Canceled;
+      FormOperationException$Unknown;
 
   /// The error code associated with this exception
   final FormOperationErrorCode? errorCode;

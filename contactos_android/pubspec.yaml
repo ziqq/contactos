@@ -1,0 +1,59 @@
+name: contactos_android
+description: Android implementation of the contactos plugin.
+version: 0.0.1
+
+# publish_to: none
+
+homepage: https://github.com/ziqq/contactos/contactos_android
+
+repository: https://github.com/ziqq/contactos/contactos_android
+
+issue_tracker: https://github.com/ziqq/contactos/issues?q=is%3Aissue+is%3Aopen+label%3A%22p%3A+contactos%22
+
+funding:
+  - https://www.buymeacoffee.com/ziqq
+  - https://boosty.to/ziqq
+
+#screenshots:
+#  - description: 'Example of using the library to check app version.'
+#    path: example.png
+
+topics:
+  - contacts
+
+
+environment:
+  sdk: '>=3.6.0 <4.0.0'
+  flutter: ">=3.29.0"
+
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  contactos_platform_interface: ^1.0.1
+  # contactos_platform_interface:
+  #   path: ../contactos_platform_interface
+
+
+dev_dependencies:
+  # Integration tests for Flutter
+  integration_test:
+    sdk: flutter
+  # Unit & Widget tests for Flutter
+  flutter_test:
+    sdk: flutter
+
+  # Linting
+  flutter_lints: ^6.0.0
+
+
+flutter:
+  plugin:
+    implements: contactos
+    platforms:
+      android:
+        package: flutter.plugins.contactos
+        pluginClass: ContactosPlugin
+        dartPluginClass: ContactosPluginAndroid
+

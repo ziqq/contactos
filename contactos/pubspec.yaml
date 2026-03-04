@@ -1,37 +1,65 @@
 name: contactos
-description: Android and iOS implementation of the contactos plugin.
+description: Plugin to access and manage contacts on Android and iOS.
+
+version: 2.0.0
+
+homepage: https://github.com/ziqq/contactos
+
 repository: https://github.com/ziqq/contactos/contactos
+
 issue_tracker: https://github.com/ziqq/contactos/issues?q=is%3Aissue+is%3Aopen+label%3A%22p%3A+contactos%22
-version: 1.0.6
+
+#screenshots:
+#  - description: 'Example of using the library to get contacts.'
+#    path: example.png
+
+funding:
+  - https://www.buymeacoffee.com/ziqq
+  - https://boosty.to/ziqq
+
+platforms:
+  android:
+  ios:
+
+topics:
+  - contacts
+
 
 environment:
   sdk: '>=3.6.0 <4.0.0'
   flutter: ">=3.29.3"
 
-flutter:
-  plugin:
-    implements: contactos
-    platforms:
-      android:
-        package: flutter.plugins.contactos
-        pluginClass: ContactosPlugin
-        dartPluginClass: Contactos
-      ios:
-        pluginClass: ContactosPlugin
-        dartPluginClass: Contactos
 
 dependencies:
   flutter:
     sdk: flutter
 
-  contactos_platform_interface: ^1.0.0
+  contactos_android: ^0.0.1
+  # contactos_android:
+  #   path: ../contactos_android
+
+  contactos_foundation: ^0.0.2
+  # contactos_foundation:
+  #   path: ../contactos_foundation
+
+  contactos_platform_interface: ^1.0.1
+  # contactos_platform_interface:
+  #   path: ../contactos_platform_interface
+
 
 dev_dependencies:
+  # Integration tests for Flutter
+  integration_test:
+    sdk: flutter
+  # Unit & Widget tests for Flutter
   flutter_test:
     sdk: flutter
 
+  # Testsing
+  plugin_platform_interface: ^2.1.8
+
   # Linting
-  flutter_lints: ^5.0.0
+  flutter_lints: ^6.0.0
 
   # Utilities
   collection: ^1.19.1
@@ -39,5 +67,11 @@ dev_dependencies:
   # Logging
   l: ^5.0.0
 
-topics:
-  - contacts
+
+flutter:
+  plugin:
+    platforms:
+      android:
+        default_package: contactos_android
+      ios:
+        default_package: contactos_foundation

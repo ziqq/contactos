@@ -1,3 +1,8 @@
+/*
+ * Author: Anton Ustinoff <https://github.com/ziqq> | <a.a.ustinoff@gmail.com>
+ * Date: 26 November 2025
+ */
+
 import 'dart:developer';
 
 import 'package:contactos/contactos.dart';
