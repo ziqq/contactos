@@ -1,4 +1,4 @@
-# AI rules for contactos package
+# Contactos
 
 This is a **Flutter package** (not an app). The package is used to access and manage the device's contacts. The codebase includes platform-specific implementations for Android and iOS, as well as a common Dart interface. The package also includes example usage and documentation.
 
