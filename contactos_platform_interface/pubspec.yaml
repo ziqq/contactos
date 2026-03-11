@@ -1,12 +1,12 @@
 name: contactos_platform_interface
 description: A common platform interface for the contactos plugin.
-version: 1.0.1
+version: 1.0.2
 
-homepage: https://github.com/ziqq/contactos/contactos_platform_interface
+homepage: https://github.com/ziqq/contactos
 
-repository: https://github.com/ziqq/contactos/contactos_platform_interface
+repository: https://github.com/ziqq/contactos/tree/main/contactos_platform_interface
 
-issue_tracker: https://github.com/ziqq/contactos/issues?q=is%3Aissue+is%3Aopen+label%3A%22p%3A+contactos%22
+issue_tracker: https://github.com/ziqq/contactos/issues
 
 funding:
   - https://www.buymeacoffee.com/ziqq

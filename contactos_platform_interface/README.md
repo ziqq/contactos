@@ -1,7 +1,6 @@
 # contactos_platform_interface
 
 [![pub package](https://img.shields.io/pub/v/contactos_platform_interface.svg)](https://pub.dev/packages/contactos_platform_interface)
-[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![style: flutter lints](https://img.shields.io/badge/style-flutter__lints-blue)](https://pub.dev/packages/flutter_lints)
 
 A common platform interface for the [`contactos`](https://pub.dev/packages/contactos) plugin.
