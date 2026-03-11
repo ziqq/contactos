@@ -31,7 +31,7 @@ dependencies:
   flutter:
     sdk: flutter
 
-  contactos_platform_interface: ^1.0.2
+  contactos_platform_interface: ^1.0.3
   # contactos_platform_interface:
   #   path: ../contactos_platform_interface
 
