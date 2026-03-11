@@ -1,14 +1,14 @@
 name: contactos_android
 description: Android implementation of the contactos plugin.
-version: 0.0.1
+version: 0.0.3
 
 # publish_to: none
 
-homepage: https://github.com/ziqq/contactos/contactos_android
+homepage: https://github.com/ziqq/contactos
 
-repository: https://github.com/ziqq/contactos/contactos_android
+repository: https://github.com/ziqq/contactos/tree/main/contactos_android
 
-issue_tracker: https://github.com/ziqq/contactos/issues?q=is%3Aissue+is%3Aopen+label%3A%22p%3A+contactos%22
+issue_tracker: https://github.com/ziqq/contactos/issues
 
 funding:
   - https://www.buymeacoffee.com/ziqq

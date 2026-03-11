@@ -47,15 +47,15 @@ packages:
       path: ".."
       relative: true
     source: path
-    version: "0.0.2"
+    version: "0.0.4"
   contactos_platform_interface:
     dependency: transitive
     description:
       name: contactos_platform_interface
-      sha256: "6fc797fa685c84ef7e1ec8fc8c6aae1f9f09274bcc5ea26e435781a4fa907628"
+      sha256: b2d1b11a01fb6877acdfe5be6c727525221e3702acfa7ec44787b24352a12c36
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.1"
+    version: "1.0.2"
   cupertino_icons:
     dependency: "direct main"
     description:

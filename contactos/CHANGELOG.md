@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.0.1
+- **CHANGED**: Relicensed the package to MIT and aligned license references.
+
 ## 2.0.0
 - **CHANGED**: Migrate to platform implementations
 

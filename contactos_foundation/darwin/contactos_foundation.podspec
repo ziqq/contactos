@@ -3,14 +3,14 @@
 #
 Pod::Spec.new do |s|
   s.name             = 'contactos_foundation'
-  s.version          = '0.0.1'
+  s.version          = '0.0.4'
   s.summary          = "A Flutter plugin to retrieve and manage contacts on iOS devices"
   s.description      = <<-DESC
   A Flutter plugin to retrieve and manage contacts on iOS devices.
                        DESC
 
   s.homepage         = 'https://github.com/ziqq/contactos/contactos_foundation'
-  s.license          = { :type => 'BSD', :file => '../LICENSE' }
+  s.license          = { :type => 'MIT', :file => '../LICENSE' }
   s.author           = 'Anton Ustinoff'
 
   # Use local path (plugin shipped from local packages directory for Flutter). Remote :http not needed.

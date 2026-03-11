@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.0.3
+- **CHANGED**: Relicensed the package to MIT and aligned license references.
+
 ## 1.0.2
 - **CHANGED**: Documentation updates
 
