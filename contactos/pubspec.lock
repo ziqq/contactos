@@ -45,26 +45,26 @@ packages:
     dependency: "direct main"
     description:
       name: contactos_android
-      sha256: "9847cb2a2955c02e793dc9af803ec8130b458e6e95ec859b860431f38d7526a5"
+      sha256: c18473e75b844a493bdfa7a9e174692f31b72a919bd257b2b6e471bd495a70e3
       url: "https://pub.dev"
     source: hosted
-    version: "0.0.1"
+    version: "0.0.3"
   contactos_foundation:
     dependency: "direct main"
     description:
       name: contactos_foundation
-      sha256: "8dbcf1dd698e9776e12f23635b6a2b73fc9fcea936113b3079d6081f5d40f534"
+      sha256: bb50ccde0f6c7bede6a56f1ba4dd31862d6cb2f38cb8173b4ab9caca74006a1b
       url: "https://pub.dev"
     source: hosted
-    version: "0.0.2"
+    version: "0.0.4"
   contactos_platform_interface:
     dependency: "direct main"
     description:
       name: contactos_platform_interface
-      sha256: "6fc797fa685c84ef7e1ec8fc8c6aae1f9f09274bcc5ea26e435781a4fa907628"
+      sha256: c9457e86a9f56fef8659d63d3dacd1b7a570220e01cf83d8fe036284b71012fb
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.1"
+    version: "1.0.3"
   fake_async:
     dependency: transitive
     description:

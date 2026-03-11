@@ -34,15 +34,15 @@ dependencies:
   flutter:
     sdk: flutter
 
-  contactos_android: '>=0.0.1 <0.1.0'
+  contactos_android: '^0.0.3'
   # contactos_android:
   #   path: ../contactos_android
 
-  contactos_foundation: '>=0.0.2 <0.1.0'
+  contactos_foundation: '^0.0.4'
   # contactos_foundation:
   #   path: ../contactos_foundation
 
-  contactos_platform_interface: ^1.0.1
+  contactos_platform_interface: ^1.0.3
   # contactos_platform_interface:
   #   path: ../contactos_platform_interface
 
