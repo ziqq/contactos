@@ -1,7 +1,6 @@
 # contactos_foundation
 
 [![pub package](https://img.shields.io/pub/v/contactos_foundation.svg)](https://pub.dev/packages/contactos_foundation)
-[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![style: flutter lints](https://img.shields.io/badge/style-flutter__lints-blue)](https://pub.dev/packages/flutter_lints)
 
 The iOS (Darwin) implementation of the [`contactos`](https://pub.dev/packages/contactos) plugin.
