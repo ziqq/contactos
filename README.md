@@ -68,7 +68,7 @@ dependencies:
     contactos: ^latest_version
 ```
 
-Starting with `contactos 2.1.0`, the app-facing package requires Dart `>=3.12.1 <4.0.0` and Flutter `>=3.44.1`. The Android implementation package `contactos_android 0.1.0` requires Flutter `>=3.44.0`.
+Starting with `contactos 2.1.0`, the app-facing package requires Dart `>=3.12.1 <4.0.0` and Flutter `>=3.44.1`. The Android implementation package `contactos_android 0.1.0` requires Flutter `>=3.44.1`.
 
 
 ## Permissions

@@ -6,7 +6,7 @@
 
 The Android implementation of the [`contactos`](https://pub.dev/packages/contactos) plugin.
 
-Starting with `0.1.0`, this package requires Dart `>=3.12.1 <4.0.0` and Flutter `>=3.44.0`.
+Starting with `0.1.0`, this package requires Dart `>=3.12.1 <4.0.0` and Flutter `>=3.44.1`.
 
 ## Usage
 
