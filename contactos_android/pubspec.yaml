@@ -1,6 +1,6 @@
 name: contactos_android
 description: Android implementation of the contactos plugin.
-version: 0.0.3
+version: 0.1.0
 
 # publish_to: none
 
@@ -23,8 +23,8 @@ topics:
 
 
 environment:
-  sdk: '>=3.6.0 <4.0.0'
-  flutter: ">=3.29.0"
+  sdk: '>=3.12.1 <4.0.0'
+  flutter: ">=3.44.1"
 
 
 dependencies:

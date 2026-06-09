@@ -51,8 +51,7 @@ class MockContactosPlatform extends ContactosPlatform
     bool orderByGivenName = true,
     bool iOSLocalizedLabels = true,
     bool androidLocalizedLabels = true,
-  }) async =>
-      contacts;
+  }) async => contacts;
 
   @override
   Future<List<Contact>> getContactsForEmail(
@@ -62,10 +61,9 @@ class MockContactosPlatform extends ContactosPlatform
     bool orderByGivenName = true,
     bool iOSLocalizedLabels = true,
     bool androidLocalizedLabels = true,
-  }) async =>
-      contacts
-          .where((c) => c.emails?.any((e) => e.value == email) ?? false)
-          .toList();
+  }) async => contacts
+      .where((c) => c.emails?.any((e) => e.value == email) ?? false)
+      .toList();
 
   @override
   Future<List<Contact>> getContactsForPhone(
@@ -75,32 +73,28 @@ class MockContactosPlatform extends ContactosPlatform
     bool orderByGivenName = true,
     bool iOSLocalizedLabels = true,
     bool androidLocalizedLabels = true,
-  }) async =>
-      contacts
-          .where((c) => c.phones?.any((p) => p.value == phone) ?? false)
-          .toList();
+  }) async => contacts
+      .where((c) => c.phones?.any((p) => p.value == phone) ?? false)
+      .toList();
 
   @override
   Future<Contact> openContactForm({
     bool iOSLocalizedLabels = true,
     bool androidLocalizedLabels = true,
-  }) async =>
-      const Contact(identifier: 'new_contact');
+  }) async => const Contact(identifier: 'new_contact');
 
   @override
   Future<Contact?> openDeviceContactPicker({
     bool iOSLocalizedLabels = true,
     bool androidLocalizedLabels = true,
-  }) async =>
-      const Contact(identifier: 'picked_contact');
+  }) async => const Contact(identifier: 'picked_contact');
 
   @override
   Future<Contact> openExistingContact(
     Contact contact, {
     bool iOSLocalizedLabels = true,
     bool androidLocalizedLabels = true,
-  }) async =>
-      contact;
+  }) async => contact;
 }
 
 void main() {
@@ -156,7 +150,7 @@ void main() {
     group('getContacts -', () {
       test('delegates to platform', () async {
         mockPlatform.contacts = [
-          const Contact(identifier: '1', displayName: 'Test')
+          const Contact(identifier: '1', displayName: 'Test'),
         ];
         final result = await contactos.getContacts();
         expect(result.length, 1);

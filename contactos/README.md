@@ -21,6 +21,8 @@ dependencies:
     contactos: ^latest_version
 ```
 
+Starting with `2.1.0`, this package requires Dart `>=3.12.1 <4.0.0` and Flutter `>=3.44.1`.
+
 
 ## Permissions
 

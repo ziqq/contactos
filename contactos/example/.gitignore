@@ -3,6 +3,7 @@
 *.moved-aside
 *.pbxuser
 *.perspectivev3
+pubspec_overrides.yaml
 **/*sync/
 .sconsign.dblite
 .tags*

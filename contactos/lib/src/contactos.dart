@@ -24,8 +24,9 @@ class Contactos extends ContactosPlatform {
   static Contactos? _instance;
 
   /// The default instance of [Contactos].
-  static final Contactos instance =
-      _instance ??= Contactos._(ContactosPlatform.instance);
+  static final Contactos instance = _instance ??= Contactos._(
+    ContactosPlatform.instance,
+  );
 
   /// Create a custom instance of [Contactos].
   /// Use this constructor for testing purposes only.
@@ -42,10 +43,7 @@ class Contactos extends ContactosPlatform {
   Future<void> updateContact(Contact c) => _platform.updateContact(c);
 
   @override
-  Future<Uint8List?> getAvatar(
-    Contact contact, {
-    bool photoHighRes = true,
-  }) =>
+  Future<Uint8List?> getAvatar(Contact contact, {bool photoHighRes = true}) =>
       _platform.getAvatar(contact, photoHighRes: photoHighRes);
 
   @override
@@ -56,15 +54,14 @@ class Contactos extends ContactosPlatform {
     bool orderByGivenName = true,
     bool iOSLocalizedLabels = true,
     bool androidLocalizedLabels = true,
-  }) =>
-      _platform.getContacts(
-        query: query,
-        withThumbnails: withThumbnails,
-        photoHighResolution: photoHighResolution,
-        orderByGivenName: orderByGivenName,
-        iOSLocalizedLabels: iOSLocalizedLabels,
-        androidLocalizedLabels: androidLocalizedLabels,
-      );
+  }) => _platform.getContacts(
+    query: query,
+    withThumbnails: withThumbnails,
+    photoHighResolution: photoHighResolution,
+    orderByGivenName: orderByGivenName,
+    iOSLocalizedLabels: iOSLocalizedLabels,
+    androidLocalizedLabels: androidLocalizedLabels,
+  );
 
   @override
   Future<List<Contact>> getContactsForEmail(
@@ -74,15 +71,14 @@ class Contactos extends ContactosPlatform {
     bool orderByGivenName = true,
     bool iOSLocalizedLabels = true,
     bool androidLocalizedLabels = true,
-  }) =>
-      _platform.getContactsForEmail(
-        email,
-        withThumbnails: withThumbnails,
-        photoHighResolution: photoHighResolution,
-        orderByGivenName: orderByGivenName,
-        iOSLocalizedLabels: iOSLocalizedLabels,
-        androidLocalizedLabels: androidLocalizedLabels,
-      );
+  }) => _platform.getContactsForEmail(
+    email,
+    withThumbnails: withThumbnails,
+    photoHighResolution: photoHighResolution,
+    orderByGivenName: orderByGivenName,
+    iOSLocalizedLabels: iOSLocalizedLabels,
+    androidLocalizedLabels: androidLocalizedLabels,
+  );
 
   @override
   Future<List<Contact>> getContactsForPhone(
@@ -92,45 +88,41 @@ class Contactos extends ContactosPlatform {
     bool orderByGivenName = true,
     bool iOSLocalizedLabels = true,
     bool androidLocalizedLabels = true,
-  }) =>
-      _platform.getContactsForPhone(
-        phone,
-        withThumbnails: withThumbnails,
-        photoHighResolution: photoHighResolution,
-        orderByGivenName: orderByGivenName,
-        iOSLocalizedLabels: iOSLocalizedLabels,
-        androidLocalizedLabels: androidLocalizedLabels,
-      );
+  }) => _platform.getContactsForPhone(
+    phone,
+    withThumbnails: withThumbnails,
+    photoHighResolution: photoHighResolution,
+    orderByGivenName: orderByGivenName,
+    iOSLocalizedLabels: iOSLocalizedLabels,
+    androidLocalizedLabels: androidLocalizedLabels,
+  );
 
   @override
   Future<Contact> openContactForm({
     bool iOSLocalizedLabels = true,
     bool androidLocalizedLabels = true,
-  }) =>
-      _platform.openContactForm(
-        iOSLocalizedLabels: iOSLocalizedLabels,
-        androidLocalizedLabels: androidLocalizedLabels,
-      );
+  }) => _platform.openContactForm(
+    iOSLocalizedLabels: iOSLocalizedLabels,
+    androidLocalizedLabels: androidLocalizedLabels,
+  );
 
   @override
   Future<Contact?> openDeviceContactPicker({
     bool iOSLocalizedLabels = true,
     bool androidLocalizedLabels = true,
-  }) =>
-      _platform.openDeviceContactPicker(
-        iOSLocalizedLabels: iOSLocalizedLabels,
-        androidLocalizedLabels: androidLocalizedLabels,
-      );
+  }) => _platform.openDeviceContactPicker(
+    iOSLocalizedLabels: iOSLocalizedLabels,
+    androidLocalizedLabels: androidLocalizedLabels,
+  );
 
   @override
   Future<Contact> openExistingContact(
     Contact contact, {
     bool iOSLocalizedLabels = true,
     bool androidLocalizedLabels = true,
-  }) =>
-      _platform.openExistingContact(
-        contact,
-        iOSLocalizedLabels: iOSLocalizedLabels,
-        androidLocalizedLabels: androidLocalizedLabels,
-      );
+  }) => _platform.openExistingContact(
+    contact,
+    iOSLocalizedLabels: iOSLocalizedLabels,
+    androidLocalizedLabels: androidLocalizedLabels,
+  );
 }
