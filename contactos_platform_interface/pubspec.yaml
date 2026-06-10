@@ -28,8 +28,8 @@ dependencies:
   plugin_platform_interface: ^2.1.8
 
   # Utilities
-  collection: '^1.16.0'
-  meta: '^1.16.0'
+  collection: ^1.19.1
+  meta: ^1.18.0
 
 
 dev_dependencies:
