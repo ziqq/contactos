@@ -17,12 +17,9 @@ void main() {
       });
 
       test('cannot be implemented with `implements`', () {
-        expect(
-          () {
-            ContactosPlatform.instance = ImplementsContactosPlatform();
-          },
-          throwsA(isA<AssertionError>()),
-        );
+        expect(() {
+          ContactosPlatform.instance = ImplementsContactosPlatform();
+        }, throwsA(isA<AssertionError>()));
       });
 
       test('can be extended', () {

@@ -23,8 +23,7 @@ abstract class ContactosPlatform extends PlatformInterface {
   /// Create an instance with a [FirebaseApp] using an existing instance.
   factory ContactosPlatform.instanceFor({
     required MethodChannelContactos channel,
-  }) =>
-      ContactosPlatform.instance.delegateFor(channel: channel);
+  }) => ContactosPlatform.instance.delegateFor(channel: channel);
 
   static final Object _token = Object();
 

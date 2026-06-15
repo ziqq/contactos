@@ -184,27 +184,25 @@ class Contact {
     List<Contact$PostalAddress>? postalAddresses,
     Uint8List? avatar,
     DateTime? birthday,
-  }) =>
-      Contact(
-        identifier: identifier ?? this.identifier,
-        displayName: displayName ?? this.displayName,
-        givenName: givenName ?? this.givenName,
-        middleName: middleName ?? this.middleName,
-        prefix: prefix ?? this.prefix,
-        suffix: suffix ?? this.suffix,
-        familyName: familyName ?? this.familyName,
-        company: company ?? this.company,
-        jobTitle: jobTitle ?? this.jobTitle,
-        androidAccountTypeRaw:
-            androidAccountTypeRaw ?? this.androidAccountTypeRaw,
-        androidAccountName: androidAccountName ?? this.androidAccountName,
-        androidAccountType: androidAccountType ?? this.androidAccountType,
-        emails: emails ?? this.emails,
-        phones: phones ?? this.phones,
-        postalAddresses: postalAddresses ?? this.postalAddresses,
-        avatar: avatar ?? this.avatar,
-        birthday: birthday ?? this.birthday,
-      );
+  }) => Contact(
+    identifier: identifier ?? this.identifier,
+    displayName: displayName ?? this.displayName,
+    givenName: givenName ?? this.givenName,
+    middleName: middleName ?? this.middleName,
+    prefix: prefix ?? this.prefix,
+    suffix: suffix ?? this.suffix,
+    familyName: familyName ?? this.familyName,
+    company: company ?? this.company,
+    jobTitle: jobTitle ?? this.jobTitle,
+    androidAccountTypeRaw: androidAccountTypeRaw ?? this.androidAccountTypeRaw,
+    androidAccountName: androidAccountName ?? this.androidAccountName,
+    androidAccountType: androidAccountType ?? this.androidAccountType,
+    emails: emails ?? this.emails,
+    phones: phones ?? this.phones,
+    postalAddresses: postalAddresses ?? this.postalAddresses,
+    avatar: avatar ?? this.avatar,
+    birthday: birthday ?? this.birthday,
+  );
 
   static JSON _toJson(Contact contact) {
     final emails = contact.emails;
@@ -235,8 +233,8 @@ class Contact {
     final birthday = contactBirthday == null
         ? null
         : '${contactBirthday.year.toString()}-'
-            '${contactBirthday.month.toString().padLeft(2, '0')}-'
-            '${contactBirthday.day.toString().padLeft(2, '0')}';
+              '${contactBirthday.month.toString().padLeft(2, '0')}-'
+              '${contactBirthday.day.toString().padLeft(2, '0')}';
 
     return {
       'identifier': contact.identifier,
@@ -262,37 +260,38 @@ class Contact {
   JSON toJson() => Contact._toJson(this);
 
   /// The contact's initials.
-  String initials() => ((givenName?.isNotEmpty == true ? givenName![0] : '') +
-          (familyName?.isNotEmpty == true ? familyName![0] : ''))
-      .toUpperCase();
+  String initials() =>
+      ((givenName?.isNotEmpty == true ? givenName![0] : '') +
+              (familyName?.isNotEmpty == true ? familyName![0] : ''))
+          .toUpperCase();
 
   /// The [+] operator fills in this contact's empty fields
   /// with the fields from [other]
   Contact operator +(Contact other) => Contact(
-        givenName: givenName ?? other.givenName,
-        middleName: middleName ?? other.middleName,
-        prefix: prefix ?? other.prefix,
-        suffix: suffix ?? other.suffix,
-        familyName: familyName ?? other.familyName,
-        company: company ?? other.company,
-        jobTitle: jobTitle ?? other.jobTitle,
-        androidAccountType: androidAccountType ?? other.androidAccountType,
-        androidAccountName: androidAccountName ?? other.androidAccountName,
-        emails: emails == null
-            ? other.emails
-            : emails!.toSet().union(other.emails?.toSet() ?? {}).toList(),
-        phones: phones == null
-            ? other.phones
-            : phones!.toSet().union(other.phones?.toSet() ?? {}).toList(),
-        postalAddresses: postalAddresses == null
-            ? other.postalAddresses
-            : postalAddresses!
-                .toSet()
-                .union(other.postalAddresses?.toSet() ?? {})
-                .toList(),
-        avatar: avatar ?? other.avatar,
-        birthday: birthday ?? other.birthday,
-      );
+    givenName: givenName ?? other.givenName,
+    middleName: middleName ?? other.middleName,
+    prefix: prefix ?? other.prefix,
+    suffix: suffix ?? other.suffix,
+    familyName: familyName ?? other.familyName,
+    company: company ?? other.company,
+    jobTitle: jobTitle ?? other.jobTitle,
+    androidAccountType: androidAccountType ?? other.androidAccountType,
+    androidAccountName: androidAccountName ?? other.androidAccountName,
+    emails: emails == null
+        ? other.emails
+        : emails!.toSet().union(other.emails?.toSet() ?? {}).toList(),
+    phones: phones == null
+        ? other.phones
+        : phones!.toSet().union(other.phones?.toSet() ?? {}).toList(),
+    postalAddresses: postalAddresses == null
+        ? other.postalAddresses
+        : postalAddresses!
+              .toSet()
+              .union(other.postalAddresses?.toSet() ?? {})
+              .toList(),
+    avatar: avatar ?? other.avatar,
+    birthday: birthday ?? other.birthday,
+  );
 
   /// Returns true if all items in this contact are identical.
   @override
@@ -313,24 +312,28 @@ class Contact {
       birthday == other.birthday &&
       const DeepCollectionEquality.unordered().equals(phones, other.phones) &&
       const DeepCollectionEquality.unordered().equals(emails, other.emails) &&
-      const DeepCollectionEquality.unordered()
-          .equals(postalAddresses, other.postalAddresses);
+      const DeepCollectionEquality.unordered().equals(
+        postalAddresses,
+        other.postalAddresses,
+      );
 
   @override
-  int get hashCode => Object.hashAll([
-        company,
-        displayName,
-        familyName,
-        givenName,
-        identifier,
-        jobTitle,
-        androidAccountType,
-        androidAccountName,
-        middleName,
-        prefix,
-        suffix,
-        birthday,
-      ].where((s) => s != null));
+  int get hashCode => Object.hashAll(
+    [
+      company,
+      displayName,
+      familyName,
+      givenName,
+      identifier,
+      jobTitle,
+      androidAccountType,
+      androidAccountName,
+      middleName,
+      prefix,
+      suffix,
+      birthday,
+    ].where((s) => s != null),
+  );
 }
 
 /// {@template postal_address}
@@ -351,13 +354,13 @@ class Contact$PostalAddress {
   /// Creates a [Contact$PostalAddress] from a `Map<String, Object?>`.
   /// {@macro postal_address}
   factory Contact$PostalAddress.fromJson(JSON json) => Contact$PostalAddress(
-        label: json['label'].toString(),
-        street: json['street'].toString(),
-        city: json['city'].toString(),
-        postcode: json['postcode'].toString(),
-        region: json['region'].toString(),
-        country: json['country'].toString(),
-      );
+    label: json['label'].toString(),
+    street: json['street'].toString(),
+    city: json['city'].toString(),
+    postcode: json['postcode'].toString(),
+    region: json['region'].toString(),
+    country: json['country'].toString(),
+  );
 
   /// The label of the postal address (e.g., "home", "work")
   final String? label;
@@ -386,15 +389,14 @@ class Contact$PostalAddress {
     String? postcode,
     String? region,
     String? country,
-  }) =>
-      Contact$PostalAddress(
-        label: label ?? this.label,
-        street: street ?? this.street,
-        city: city ?? this.city,
-        postcode: postcode ?? this.postcode,
-        region: region ?? this.region,
-        country: country ?? this.country,
-      );
+  }) => Contact$PostalAddress(
+    label: label ?? this.label,
+    street: street ?? this.street,
+    city: city ?? this.city,
+    postcode: postcode ?? this.postcode,
+    region: region ?? this.region,
+    country: country ?? this.country,
+  );
 
   @override
   bool operator ==(Object other) =>
@@ -407,23 +409,18 @@ class Contact$PostalAddress {
       street == other.street;
 
   @override
-  int get hashCode => Object.hashAll([
-        label,
-        street,
-        city,
-        country,
-        region,
-        postcode,
-      ].where((s) => s != null));
+  int get hashCode => Object.hashAll(
+    [label, street, city, country, region, postcode].where((s) => s != null),
+  );
 
   static JSON _toJson(Contact$PostalAddress address) => {
-        'label': address.label,
-        'street': address.street,
-        'city': address.city,
-        'postcode': address.postcode,
-        'region': address.region,
-        'country': address.country
-      };
+    'label': address.label,
+    'street': address.street,
+    'city': address.city,
+    'postcode': address.postcode,
+    'region': address.region,
+    'country': address.country,
+  };
 
   @override
   String toString() {
@@ -473,9 +470,9 @@ class Contact$Field {
   /// Creates an [Contact$Field] from a `Map<String, Object?>`.
   /// {@macro item}
   factory Contact$Field.fromJson(JSON json) => Contact$Field(
-        label: json['label'].toString(),
-        value: json['value'].toString(),
-      );
+    label: json['label'].toString(),
+    value: json['value'].toString(),
+  );
 
   /// The label of the item (e.g., "home", "work")
   final String? label;
@@ -490,8 +487,10 @@ class Contact$Field {
   @override
   int get hashCode => Object.hash(label, value);
 
-  static JSON _toJson(Contact$Field item) =>
-      {'label': item.label, 'value': item.value};
+  static JSON _toJson(Contact$Field item) => {
+    'label': item.label,
+    'value': item.value,
+  };
 }
 
 /// {@template form_operation_error_code}
@@ -547,7 +546,7 @@ class FormOperationException implements Exception {
 class FormOperationException$Canceled extends FormOperationException {
   /// {@macro form_operation_exception}
   const FormOperationException$Canceled()
-      : super(errorCode: FormOperationErrorCode.canceled);
+    : super(errorCode: FormOperationErrorCode.canceled);
 }
 
 /// Exception thrown when a form operation could not be open
@@ -556,7 +555,7 @@ class FormOperationException$Canceled extends FormOperationException {
 class FormOperationException$CouldNotBeOpen extends FormOperationException {
   /// {@macro form_operation_exception}
   const FormOperationException$CouldNotBeOpen()
-      : super(errorCode: FormOperationErrorCode.couldNotBeOpen);
+    : super(errorCode: FormOperationErrorCode.couldNotBeOpen);
 }
 
 /// Exception thrown when a form operation fails with an unknown error
@@ -565,5 +564,5 @@ class FormOperationException$CouldNotBeOpen extends FormOperationException {
 class FormOperationException$Unknown extends FormOperationException {
   /// {@macro form_operation_exception}
   const FormOperationException$Unknown()
-      : super(errorCode: FormOperationErrorCode.unknown);
+    : super(errorCode: FormOperationErrorCode.unknown);
 }

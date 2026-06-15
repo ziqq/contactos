@@ -1,8 +1,10 @@
 # Changelog
 
+
 ## 2.1.0
 - **CHANGED**: Updated the Android implementation dependency to the built-in Kotlin release.
-- **CHANGED**: Raised the minimum supported Dart SDK to `3.12.1` and Flutter SDK to `3.44.1`.
+- **CHANGED**: Raised the minimum supported Dart SDK to `3.12.0` and Flutter SDK to `3.44.0`.
+- **FIXED**: Updated the iOS implementation dependency to the Swift Package Manager compatibility release.
 
 ## 2.0.1
 - **CHANGED**: Relicensed the package to MIT and aligned license references.

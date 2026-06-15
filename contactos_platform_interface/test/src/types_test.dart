@@ -48,10 +48,10 @@ void main() {
           'androidAccountType': 'com.google',
           'androidAccountName': 'account',
           'emails': [
-            {'label': 'work', 'value': 'email@example.com'}
+            {'label': 'work', 'value': 'email@example.com'},
           ],
           'phones': [
-            {'label': 'mobile', 'value': '1234567890'}
+            {'label': 'mobile', 'value': '1234567890'},
           ],
           'postalAddresses': [
             {
@@ -61,7 +61,7 @@ void main() {
               'postcode': '12345',
               'region': 'Region',
               'country': 'Country',
-            }
+            },
           ],
           'avatar': [1, 2, 3],
           'birthday': '2000-01-01',
@@ -91,9 +91,7 @@ void main() {
       });
 
       test('handles invalid birthday', () {
-        final json = {
-          'birthday': 'invalid',
-        };
+        final json = {'birthday': 'invalid'};
         final contact = Contact.fromJson(json);
         expect(contact.birthday, null);
       });
@@ -115,7 +113,7 @@ void main() {
           androidAccountTypeRaw: 'com.google',
           androidAccountName: 'account',
           emails: const [
-            Contact$Field(label: 'work', value: 'email@example.com')
+            Contact$Field(label: 'work', value: 'email@example.com'),
           ],
           phones: const [Contact$Field(label: 'mobile', value: '1234567890')],
           postalAddresses: const [
@@ -126,7 +124,7 @@ void main() {
               postcode: '12345',
               region: 'Region',
               country: 'Country',
-            )
+            ),
           ],
           avatar: Uint8List.fromList([1, 2, 3]),
           birthday: DateTime(2000, 1, 1),
@@ -339,8 +337,10 @@ void main() {
     group('toString -', () {
       test('returns correct message', () {
         const exception = FormOperationException.canceled();
-        expect(exception.toString(),
-            'FormOperationException: FormOperationErrorCode.canceled');
+        expect(
+          exception.toString(),
+          'FormOperationException: FormOperationErrorCode.canceled',
+        );
       });
     });
 

@@ -7,18 +7,18 @@
 import PackageDescription
 
 let package = Package(
-  name: "contactos",
+  name: "contactos_foundation",
   platforms: [
     .iOS("12.0"),
     .macOS("10.14"),
   ],
   products: [
-    .library(name: "contactos", targets: ["contactos"])
+    .library(name: "contactos-foundation", targets: ["contactos_foundation"])
   ],
   dependencies: [],
   targets: [
     .target(
-      name: "contactos",
+      name: "contactos_foundation",
       dependencies: [],
       resources: [
         .process("Resources")

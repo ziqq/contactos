@@ -26,8 +26,8 @@ topics:
 
 
 environment:
-  sdk: '>=3.12.1 <4.0.0'
-  flutter: ">=3.44.1"
+  sdk: '>=3.12.0 <4.0.0'
+  flutter: ">=3.44.0"
 
 
 dependencies:
@@ -38,7 +38,7 @@ dependencies:
   # contactos_android:
   #   path: ../contactos_android
 
-  contactos_foundation: '^0.0.4'
+  contactos_foundation: '^0.0.5'
   # contactos_foundation:
   #   path: ../contactos_foundation
 
