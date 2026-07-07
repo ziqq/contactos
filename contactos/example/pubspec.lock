@@ -49,25 +49,28 @@ packages:
     source: path
     version: "2.1.0"
   contactos_android:
-    dependency: "direct overridden"
+    dependency: transitive
     description:
-      path: "../../contactos_android"
-      relative: true
-    source: path
+      name: contactos_android
+      sha256: "1fbe4f6ad6fbeb7af28fd8c9cecbae95b88972082600e442cbac4eb1bdaa5366"
+      url: "https://pub.dev"
+    source: hosted
     version: "0.1.0"
   contactos_foundation:
-    dependency: "direct overridden"
+    dependency: transitive
     description:
-      path: "../../contactos_foundation"
-      relative: true
-    source: path
+      name: contactos_foundation
+      sha256: "5c9ca43cea668e0701abfb64c8f9d8dd0796d3d91793d0a9000dbbe3080c43f8"
+      url: "https://pub.dev"
+    source: hosted
     version: "0.0.5"
   contactos_platform_interface:
     dependency: "direct main"
     description:
-      path: "../../contactos_platform_interface"
-      relative: true
-    source: path
+      name: contactos_platform_interface
+      sha256: c9457e86a9f56fef8659d63d3dacd1b7a570220e01cf83d8fe036284b71012fb
+      url: "https://pub.dev"
+    source: hosted
     version: "1.0.3"
   cupertino_icons:
     dependency: "direct main"
