@@ -2,7 +2,7 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Run Example",
+      "name": "run:example",
       "type": "dart",
       "request": "launch",
       "cwd": "${workspaceFolder}/contactos/example",
@@ -10,7 +10,7 @@
       "env": {}
     },
     {
-      "name": "Run Android",
+      "name": "run:example:android",
       "type": "dart",
       "request": "launch",
       "cwd": "${workspaceFolder}/contactos_android/example",
@@ -18,7 +18,7 @@
       "env": {}
     },
     {
-      "name": "Run IOS",
+      "name": "run:example:foundation",
       "type": "dart",
       "request": "launch",
       "cwd": "${workspaceFolder}/contactos_foundation/example",
@@ -26,7 +26,7 @@
       "env": {}
     },
     {
-      "name": "Flutter Test",
+      "name": "run:tests",
       "request": "launch",
       "type": "dart",
       "program": "test/contacts_test.dart",

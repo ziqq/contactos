@@ -12,7 +12,7 @@ import 'src/method_channel_contactos_test.dart'
 import 'src/types_test.dart' as types_test;
 
 void main() => group('Unit_tests -', () {
-      contactos_platform_interface_test.main();
-      method_channel_contactos_test.main();
-      types_test.main();
-    });
+  contactos_platform_interface_test.main();
+  method_channel_contactos_test.main();
+  types_test.main();
+});

@@ -16,11 +16,11 @@ dependencies:
   contactos_foundation:
     path: ../
 
-  cupertino_icons: any
-  collection: any
   intl: any
+  collection: any
+  cupertino_icons: any
 
-  permission_handler: ^11.4.0
+  permission_handler: ^12.0.3
 
 
 dev_dependencies:

@@ -39,18 +39,12 @@ class MethodChannelContactos extends ContactosPlatform {
       _channel.invokeMethod('updateContact', contact.toJson());
 
   @override
-  Future<Uint8List?> getAvatar(
-    Contact contact, {
-    bool photoHighRes = true,
-  }) =>
-      _channel.invokeMethod(
-        'getAvatar',
-        <String, dynamic>{
-          'contact': contact.toJson(),
-          'identifier': contact.identifier,
-          'photoHighResolution': photoHighRes,
-        },
-      );
+  Future<Uint8List?> getAvatar(Contact contact, {bool photoHighRes = true}) =>
+      _channel.invokeMethod('getAvatar', <String, dynamic>{
+        'contact': contact.toJson(),
+        'identifier': contact.identifier,
+        'photoHighResolution': photoHighRes,
+      });
 
   @override
   Future<List<Contact>> getContacts({
@@ -61,17 +55,15 @@ class MethodChannelContactos extends ContactosPlatform {
     bool iOSLocalizedLabels = true,
     bool androidLocalizedLabels = true,
   }) async {
-    final contacts = await _channel.invokeMethod(
-      'getContacts',
-      <String, dynamic>{
-        'query': query,
-        'withThumbnails': withThumbnails,
-        'photoHighResolution': photoHighResolution,
-        'orderByGivenName': orderByGivenName,
-        'iOSLocalizedLabels': iOSLocalizedLabels,
-        'androidLocalizedLabels': androidLocalizedLabels,
-      },
-    );
+    final contacts = await _channel
+        .invokeMethod('getContacts', <String, dynamic>{
+          'query': query,
+          'withThumbnails': withThumbnails,
+          'photoHighResolution': photoHighResolution,
+          'orderByGivenName': orderByGivenName,
+          'iOSLocalizedLabels': iOSLocalizedLabels,
+          'androidLocalizedLabels': androidLocalizedLabels,
+        });
     if (contacts is! Iterable<dynamic>) return const <Contact>[];
     return contacts
         .whereType<JSON>()
@@ -88,17 +80,15 @@ class MethodChannelContactos extends ContactosPlatform {
     bool iOSLocalizedLabels = true,
     bool androidLocalizedLabels = true,
   }) async {
-    final contacts = await _channel.invokeMethod(
-      'getContactsForEmail',
-      <String, dynamic>{
-        'email': email,
-        'withThumbnails': withThumbnails,
-        'photoHighResolution': photoHighResolution,
-        'orderByGivenName': orderByGivenName,
-        'iOSLocalizedLabels': iOSLocalizedLabels,
-        'androidLocalizedLabels': androidLocalizedLabels,
-      },
-    );
+    final contacts = await _channel
+        .invokeMethod('getContactsForEmail', <String, dynamic>{
+          'email': email,
+          'withThumbnails': withThumbnails,
+          'photoHighResolution': photoHighResolution,
+          'orderByGivenName': orderByGivenName,
+          'iOSLocalizedLabels': iOSLocalizedLabels,
+          'androidLocalizedLabels': androidLocalizedLabels,
+        });
     if (contacts is! Iterable<dynamic>) return const <Contact>[];
     return contacts
         .whereType<JSON>()
@@ -116,17 +106,15 @@ class MethodChannelContactos extends ContactosPlatform {
     bool androidLocalizedLabels = true,
   }) async {
     if (phone == null || phone.isEmpty) return const <Contact>[];
-    final contacts = await _channel.invokeMethod(
-      'getContactsForPhone',
-      <String, dynamic>{
-        'phone': phone,
-        'withThumbnails': withThumbnails,
-        'photoHighResolution': photoHighResolution,
-        'orderByGivenName': orderByGivenName,
-        'iOSLocalizedLabels': iOSLocalizedLabels,
-        'androidLocalizedLabels': androidLocalizedLabels,
-      },
-    );
+    final contacts = await _channel
+        .invokeMethod('getContactsForPhone', <String, dynamic>{
+          'phone': phone,
+          'withThumbnails': withThumbnails,
+          'photoHighResolution': photoHighResolution,
+          'orderByGivenName': orderByGivenName,
+          'iOSLocalizedLabels': iOSLocalizedLabels,
+          'androidLocalizedLabels': androidLocalizedLabels,
+        });
     if (contacts is! Iterable<dynamic>) return const <Contact>[];
     return contacts
         .whereType<JSON>()
@@ -139,13 +127,11 @@ class MethodChannelContactos extends ContactosPlatform {
     bool iOSLocalizedLabels = true,
     bool androidLocalizedLabels = true,
   }) async {
-    final result = await _channel.invokeMethod(
-      'openContactForm',
-      <String, dynamic>{
-        'iOSLocalizedLabels': iOSLocalizedLabels,
-        'androidLocalizedLabels': androidLocalizedLabels,
-      },
-    );
+    final result = await _channel
+        .invokeMethod('openContactForm', <String, dynamic>{
+          'iOSLocalizedLabels': iOSLocalizedLabels,
+          'androidLocalizedLabels': androidLocalizedLabels,
+        });
     return _handleFormOperation(result);
   }
 
@@ -154,13 +140,11 @@ class MethodChannelContactos extends ContactosPlatform {
     bool iOSLocalizedLabels = true,
     bool androidLocalizedLabels = true,
   }) async {
-    var result = await _channel.invokeMethod(
-      'openDeviceContactPicker',
-      <String, dynamic>{
-        'iOSLocalizedLabels': iOSLocalizedLabels,
-        'androidLocalizedLabels': androidLocalizedLabels,
-      },
-    );
+    var result = await _channel
+        .invokeMethod('openDeviceContactPicker', <String, dynamic>{
+          'iOSLocalizedLabels': iOSLocalizedLabels,
+          'androidLocalizedLabels': androidLocalizedLabels,
+        });
     // result contains either :
     // - an List of contacts containing 0 or 1 contact
     // - a FormOperationErrorCode value
@@ -177,14 +161,12 @@ class MethodChannelContactos extends ContactosPlatform {
     bool iOSLocalizedLabels = true,
     bool androidLocalizedLabels = true,
   }) async {
-    final result = await _channel.invokeMethod(
-      'openExistingContact',
-      <String, dynamic>{
-        'contact': contact.toJson(),
-        'iOSLocalizedLabels': iOSLocalizedLabels,
-        'androidLocalizedLabels': androidLocalizedLabels,
-      },
-    );
+    final result = await _channel
+        .invokeMethod('openExistingContact', <String, dynamic>{
+          'contact': contact.toJson(),
+          'iOSLocalizedLabels': iOSLocalizedLabels,
+          'androidLocalizedLabels': androidLocalizedLabels,
+        });
     return _handleFormOperation(result);
   }
 }

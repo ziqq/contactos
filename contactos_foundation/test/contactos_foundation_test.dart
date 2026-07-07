@@ -15,27 +15,27 @@ void main() {
       TestWidgetsFlutterBinding.ensureInitialized();
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
           .setMockMethodCallHandler(channel, (methodCall) async {
-        log.add(methodCall);
-        switch (methodCall.method) {
-          case 'getContacts':
-          case 'getContactsForEmail':
-          case 'getContactsForPhone':
-            return [
-              {'identifier': 'id', 'displayName': 'Name'}
-            ];
-          case 'openContactForm':
-          case 'openExistingContact':
-            return {'identifier': 'id', 'displayName': 'Name'};
-          case 'openDeviceContactPicker':
-            return [
-              {'identifier': 'id', 'displayName': 'Name'}
-            ];
-          case 'getAvatar':
-            return Uint8List.fromList([0, 1, 2]);
-          default:
-            return null;
-        }
-      });
+            log.add(methodCall);
+            switch (methodCall.method) {
+              case 'getContacts':
+              case 'getContactsForEmail':
+              case 'getContactsForPhone':
+                return [
+                  {'identifier': 'id', 'displayName': 'Name'},
+                ];
+              case 'openContactForm':
+              case 'openExistingContact':
+                return {'identifier': 'id', 'displayName': 'Name'};
+              case 'openDeviceContactPicker':
+                return [
+                  {'identifier': 'id', 'displayName': 'Name'},
+                ];
+              case 'getAvatar':
+                return Uint8List.fromList([0, 1, 2]);
+              default:
+                return null;
+            }
+          });
       log.clear();
     });
 
@@ -164,10 +164,7 @@ void main() {
         expect(log, hasLength(1));
         expect(
           log.first,
-          isMethodCall(
-            'addContact',
-            arguments: contact.toJson(),
-          ),
+          isMethodCall('addContact', arguments: contact.toJson()),
         );
       });
     });
@@ -180,10 +177,7 @@ void main() {
         expect(log, hasLength(1));
         expect(
           log.first,
-          isMethodCall(
-            'deleteContact',
-            arguments: contact.toJson(),
-          ),
+          isMethodCall('deleteContact', arguments: contact.toJson()),
         );
       });
     });
@@ -196,10 +190,7 @@ void main() {
         expect(log, hasLength(1));
         expect(
           log.first,
-          isMethodCall(
-            'updateContact',
-            arguments: contact.toJson(),
-          ),
+          isMethodCall('updateContact', arguments: contact.toJson()),
         );
       });
     });

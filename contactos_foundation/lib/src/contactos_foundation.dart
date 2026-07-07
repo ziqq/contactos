@@ -5,7 +5,6 @@
 import 'dart:typed_data';
 
 import 'package:contactos_platform_interface/contactos_platform_interface.dart';
-import 'package:flutter/foundation.dart' show visibleForOverriding;
 
 /// The iOS and macOS implementation of [ContactosPlatform].
 ///
@@ -13,15 +12,13 @@ import 'package:flutter/foundation.dart' show visibleForOverriding;
 /// functionality for iOS and macOS.
 class ContactosPluginFoundation extends ContactosPlatform {
   /// Creates a new plugin for iOS and macOS implementation instance.
-  ContactosPluginFoundation._({
-    @visibleForOverriding MethodChannelContactos? channel,
-  }) : _channel = channel ?? MethodChannelContactos.instance;
+  ContactosPluginFoundation._({MethodChannelContactos? channel})
+    : _channel = channel ?? MethodChannelContactos.instance;
 
   /// Returns an instance using a specified [MethodChannelContactos].
   factory ContactosPluginFoundation._instanceFor({
-    @visibleForOverriding MethodChannelContactos? channel,
-  }) =>
-      ContactosPluginFoundation._(channel: channel);
+    MethodChannelContactos? channel,
+  }) => ContactosPluginFoundation._(channel: channel);
 
   /// Returns the default instance
   /// of [ContactosPluginFoundation].
@@ -50,15 +47,14 @@ class ContactosPluginFoundation extends ContactosPlatform {
     bool orderByGivenName = true,
     bool iOSLocalizedLabels = true,
     bool androidLocalizedLabels = true,
-  }) =>
-      _channel.getContacts(
-        query: query,
-        withThumbnails: withThumbnails,
-        photoHighResolution: photoHighResolution,
-        orderByGivenName: orderByGivenName,
-        iOSLocalizedLabels: iOSLocalizedLabels,
-        androidLocalizedLabels: androidLocalizedLabels,
-      );
+  }) => _channel.getContacts(
+    query: query,
+    withThumbnails: withThumbnails,
+    photoHighResolution: photoHighResolution,
+    orderByGivenName: orderByGivenName,
+    iOSLocalizedLabels: iOSLocalizedLabels,
+    androidLocalizedLabels: androidLocalizedLabels,
+  );
 
   /// Fetches all contacts, or when specified, the contacts with the phone
   /// matching [phone]
@@ -70,15 +66,14 @@ class ContactosPluginFoundation extends ContactosPlatform {
     bool orderByGivenName = true,
     bool iOSLocalizedLabels = true,
     bool androidLocalizedLabels = true,
-  }) =>
-      _channel.getContactsForPhone(
-        phone,
-        withThumbnails: withThumbnails,
-        photoHighResolution: photoHighResolution,
-        orderByGivenName: orderByGivenName,
-        iOSLocalizedLabels: iOSLocalizedLabels,
-        androidLocalizedLabels: androidLocalizedLabels,
-      );
+  }) => _channel.getContactsForPhone(
+    phone,
+    withThumbnails: withThumbnails,
+    photoHighResolution: photoHighResolution,
+    orderByGivenName: orderByGivenName,
+    iOSLocalizedLabels: iOSLocalizedLabels,
+    androidLocalizedLabels: androidLocalizedLabels,
+  );
 
   /// Fetches all contacts, or when specified, the contacts with the email
   /// matching [email]
@@ -91,15 +86,14 @@ class ContactosPluginFoundation extends ContactosPlatform {
     bool orderByGivenName = true,
     bool iOSLocalizedLabels = true,
     bool androidLocalizedLabels = true,
-  }) =>
-      _channel.getContactsForEmail(
-        email,
-        withThumbnails: withThumbnails,
-        photoHighResolution: photoHighResolution,
-        orderByGivenName: orderByGivenName,
-        iOSLocalizedLabels: iOSLocalizedLabels,
-        androidLocalizedLabels: androidLocalizedLabels,
-      );
+  }) => _channel.getContactsForEmail(
+    email,
+    withThumbnails: withThumbnails,
+    photoHighResolution: photoHighResolution,
+    orderByGivenName: orderByGivenName,
+    iOSLocalizedLabels: iOSLocalizedLabels,
+    androidLocalizedLabels: androidLocalizedLabels,
+  );
 
   /// Loads the avatar for the given contact and returns it. If the user does
   /// not have an avatar, then `null` is returned in that slot. Only implemented
@@ -127,11 +121,10 @@ class ContactosPluginFoundation extends ContactosPlatform {
   Future<Contact> openContactForm({
     bool iOSLocalizedLabels = true,
     bool androidLocalizedLabels = true,
-  }) =>
-      _channel.openContactForm(
-        iOSLocalizedLabels: iOSLocalizedLabels,
-        androidLocalizedLabels: androidLocalizedLabels,
-      );
+  }) => _channel.openContactForm(
+    iOSLocalizedLabels: iOSLocalizedLabels,
+    androidLocalizedLabels: androidLocalizedLabels,
+  );
 
   /// Opens the contact form with the fields prefilled with the values from the
   /// [contact] parameter
@@ -140,12 +133,11 @@ class ContactosPluginFoundation extends ContactosPlatform {
     Contact contact, {
     bool iOSLocalizedLabels = true,
     bool androidLocalizedLabels = true,
-  }) =>
-      _channel.openExistingContact(
-        contact,
-        iOSLocalizedLabels: iOSLocalizedLabels,
-        androidLocalizedLabels: androidLocalizedLabels,
-      );
+  }) => _channel.openExistingContact(
+    contact,
+    iOSLocalizedLabels: iOSLocalizedLabels,
+    androidLocalizedLabels: androidLocalizedLabels,
+  );
 
   /// Displays the device/native contact picker dialog
   /// and returns the contact selected by the user
@@ -153,9 +145,8 @@ class ContactosPluginFoundation extends ContactosPlatform {
   Future<Contact?> openDeviceContactPicker({
     bool iOSLocalizedLabels = true,
     bool androidLocalizedLabels = true,
-  }) =>
-      _channel.openDeviceContactPicker(
-        iOSLocalizedLabels: iOSLocalizedLabels,
-        androidLocalizedLabels: androidLocalizedLabels,
-      );
+  }) => _channel.openDeviceContactPicker(
+    iOSLocalizedLabels: iOSLocalizedLabels,
+    androidLocalizedLabels: androidLocalizedLabels,
+  );
 }

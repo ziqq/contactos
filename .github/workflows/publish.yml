@@ -40,15 +40,17 @@ jobs:
             else
               PACKAGES="android,ios,interface,main"
             fi
+          elif [[ "${{ github.ref }}" =~ ^refs/tags/v[0-9]+\.[0-9]+\.[0-9]+.*$ ]]; then
+            PACKAGES="main"
           elif [[ "${{ github.ref }}" =~ ^refs/tags/(.*)-v.*$ ]]; then
             PACKAGE_NAME="${BASH_REMATCH[1]}"
             if [[ "$PACKAGE_NAME" == "contactos" ]]; then
               PACKAGES="main"
-            elif [[ "$PACKAGE_NAME" == "contactos_android" ]]; then
+            elif [[ "$PACKAGE_NAME" == "contactos-android" ]]; then
               PACKAGES="android"
-            elif [[ "$PACKAGE_NAME" == "contactos_foundation" ]]; then
+            elif [[ "$PACKAGE_NAME" == "contactos-foundation" ]]; then
               PACKAGES="ios"
-            elif [[ "$PACKAGE_NAME" == "contactos_platform_interface" ]]; then
+            elif [[ "$PACKAGE_NAME" == "contactos-platform-interface" ]]; then
               PACKAGES="interface"
             fi
           fi

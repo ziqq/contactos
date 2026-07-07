@@ -1,7 +1,7 @@
 name: contactos
 description: Plugin to access and manage contacts on Android and iOS.
 
-version: 2.0.1
+version: 2.1.0
 
 homepage: https://github.com/ziqq/contactos
 
@@ -26,19 +26,19 @@ topics:
 
 
 environment:
-  sdk: '>=3.6.0 <4.0.0'
-  flutter: ">=3.29.3"
+  sdk: '>=3.12.0 <4.0.0'
+  flutter: ">=3.44.0"
 
 
 dependencies:
   flutter:
     sdk: flutter
 
-  contactos_android: '^0.0.3'
+  contactos_android: '^0.1.0'
   # contactos_android:
   #   path: ../contactos_android
 
-  contactos_foundation: '^0.0.4'
+  contactos_foundation: '^0.0.5'
   # contactos_foundation:
   #   path: ../contactos_foundation
 

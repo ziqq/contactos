@@ -68,6 +68,8 @@ dependencies:
     contactos: ^latest_version
 ```
 
+Starting with `contactos 2.1.0`, the app-facing package requires Dart `>=3.12.0 <4.0.0` and Flutter `>=3.44.0`. The Android implementation package `contactos_android 0.1.0` requires Flutter `>=3.44.0`.
+
 
 ## Permissions
 
@@ -186,6 +188,14 @@ make precommit
 ```
 
 See each package's `Makefile` for per-package targets.
+
+For contribution setup, validation, and release workflow details, see [CONTRIBUTING.md](CONTRIBUTING.md).
+
+For the current stable release line, publish packages in this order:
+
+1. `contactos_foundation 0.0.5`
+2. `contactos_android 0.1.0`
+3. `contactos 2.1.0`
 
 
 ## Changelog

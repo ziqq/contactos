@@ -1,8 +1,6 @@
 name: contactos_android
 description: Android implementation of the contactos plugin.
-version: 0.0.3
-
-# publish_to: none
+version: 0.1.0
 
 homepage: https://github.com/ziqq/contactos
 
@@ -19,12 +17,13 @@ funding:
 #    path: example.png
 
 topics:
+  - android
   - contacts
 
 
 environment:
-  sdk: '>=3.6.0 <4.0.0'
-  flutter: ">=3.29.0"
+  sdk: '>=3.12.0 <4.0.0'
+  flutter: ">=3.44.0"
 
 
 dependencies:
@@ -43,6 +42,12 @@ dev_dependencies:
   # Unit & Widget tests for Flutter
   flutter_test:
     sdk: flutter
+
+  # Utilities
+  collection: any
+
+  # Logging
+  l: ^5.0.1
 
   # Linting
   flutter_lints: ^6.0.0

@@ -1,8 +1,6 @@
 name: contactos_foundation
 description: iOS implementation of the contactos plugin.
-version: 0.0.4
-
-# publish_to: none
+version: 0.0.5
 
 homepage: https://github.com/ziqq/contactos
 
@@ -19,12 +17,13 @@ funding:
 #    path: example.png
 
 topics:
+  - ios
   - contacts
 
 
 environment:
-  sdk: '>=3.6.0 <4.0.0'
-  flutter: ">=3.29.0"
+  sdk: '>=3.12.0 <4.0.0'
+  flutter: ">=3.44.0"
 
 
 dependencies:

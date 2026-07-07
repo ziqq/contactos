@@ -21,6 +21,8 @@ dependencies:
     contactos: ^latest_version
 ```
 
+Starting with `2.1.0`, this package requires Dart `>=3.12.0 <4.0.0` and Flutter `>=3.44.0`.
+
 
 ## Permissions
 
@@ -126,6 +128,8 @@ Uint8List avatar;
 ## Changelog
 
 Refer to the [Changelog](https://github.com/ziqq/contactos/blob/main/contactos/CHANGELOG.md) to get all release notes.
+
+For repository-level contribution and release workflow details, see the [main CONTRIBUTING guide](https://github.com/ziqq/contactos/blob/main/CONTRIBUTING.md).
 
 
 ## Maintainers

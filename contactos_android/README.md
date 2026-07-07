@@ -6,6 +6,8 @@
 
 The Android implementation of the [`contactos`](https://pub.dev/packages/contactos) plugin.
 
+Starting with `0.1.0`, this package requires Dart `>=3.12.0 <4.0.0` and Flutter `>=3.44.0`.
+
 ## Usage
 
 This package is not meant to be used directly. It is automatically included in your app when you depend on the main [`contactos`](https://pub.dev/packages/contactos) package.
@@ -15,6 +17,8 @@ For more information on how to use the `contactos` plugin, please see the [main 
 ## Contributing
 
 This is part of a federated plugin. Contributions to the platform-specific implementations are welcome. Please see the [main repository](https://github.com/ziqq/contactos) for more information on how to contribute.
+
+The repository-level contribution and release workflow is documented in [CONTRIBUTING.md](https://github.com/ziqq/contactos/blob/main/CONTRIBUTING.md).
 
 
 ## Maintainers

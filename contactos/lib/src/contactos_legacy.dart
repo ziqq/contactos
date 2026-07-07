@@ -10,8 +10,8 @@ import 'package:flutter/foundation.dart';
 /// This class implements the `package:contactos` functionality for iOS.
 class Contactos extends ContactosPlatform {
   Contactos._({@visibleForTesting MethodChannelContactos? channel})
-      : channel = channel ?? MethodChannelContactos.instance,
-        super();
+    : channel = channel ?? MethodChannelContactos.instance,
+      super();
 
   /// Underlying channel-based implementation.
   final MethodChannelContactos channel;
@@ -30,9 +30,7 @@ class Contactos extends ContactosPlatform {
 
   @protected
   @override
-  ContactosPlatform delegateFor({
-    required MethodChannelContactos channel,
-  }) =>
+  ContactosPlatform delegateFor({required MethodChannelContactos channel}) =>
       Contactos._(channel: channel);
 
   @override
@@ -45,10 +43,7 @@ class Contactos extends ContactosPlatform {
   Future<void> updateContact(Contact c) => channel.updateContact(c);
 
   @override
-  Future<Uint8List?> getAvatar(
-    Contact contact, {
-    bool photoHighRes = true,
-  }) =>
+  Future<Uint8List?> getAvatar(Contact contact, {bool photoHighRes = true}) =>
       channel.getAvatar(contact, photoHighRes: photoHighRes);
 
   @override
@@ -59,15 +54,14 @@ class Contactos extends ContactosPlatform {
     bool orderByGivenName = true,
     bool iOSLocalizedLabels = true,
     bool androidLocalizedLabels = true,
-  }) =>
-      channel.getContacts(
-        query: query,
-        withThumbnails: withThumbnails,
-        photoHighResolution: photoHighResolution,
-        orderByGivenName: orderByGivenName,
-        iOSLocalizedLabels: iOSLocalizedLabels,
-        androidLocalizedLabels: androidLocalizedLabels,
-      );
+  }) => channel.getContacts(
+    query: query,
+    withThumbnails: withThumbnails,
+    photoHighResolution: photoHighResolution,
+    orderByGivenName: orderByGivenName,
+    iOSLocalizedLabels: iOSLocalizedLabels,
+    androidLocalizedLabels: androidLocalizedLabels,
+  );
 
   @override
   Future<List<Contact>> getContactsForEmail(
@@ -77,15 +71,14 @@ class Contactos extends ContactosPlatform {
     bool orderByGivenName = true,
     bool iOSLocalizedLabels = true,
     bool androidLocalizedLabels = true,
-  }) =>
-      channel.getContactsForEmail(
-        email,
-        withThumbnails: withThumbnails,
-        photoHighResolution: photoHighResolution,
-        orderByGivenName: orderByGivenName,
-        iOSLocalizedLabels: iOSLocalizedLabels,
-        androidLocalizedLabels: androidLocalizedLabels,
-      );
+  }) => channel.getContactsForEmail(
+    email,
+    withThumbnails: withThumbnails,
+    photoHighResolution: photoHighResolution,
+    orderByGivenName: orderByGivenName,
+    iOSLocalizedLabels: iOSLocalizedLabels,
+    androidLocalizedLabels: androidLocalizedLabels,
+  );
 
   @override
   Future<List<Contact>> getContactsForPhone(
@@ -95,45 +88,41 @@ class Contactos extends ContactosPlatform {
     bool orderByGivenName = true,
     bool iOSLocalizedLabels = true,
     bool androidLocalizedLabels = true,
-  }) =>
-      channel.getContactsForPhone(
-        phone,
-        withThumbnails: withThumbnails,
-        photoHighResolution: photoHighResolution,
-        orderByGivenName: orderByGivenName,
-        iOSLocalizedLabels: iOSLocalizedLabels,
-        androidLocalizedLabels: androidLocalizedLabels,
-      );
+  }) => channel.getContactsForPhone(
+    phone,
+    withThumbnails: withThumbnails,
+    photoHighResolution: photoHighResolution,
+    orderByGivenName: orderByGivenName,
+    iOSLocalizedLabels: iOSLocalizedLabels,
+    androidLocalizedLabels: androidLocalizedLabels,
+  );
 
   @override
   Future<Contact> openContactForm({
     bool iOSLocalizedLabels = true,
     bool androidLocalizedLabels = true,
-  }) =>
-      channel.openContactForm(
-        iOSLocalizedLabels: iOSLocalizedLabels,
-        androidLocalizedLabels: androidLocalizedLabels,
-      );
+  }) => channel.openContactForm(
+    iOSLocalizedLabels: iOSLocalizedLabels,
+    androidLocalizedLabels: androidLocalizedLabels,
+  );
 
   @override
   Future<Contact?> openDeviceContactPicker({
     bool iOSLocalizedLabels = true,
     bool androidLocalizedLabels = true,
-  }) =>
-      channel.openDeviceContactPicker(
-        iOSLocalizedLabels: iOSLocalizedLabels,
-        androidLocalizedLabels: androidLocalizedLabels,
-      );
+  }) => channel.openDeviceContactPicker(
+    iOSLocalizedLabels: iOSLocalizedLabels,
+    androidLocalizedLabels: androidLocalizedLabels,
+  );
 
   @override
   Future<Contact> openExistingContact(
     Contact contact, {
     bool iOSLocalizedLabels = true,
     bool androidLocalizedLabels = true,
-  }) =>
-      channel.openExistingContact(
-        contact,
-        iOSLocalizedLabels: iOSLocalizedLabels,
-        androidLocalizedLabels: androidLocalizedLabels,
-      );
+  }) => channel.openExistingContact(
+    contact,
+    iOSLocalizedLabels: iOSLocalizedLabels,
+    androidLocalizedLabels: androidLocalizedLabels,
+  );
 }

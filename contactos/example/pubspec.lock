@@ -47,30 +47,27 @@ packages:
       path: ".."
       relative: true
     source: path
-    version: "2.0.1"
+    version: "2.1.0"
   contactos_android:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
-      name: contactos_android
-      sha256: c18473e75b844a493bdfa7a9e174692f31b72a919bd257b2b6e471bd495a70e3
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.0.3"
+      path: "../../contactos_android"
+      relative: true
+    source: path
+    version: "0.1.0"
   contactos_foundation:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
-      name: contactos_foundation
-      sha256: bb50ccde0f6c7bede6a56f1ba4dd31862d6cb2f38cb8173b4ab9caca74006a1b
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.0.4"
+      path: "../../contactos_foundation"
+      relative: true
+    source: path
+    version: "0.0.5"
   contactos_platform_interface:
     dependency: "direct main"
     description:
-      name: contactos_platform_interface
-      sha256: c9457e86a9f56fef8659d63d3dacd1b7a570220e01cf83d8fe036284b71012fb
-      url: "https://pub.dev"
-    source: hosted
+      path: "../../contactos_platform_interface"
+      relative: true
+    source: path
     version: "1.0.3"
   cupertino_icons:
     dependency: "direct main"
@@ -178,10 +175,10 @@ packages:
     dependency: transitive
     description:
       name: meta
-      sha256: "23f08335362185a5ea2ad3a4e597f1375e78bce8a040df5c600c8d3552ef2394"
+      sha256: "1741988757a65eb6b36abe716829688cf01910bbf91c34354ff7ec1c3de2b349"
       url: "https://pub.dev"
     source: hosted
-    version: "1.17.0"
+    version: "1.18.0"
   path:
     dependency: transitive
     description:
@@ -194,18 +191,18 @@ packages:
     dependency: "direct main"
     description:
       name: permission_handler
-      sha256: "59adad729136f01ea9e35a48f5d1395e25cba6cea552249ddbe9cf950f5d7849"
+      sha256: fe54465bcc62a4564c6e4db337bbaded6c0c0fa6e10487414436d163114784f6
       url: "https://pub.dev"
     source: hosted
-    version: "11.4.0"
+    version: "12.0.3"
   permission_handler_android:
     dependency: transitive
     description:
       name: permission_handler_android
-      sha256: d3971dcdd76182a0c198c096b5db2f0884b0d4196723d21a866fc4cdea057ebc
+      sha256: "1e3bc410ca1bf84662104b100eb126e066cb55791b7451307f9708d4007350e6"
       url: "https://pub.dev"
     source: hosted
-    version: "12.1.0"
+    version: "13.0.1"
   permission_handler_apple:
     dependency: transitive
     description:
@@ -319,10 +316,10 @@ packages:
     dependency: transitive
     description:
       name: test_api
-      sha256: "8161c84903fd860b26bfdefb7963b3f0b68fee7adea0f59ef805ecca346f0c7a"
+      sha256: "949a932224383300f01be9221c39180316445ecb8e7547f70a41a35bf421fb9e"
       url: "https://pub.dev"
     source: hosted
-    version: "0.7.10"
+    version: "0.7.11"
   vector_math:
     dependency: transitive
     description:
@@ -356,5 +353,5 @@ packages:
     source: hosted
     version: "3.1.0"
 sdks:
-  dart: ">=3.9.0-0 <4.0.0"
-  flutter: ">=3.29.3"
+  dart: ">=3.12.0 <4.0.0"
+  flutter: ">=3.44.0"
