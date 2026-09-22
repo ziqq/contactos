@@ -215,7 +215,7 @@ jobs:
           template-path: .github/notify/ci.md.tmpl
           variables: |
             {
-              "package_url": "https://pub.dev/packages/contactos",
+              "pub_dev_url": "https://pub.dev/packages/contactos",
               "status_label": ${{ toJSON(contains(needs.*.result, 'failure') && 'failure' || contains(needs.*.result, 'cancelled') && 'cancelled' || 'success') }}
             }
           failure-policy: best-effort
