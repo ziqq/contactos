@@ -101,6 +101,7 @@ test-android-native: ## Run Android JVM tests and generate JaCoCo coverage
 				@cd example && $(FLUTTER) pub get
 				@cd example && $(FLUTTER) build apk --debug --config-only --no-pub
 				@cd example/android && ./gradlew :contactos_android:nativeCoverage --console=plain
+				@python3 tool/filter_jacoco_coverage.py example/build/contactos_android/reports/jacoco/nativeCoverage.xml android/src/main/java
 
 .PHONY: tag
 tag: ## Add a tag to the current commit
