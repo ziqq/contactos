@@ -9,11 +9,11 @@ import 'package:contactos/contactos.dart';
 import 'package:contactos_example/main.dart';
 import 'package:flutter/material.dart';
 
-/// {@template navite_contacts_picker_screen}
+/// {@template native_contacts_picker_screen}
 /// NativeContactsPickerScreen widget.
 /// {@endtemplate}
 class NativeContactsPickerScreen extends StatefulWidget {
-  /// {@macro navite_contacts_picker_screen}
+  /// {@macro native_contacts_picker_screen}
   const NativeContactsPickerScreen({super.key});
 
   @override
@@ -43,17 +43,18 @@ class _NativeContactsPickerScreenState
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(title: const Text('Contacts Picker Example')),
-        body: SafeArea(
-            child: Column(
-          children: <Widget>[
-            ElevatedButton(
-              onPressed: _pickContact,
-              child: const Text('Pick a contact'),
-            ),
-            if (_contact != null)
-              Text('Contact selected: ${_contact?.displayName}'),
-          ],
-        )),
-      );
+    appBar: AppBar(title: const Text('Contacts Picker Example')),
+    body: SafeArea(
+      child: Column(
+        children: <Widget>[
+          ElevatedButton(
+            onPressed: _pickContact,
+            child: const Text('Pick a contact'),
+          ),
+          if (_contact != null)
+            Text('Contact selected: ${_contact?.displayName}'),
+        ],
+      ),
+    ),
+  );
 }

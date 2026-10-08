@@ -5,23 +5,24 @@ This is a **Flutter plugin** (not an app) for accessing and managing the device'
 
 ## Environment setup
 
-- **Flutter version**: managed via [FVM](https://fvm.app/) (see `.fvmrc`). Always prefix Flutter/Dart commands with `fvm`.
+- **Flutter version**: managed via [mise](https://mise.jdx.dev) (`mise.toml`, latest stable Flutter + Temurin 17) or [FVM](https://fvm.app/) (`.fvmrc`). The Makefiles use `fvm` when it is installed and the SDK from `PATH` otherwise.
 
 ```sh
-fvm flutter pub get
+mise install   # or: fvm use
+make get
 ```
 
 To run the example app:
 
 ```sh
 cd contactos/example
-fvm flutter run
+flutter run    # or: fvm flutter run
 ```
 
 
 ## Project Structure
 
-Full project tree: see `README.md` → **Project Structure**.
+Full project tree: see `README.md` → **Repository structure**; package responsibilities: `docs/architecture.md`.
 
 
 ## Build, test, and validate
@@ -36,6 +37,8 @@ make format           # Format all packages (line length 80)
 make analyze          # Analyze all packages
 make check            # Analyze + pana for all packages
 make test-unit        # Run unit tests for all packages
+make format-check     # Fail on unformatted code (as CI does)
+make screenshots      # Regenerate example screenshots
 make all              # Full pipeline: format + check + test-unit
 make precommit        # Same as `make all`
 ```
@@ -52,6 +55,8 @@ cd contactos_platform_interface && make all
 ### Test structure
 
 Each package has a `test/` directory with unit tests. The main test file matches the package name (e.g., `contactos_test.dart`). Use `make test-unit` to run tests with coverage.
+
+Native tests: Android JVM tests in `contactos_android/android/src/test/` (`make test-android-native` in `contactos_android`), iOS XCTest in `contactos_foundation/example/ios/RunnerTests/` (`make test-ios-native` in `contactos_foundation`, macOS only).
 
 
 ## Key conventions
@@ -84,7 +89,9 @@ Each package has a `test/` directory with unit tests. The main test file matches
 | `<package>/pubspec.yaml` | Package dependencies and metadata |
 | `<package>/analysis_options.yaml` | Lint rules (`flutter_lints` + custom), analyzer excludes |
 | `<package>/Makefile` | Per-package build/test/format/analyze targets |
+| `mise.toml` | mise toolchain (Flutter, Java) |
 | `.fvmrc` | FVM Flutter version configuration |
+| `codecov.yml` | Codecov flags per package and platform |
 | `Makefile` | Root-level orchestration targets |
 
 

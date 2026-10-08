@@ -44,7 +44,7 @@ dev_dependencies:
     sdk: flutter
 
   # Utilities
-  collection: any
+  collection: ^1.19.1
 
   # Logging
   l: ^5.0.1

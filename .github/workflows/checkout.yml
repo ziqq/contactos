@@ -1,175 +1,312 @@
 name: CI
 
 on:
-  push:
-    branches: [ main ]
-    paths:
-      - ".github/workflows/**"
-      - "contactos/**"
-      - "contactos_android/**"
-      - "contactos_foundation/**"
-      - "contactos_platform_interface/**"
-  pull_request:
-    branches: [ main ]
-    paths:
-      - ".github/workflows/**"
-      - "contactos/**"
-      - "contactos_android/**"
-      - "contactos_foundation/**"
-      - "contactos_platform_interface/**"
   workflow_dispatch:
+  push:
+    branches:
+      - "main"
+    paths:
+      - ".github/workflows/checkout.yml"
+      - "contactos/**"
+      - "contactos_android/**"
+      - "contactos_foundation/**"
+      - "contactos_platform_interface/**"
+      - "codecov.yml"
+      - "Makefile"
+      - "mise.toml"
+      - "tool/**"
+  pull_request:
+    branches:
+      - "main"
+    paths:
+      - ".github/workflows/checkout.yml"
+      - "contactos/**"
+      - "contactos_android/**"
+      - "contactos_foundation/**"
+      - "contactos_platform_interface/**"
+      - "codecov.yml"
+      - "Makefile"
+      - "mise.toml"
+      - "tool/**"
+
+permissions:
+  contents: read
 
 concurrency:
-  group: ci-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
-jobs:
-  detect-changes:
-    name: Detect changed packages
-    runs-on: ubuntu-latest
-    outputs:
-      matrix: ${{ steps.set-matrix.outputs.matrix }}
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - id: set-matrix
-        run: |
-          MATRIX_JSON='{"include":[{"name":"plugin","path":"contactos"},{"name":"android","path":"contactos_android"},{"name":"foundation","path":"contactos_foundation"},{"name":"interface","path":"contactos_platform_interface"}]}'
-          echo "matrix=$MATRIX_JSON" >> $GITHUB_OUTPUT
+defaults:
+  run:
+    shell: bash
 
-  package-ci:
-    name: Package (${{ matrix.name }})
-    needs: detect-changes
+env:
+  MISE_VERSION: "2026.10.4"
+
+jobs:
+  package:
+    name: Package (${{ matrix.package }})
     runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      actions: read
+      checks: write
     strategy:
       fail-fast: false
-      matrix: ${{ fromJson(needs.detect-changes.outputs.matrix) }}
+      matrix:
+        include:
+          - package: contactos_platform_interface
+            example: false
+          - package: contactos_android
+            example: true
+          - package: contactos_foundation
+            example: true
+          - package: contactos
+            example: true
+    defaults:
+      run:
+        working-directory: ${{ matrix.package }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v6
 
-      - name: Install Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          channel: stable
-
-      - name: Flutter version
-        run: flutter --version
-
-      - name: Cache pub
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.pub-cache
-          key: ${{ runner.os }}-pub-${{ matrix.name }}-${{ hashFiles(format('{0}/pubspec.lock', matrix.path)) }}
-          restore-keys: |
-            ${{ runner.os }}-pub-${{ matrix.name }}-
-            ${{ runner.os }}-pub-
-
-      - name: Pub get
-        working-directory: ${{ matrix.path }}
-        run: flutter pub get
-
-      - name: Format check
-        working-directory: ${{ matrix.path }}
-        run: dart format -l 80 lib test
-
-      - name: Analyze
-        working-directory: ${{ matrix.path }}
-        run: dart analyze --fatal-infos --fatal-warnings lib/
-
-      - name: Test (with coverage if Dart/Flutter tests exist)
-        working-directory: ${{ matrix.path }}
+      - name: Check package content
         run: |
-          if ls test/*.dart >/dev/null 2>&1; then
-            flutter test --coverage
-          else
-            echo "No tests"
-          fi
-
-      - name: Upload partial coverage artifact
-        if: success()
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage-${{ matrix.name }}
-          path: ${{ matrix.path }}/coverage/lcov.info
-          if-no-files-found: ignore
-
-  coverage-merge:
-    name: Merge coverage & Codecov
-    needs: package-ci
-    runs-on: ubuntu-latest
-    if: always()
-    steps:
-      - uses: actions/checkout@v4
-      - name: Download coverage artifacts
-        uses: actions/download-artifact@v4
-        with:
-          path: coverage_parts
-          pattern: coverage-*
-      - name: Merge lcov
-        run: |
-          sudo apt-get update && sudo apt-get install -y lcov
-          mkdir -p merged
-
-          # Map artifact names back to package paths
-          declare -A ARTIFACT_TO_PATH=(
-            ["coverage-plugin"]="contactos"
-            ["coverage-android"]="contactos_android"
-            ["coverage-foundation"]="contactos_foundation"
-            ["coverage-interface"]="contactos_platform_interface"
-          )
-
-          FIRST=true
-          for dir in coverage_parts/coverage-*/; do
-            ARTIFACT_NAME=$(basename "$dir")
-            PKG_PATH="${ARTIFACT_TO_PATH[$ARTIFACT_NAME]}"
-            LCOV_FILE="$dir/lcov.info"
-
-            if [ ! -f "$LCOV_FILE" ]; then
-              echo "No lcov.info in $dir, skipping"
-              continue
-            fi
-
-            # Prefix SF: paths with the package directory
-            # so Codecov maps files correctly in the monorepo
-            if [ -n "$PKG_PATH" ]; then
-              sed -i "s|^SF:|SF:${PKG_PATH}/|" "$LCOV_FILE"
-            fi
-
-            if $FIRST; then
-              cp "$LCOV_FILE" merged/lcov.info
-              FIRST=false
-            else
-              lcov -a merged/lcov.info -a "$LCOV_FILE" -o merged/lcov.tmp
-              mv merged/lcov.tmp merged/lcov.info
-            fi
+          for file in README.md CHANGELOG.md LICENSE pubspec.yaml; do
+            test -f "$file" || { echo "::error::$file is missing"; exit 1; }
           done
 
-          if [ ! -f merged/lcov.info ]; then
-            echo "No coverage files found"; exit 0
+      - name: Install pinned toolchain
+        uses: jdx/mise-action@v4
+        with:
+          version: ${{ env.MISE_VERSION }}
+          install_args: flutter
+
+      - name: Check flutter version
+        timeout-minutes: 1
+        run: flutter --version
+
+      - name: Install dependencies
+        timeout-minutes: 3
+        run: |
+          flutter pub get
+          if [[ "${{ matrix.example }}" == "true" ]]; then
+            (cd example && flutter pub get)
           fi
 
-          lcov --remove merged/lcov.info '*_test.dart' -o merged/lcov.info || true
-          echo "Merged coverage:"
-          lcov --summary merged/lcov.info || true
-      - name: Upload merged artifact
-        uses: actions/upload-artifact@v4
+      - name: Check format
+        timeout-minutes: 1
+        run: make format-check
+
+      - name: Check analyzer
+        timeout-minutes: 3
+        run: flutter analyze --no-pub --fatal-infos --fatal-warnings
+
+      - name: Check example analyzer
+        if: matrix.example
+        timeout-minutes: 3
+        working-directory: ${{ matrix.package }}/example
+        run: flutter analyze --no-pub --fatal-infos --fatal-warnings
+
+      - name: Run dependency validator
+        timeout-minutes: 2
+        run: |
+          dart pub global activate dependency_validator
+          dart pub global run dependency_validator:dependency_validator
+
+      - name: Validate publication archive
+        timeout-minutes: 2
+        run: flutter pub publish --dry-run
+
+      - name: Run tests
+        timeout-minutes: 5
+        run: |
+          mkdir -p reports
+          flutter test --no-pub --coverage --file-reporter=json:reports/tests.json test/
+
+      - name: Run example tests
+        if: matrix.example
+        timeout-minutes: 5
+        working-directory: ${{ matrix.package }}/example
+        run: flutter test --no-pub
+
+      - name: Check shared example tests
+        if: matrix.package == 'contactos'
+        timeout-minutes: 3
+        working-directory: tool/example_app_test
+        run: |
+          flutter pub get
+          dart format -l 80 --set-exit-if-changed -o none lib
+          flutter analyze --no-pub --fatal-infos --fatal-warnings
+
+      - name: Prefix coverage paths with the package directory
+        if: ${{ !cancelled() && hashFiles(format('{0}/coverage/lcov.info', matrix.package)) != '' }}
+        run: sed -i "s|^SF:|SF:${{ matrix.package }}/|" coverage/lcov.info
+
+      - name: Upload test report
+        id: upload_test_report
+        if: ${{ !cancelled() && hashFiles(format('{0}/reports/tests.json', matrix.package)) != '' }}
+        timeout-minutes: 1
+        uses: actions/upload-artifact@v7
         with:
-          name: coverage-merged
-          path: merged/lcov.info
-          if-no-files-found: ignore
-      - name: Upload to Codecov
-        uses: codecov/codecov-action@v5
+          name: test-results-${{ matrix.package }}
+          path: ${{ matrix.package }}/reports/tests.json
+
+      - name: Test report
+        if: >-
+          !cancelled() &&
+          steps.upload_test_report.outputs.artifact-id != '' &&
+          github.actor != 'dependabot[bot]' &&
+          (github.event_name != 'pull_request' ||
+          github.event.pull_request.head.repo.full_name == github.repository)
+        timeout-minutes: 1
+        uses: dorny/test-reporter@v2
         with:
+          artifact: test-results-${{ matrix.package }}
+          name: Test report (${{ matrix.package }})
+          path: "**/tests.json"
+          reporter: flutter-json
+          fail-on-error: false
+
+      - name: Upload coverage to Codecov
+        if: ${{ !cancelled() && hashFiles(format('{0}/coverage/lcov.info', matrix.package)) != '' }}
+        timeout-minutes: 2
+        uses: codecov/codecov-action@0fb7174895f61a3b6b78fc075e0cd60383518dac # v5
+        with:
+          files: ${{ matrix.package }}/coverage/lcov.info
+          flags: ${{ matrix.package }}
           token: ${{ secrets.CODECOV_TOKEN }}
-          files: merged/lcov.info
+          fail_ci_if_error: false
+
+  android:
+    name: Android build
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: contactos_android
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Install pinned toolchain
+        uses: jdx/mise-action@v4
+        with:
+          version: ${{ env.MISE_VERSION }}
+          install_args: flutter java
+
+      - name: Install dependencies
+        working-directory: contactos_android/example
+        run: flutter pub get
+
+      - name: Build Android example
+        timeout-minutes: 15
+        working-directory: contactos_android/example
+        run: flutter build apk --debug --no-pub
+
+      - name: Run Android native tests with coverage
+        timeout-minutes: 10
+        run: make test-android-native
+
+      - name: Upload Android native test reports
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: android-native-tests
+          path: |
+            contactos_android/example/build/contactos_android/test-results/testDebugUnitTest/
+            contactos_android/example/build/contactos_android/reports/tests/testDebugUnitTest/
+            contactos_android/example/build/contactos_android/reports/jacoco/
+          if-no-files-found: ignore
+
+      - name: Upload Android coverage to Codecov
+        if: ${{ !cancelled() && hashFiles('contactos_android/example/build/contactos_android/reports/jacoco/nativeCoverage.xml') != '' }}
+        uses: codecov/codecov-action@0fb7174895f61a3b6b78fc075e0cd60383518dac # v5
+        with:
+          files: contactos_android/example/build/contactos_android/reports/jacoco/nativeCoverage.xml
+          flags: android
+          token: ${{ secrets.CODECOV_TOKEN }}
+          fail_ci_if_error: false
+
+  ios:
+    name: iOS build (${{ matrix.swift-package-manager && 'SPM' || 'CocoaPods' }})
+    runs-on: macos-latest
+    timeout-minutes: 40
+    strategy:
+      fail-fast: false
+      matrix:
+        swift-package-manager: [false, true]
+    defaults:
+      run:
+        working-directory: contactos_foundation
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Install pinned toolchain
+        uses: jdx/mise-action@v4
+        with:
+          version: ${{ env.MISE_VERSION }}
+          install_args: flutter
+
+      - name: Select iOS dependency manager
+        run: flutter config ${{ matrix.swift-package-manager && '--enable-swift-package-manager' || '--no-enable-swift-package-manager' }}
+
+      - name: Install dependencies
+        working-directory: contactos_foundation/example
+        run: flutter pub get
+
+      - name: Build iOS example
+        timeout-minutes: 20
+        working-directory: contactos_foundation/example
+        run: flutter build ios --simulator --debug --no-codesign --no-pub
+
+      - name: Check privacy manifest is bundled
+        working-directory: contactos_foundation/example/build/ios/iphonesimulator/Runner.app
+        run: |
+          # Search relative to the app so the repository path cannot match.
+          manifests="$(find . -path '*contactos*' -name PrivacyInfo.xcprivacy)"
+          if [[ -z "$manifests" ]]; then
+            echo "::error::The contactos_foundation privacy manifest is missing from Runner.app."
+            exit 1
+          fi
+          echo "$manifests"
+
+      - name: Select iOS test simulator
+        id: ios_test_simulator
+        run: |
+          simulator_id="$(xcrun simctl list devices available --json | jq -er '[.devices[][] | select(.isAvailable and (.name | startswith("iPhone")))][0].udid // error("No iOS Simulator available")')"
+          echo "id=$simulator_id" >> "$GITHUB_OUTPUT"
+
+      - name: Run iOS native tests with coverage
+        timeout-minutes: 15
+        env:
+          IOS_SIMULATOR_ID: ${{ steps.ios_test_simulator.outputs.id }}
+        run: bash tool/test_ios_native.sh
+
+      - name: Upload iOS native test reports
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: ios-native-tests-${{ matrix.swift-package-manager && 'spm' || 'cocoapods' }}
+          path: |
+            contactos_foundation/example/build/native-ios-results-*/Tests.xcresult/
+            contactos_foundation/coverage/ios.lcov.info
+          if-no-files-found: ignore
+
+      - name: Upload iOS coverage to Codecov
+        if: ${{ !cancelled() && hashFiles('contactos_foundation/coverage/ios.lcov.info') != '' }}
+        uses: codecov/codecov-action@0fb7174895f61a3b6b78fc075e0cd60383518dac # v5
+        with:
+          files: contactos_foundation/coverage/ios.lcov.info
+          flags: ios
+          token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: false
 
   notify:
     name: Notify CI result
-    needs: [detect-changes, package-ci, coverage-merge]
+    needs: [package, android, ios]
     continue-on-error: true
     if: >-
       always() &&
@@ -190,9 +327,7 @@ jobs:
           env.NOTIFY_DISCORD_WEBHOOKS == '' ||
           env.NOTIFY_TELEGRAM_BOT_TOKEN == '' ||
           env.NOTIFY_TELEGRAM_TARGETS == ''
-        shell: bash
-        run: >-
-          echo "::warning::CI notification skipped because one or more notification secrets are not configured."
+        run: echo "::warning::CI notification skipped because notification secrets are not fully configured."
 
       - name: Checkout trusted notification template
         if: >-
@@ -202,6 +337,7 @@ jobs:
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.sha }}
+          persist-credentials: false
 
       - name: Notify Discord and Telegram
         if: >-
@@ -216,7 +352,7 @@ jobs:
           variables: |
             {
               "pub_dev_url": "https://pub.dev/packages/contactos",
-              "status_label": ${{ toJSON(contains(needs.*.result, 'failure') && 'failure' || contains(needs.*.result, 'cancelled') && 'cancelled' || 'success') }}
+              "status_label": ${{ toJSON(contains(needs.*.result, 'failure') && 'failure' || contains(needs.*.result, 'cancelled') && 'cancelled' || contains(needs.*.result, 'skipped') && 'skipped' || 'success') }}
             }
           failure-policy: best-effort
           timeout-ms: "10000"
