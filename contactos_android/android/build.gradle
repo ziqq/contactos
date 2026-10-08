@@ -1,5 +1,6 @@
 plugins {
     id "com.android.library"
+    id "jacoco"
 }
 
 android {
@@ -20,6 +21,35 @@ android {
         targetSdk                 = flutter.targetSdkVersion
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
+
+    testOptions {
+        unitTests.includeAndroidResources = true
+    }
+}
+
+jacoco {
+    toolVersion = "0.8.14"
+}
+
+tasks.withType(Test).configureEach {
+    jacoco.includeNoLocationClasses = true
+    jacoco.excludes = ["jdk.internal.*"]
+}
+
+tasks.register("nativeCoverage", JacocoReport) {
+    dependsOn "testDebugUnitTest"
+    executionData fileTree(layout.buildDirectory) {
+        include "jacoco/testDebugUnitTest.exec"
+    }
+    sourceDirectories.from files("src/main/java")
+    classDirectories.from fileTree(layout.buildDirectory.dir("intermediates/javac/debug/compileDebugJavaWithJavac/classes")) {
+        include "flutter/plugins/contactos/**"
+    }
+    reports {
+        xml.required = true
+        xml.outputLocation = layout.buildDirectory.file("reports/jacoco/nativeCoverage.xml")
+        html.required = true
+    }
 }
 
 kotlin {
@@ -29,8 +59,9 @@ kotlin {
 }
 
 dependencies {
-    testImplementation 'junit:junit:4.12'
-    testImplementation 'com.google.truth:truth:1.0'
+    testImplementation 'junit:junit:4.13.2'
+    testImplementation 'com.google.truth:truth:1.4.4'
+    testImplementation 'org.robolectric:robolectric:4.17'
 }
 
 flutter {
