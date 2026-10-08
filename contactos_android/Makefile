@@ -96,6 +96,12 @@ test-unit: ## Runs unit tests
 				@$(FLUTTER) test --coverage test/contactos_android_test.dart || (echo "¯\_(ツ)_/¯ Error while running test-unit"; exit 1)
 				@genhtml coverage/lcov.info --output=coverage -o coverage/html || (echo "¯\_(ツ)_/¯ Error while running genhtml with coverage"; exit 2)
 
+.PHONY: test-android-native
+test-android-native: ## Run Android JVM tests and generate JaCoCo coverage
+				@cd example && $(FLUTTER) pub get
+				@cd example && $(FLUTTER) build apk --debug --config-only --no-pub
+				@cd example/android && ./gradlew :contactos_android:nativeCoverage --console=plain
+
 .PHONY: tag
 tag: ## Add a tag to the current commit
 	@$(DART) run tool/tag.dart
