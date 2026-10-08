@@ -20,13 +20,13 @@ class ContactsExampleApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => MaterialApp(
-        home: const _HomePage(),
-        routes: <String, WidgetBuilder>{
-          '/add': (_) => const AddContactScreen(),
-          '/contacts-list': (_) => const ContactsListScreen(),
-          '/native-contacts-picker': (_) => const NativeContactsPickerScreen(),
-        },
-      );
+    home: const _HomePage(),
+    routes: <String, WidgetBuilder>{
+      '/add': (_) => const AddContactScreen(),
+      '/contacts-list': (_) => const ContactsListScreen(),
+      '/native-contacts-picker': (_) => const NativeContactsPickerScreen(),
+    },
+  );
 }
 
 class _HomePage extends StatefulWidget {
@@ -79,21 +79,21 @@ class __HomePageState extends State<_HomePage> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(title: const Text('Contacts Plugin Example')),
-        body: SafeArea(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-              ElevatedButton(
-                child: const Text('Contacts list'),
-                onPressed: () => _askPermissions('/contacts-list'),
-              ),
-              ElevatedButton(
-                child: const Text('Native Contacts picker'),
-                onPressed: () => _askPermissions('/native-contacts-picker'),
-              ),
-            ],
+    appBar: AppBar(title: const Text('Contacts Plugin Example')),
+    body: SafeArea(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: <Widget>[
+          ElevatedButton(
+            child: const Text('Contacts list'),
+            onPressed: () => _askPermissions('/contacts-list'),
           ),
-        ),
-      );
+          ElevatedButton(
+            child: const Text('Native Contacts picker'),
+            onPressed: () => _askPermissions('/native-contacts-picker'),
+          ),
+        ],
+      ),
+    ),
+  );
 }

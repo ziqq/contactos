@@ -54,8 +54,9 @@ class _ContactsListPageState extends State<ContactsListScreen> {
   }
 
   Future<void> updateContact() async {
-    var contact = _contacts
-        ?.firstWhereOrNull((c) => c.familyName?.startsWith('Ninja') ?? false);
+    var contact = _contacts?.firstWhereOrNull(
+      (c) => c.familyName?.startsWith('Ninja') ?? false,
+    );
     if (contact == null) return;
     await Contactos.instance.updateContact(contact);
     await refreshContacts();
@@ -88,53 +89,51 @@ class _ContactsListPageState extends State<ContactsListScreen> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(
-          title: const Text('Contacts Plugin Example'),
-          actions: <Widget>[
-            IconButton(
-              icon: const Icon(Icons.create),
-              onPressed: _openContactForm,
-            )
-          ],
-        ),
-        floatingActionButton: FloatingActionButton(
-          child: const Icon(Icons.add),
-          onPressed: () {
-            Navigator.of(context).pushNamed('/add').then((_) {
-              refreshContacts();
-            });
-          },
-        ),
-        body: SafeArea(
-          child: _contacts != null
-              ? ListView.builder(
-                  itemCount: _contacts?.length ?? 0,
-                  itemBuilder: (context, index) {
-                    final contact = _contacts?.elementAt(index);
-                    if (contact == null) return const SizedBox.shrink();
-                    return ListTile(
-                      onTap: () {
-                        final route = MaterialPageRoute<void>(
-                          builder: (context) => _ContactDetailsPage(
-                            contact,
-                            onContactDeviceSave: contactOnDeviceHasBeenUpdated,
-                          ),
-                        );
-                        Navigator.of(context).push(route);
-                      },
-                      leading: (contact.avatar != null &&
-                              (contact.avatar?.length ?? 0) > 0)
-                          ? CircleAvatar(
-                              backgroundImage: MemoryImage(contact.avatar!),
-                            )
-                          : CircleAvatar(child: Text(contact.initials())),
-                      title: Text(contact.displayName ?? ''),
+    appBar: AppBar(
+      title: const Text('Contacts Plugin Example'),
+      actions: <Widget>[
+        IconButton(icon: const Icon(Icons.create), onPressed: _openContactForm),
+      ],
+    ),
+    floatingActionButton: FloatingActionButton(
+      child: const Icon(Icons.add),
+      onPressed: () {
+        Navigator.of(context).pushNamed('/add').then((_) {
+          refreshContacts();
+        });
+      },
+    ),
+    body: SafeArea(
+      child: _contacts != null
+          ? ListView.builder(
+              itemCount: _contacts?.length ?? 0,
+              itemBuilder: (context, index) {
+                final contact = _contacts?.elementAt(index);
+                if (contact == null) return const SizedBox.shrink();
+                return ListTile(
+                  onTap: () {
+                    final route = MaterialPageRoute<void>(
+                      builder: (context) => _ContactDetailsPage(
+                        contact,
+                        onContactDeviceSave: contactOnDeviceHasBeenUpdated,
+                      ),
                     );
+                    Navigator.of(context).push(route);
                   },
-                )
-              : const Center(child: CircularProgressIndicator()),
-        ),
-      );
+                  leading:
+                      (contact.avatar != null &&
+                          (contact.avatar?.length ?? 0) > 0)
+                      ? CircleAvatar(
+                          backgroundImage: MemoryImage(contact.avatar!),
+                        )
+                      : CircleAvatar(child: Text(contact.initials())),
+                  title: Text(contact.displayName ?? ''),
+                );
+              },
+            )
+          : const Center(child: CircularProgressIndicator()),
+    ),
+  );
 }
 
 class _ContactDetailsPage extends StatefulWidget {
@@ -176,84 +175,88 @@ class _ContactDetailsPageState extends State<_ContactDetailsPage> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(
-          title: Text(widget._contact.displayName ?? ''),
-          actions: <Widget>[
-            /* IconButton(
+    appBar: AppBar(
+      title: Text(widget._contact.displayName ?? ''),
+      actions: <Widget>[
+        /* IconButton(
               icon: Icon(Icons.share),
               onPressed: () => shareVCFCard(context, contact: _contact),
             ), */
-            IconButton(
-              icon: const Icon(Icons.delete),
-              onPressed: () {
-                Contactos.instance.deleteContact(widget._contact);
-              },
-            ),
-            IconButton(
-              icon: const Icon(Icons.update),
-              onPressed: () => Navigator.of(context).push(
-                MaterialPageRoute<void>(
-                  builder: (context) => _UpdateContactsPage(
-                    contact: widget._contact,
-                  ),
-                ),
-              ),
-            ),
-            IconButton(
-                icon: const Icon(Icons.edit),
-                onPressed: () => _openExistingContactOnDevice(context)),
-          ],
+        IconButton(
+          icon: const Icon(Icons.delete),
+          onPressed: () {
+            Contactos.instance.deleteContact(widget._contact);
+          },
         ),
-        body: SafeArea(
-          child: ListView(
-            children: <Widget>[
-              ListTile(
-                title: const Text('Name'),
-                trailing: Text(widget._contact.givenName ?? ''),
-              ),
-              ListTile(
-                title: const Text('Middle name'),
-                trailing: Text(widget._contact.middleName ?? ''),
-              ),
-              ListTile(
-                title: const Text('Family name'),
-                trailing: Text(widget._contact.familyName ?? ''),
-              ),
-              ListTile(
-                title: const Text('Prefix'),
-                trailing: Text(widget._contact.prefix ?? ''),
-              ),
-              ListTile(
-                title: const Text('Suffix'),
-                trailing: Text(widget._contact.suffix ?? ''),
-              ),
-              ListTile(
-                title: const Text('Birthday'),
-                trailing: Text(widget._contact.birthday != null
-                    ? DateFormat('dd-MM-yyyy').format(widget._contact.birthday!)
-                    : ''),
-              ),
-              ListTile(
-                title: const Text('Company'),
-                trailing: Text(widget._contact.company ?? ''),
-              ),
-              ListTile(
-                title: const Text('Job'),
-                trailing: Text(widget._contact.jobTitle ?? ''),
-              ),
-              ListTile(
-                title: const Text('Account Type'),
-                trailing: Text((widget._contact.androidAccountType != null)
-                    ? widget._contact.androidAccountType.toString()
-                    : ''),
-              ),
-              _AddressesTile(widget._contact.postalAddresses!),
-              _ItemsTile('Phones', widget._contact.phones!),
-              _ItemsTile('Emails', widget._contact.emails!)
-            ],
+        IconButton(
+          icon: const Icon(Icons.update),
+          onPressed: () => Navigator.of(context).push(
+            MaterialPageRoute<void>(
+              builder: (context) =>
+                  _UpdateContactsPage(contact: widget._contact),
+            ),
           ),
         ),
-      );
+        IconButton(
+          icon: const Icon(Icons.edit),
+          onPressed: () => _openExistingContactOnDevice(context),
+        ),
+      ],
+    ),
+    body: SafeArea(
+      child: ListView(
+        children: <Widget>[
+          ListTile(
+            title: const Text('Name'),
+            trailing: Text(widget._contact.givenName ?? ''),
+          ),
+          ListTile(
+            title: const Text('Middle name'),
+            trailing: Text(widget._contact.middleName ?? ''),
+          ),
+          ListTile(
+            title: const Text('Family name'),
+            trailing: Text(widget._contact.familyName ?? ''),
+          ),
+          ListTile(
+            title: const Text('Prefix'),
+            trailing: Text(widget._contact.prefix ?? ''),
+          ),
+          ListTile(
+            title: const Text('Suffix'),
+            trailing: Text(widget._contact.suffix ?? ''),
+          ),
+          ListTile(
+            title: const Text('Birthday'),
+            trailing: Text(
+              widget._contact.birthday != null
+                  ? DateFormat('dd-MM-yyyy').format(widget._contact.birthday!)
+                  : '',
+            ),
+          ),
+          ListTile(
+            title: const Text('Company'),
+            trailing: Text(widget._contact.company ?? ''),
+          ),
+          ListTile(
+            title: const Text('Job'),
+            trailing: Text(widget._contact.jobTitle ?? ''),
+          ),
+          ListTile(
+            title: const Text('Account Type'),
+            trailing: Text(
+              (widget._contact.androidAccountType != null)
+                  ? widget._contact.androidAccountType.toString()
+                  : '',
+            ),
+          ),
+          _AddressesTile(widget._contact.postalAddresses!),
+          _ItemsTile('Phones', widget._contact.phones!),
+          _ItemsTile('Emails', widget._contact.emails!),
+        ],
+      ),
+    ),
+  );
 }
 
 @immutable
@@ -267,43 +270,43 @@ class _AddressesTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          const ListTile(title: Text('Addresses')),
-          Column(
-            children: [
-              for (final a in _addresses)
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Column(
-                    children: <Widget>[
-                      ListTile(
-                        title: const Text('Street'),
-                        trailing: Text(a.street ?? ''),
-                      ),
-                      ListTile(
-                        title: const Text('Postcode'),
-                        trailing: Text(a.postcode ?? ''),
-                      ),
-                      ListTile(
-                        title: const Text('City'),
-                        trailing: Text(a.city ?? ''),
-                      ),
-                      ListTile(
-                        title: const Text('Region'),
-                        trailing: Text(a.region ?? ''),
-                      ),
-                      ListTile(
-                        title: const Text('Country'),
-                        trailing: Text(a.country ?? ''),
-                      ),
-                    ],
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: <Widget>[
+      const ListTile(title: Text('Addresses')),
+      Column(
+        children: [
+          for (final a in _addresses)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Column(
+                children: <Widget>[
+                  ListTile(
+                    title: const Text('Street'),
+                    trailing: Text(a.street ?? ''),
                   ),
-                ),
-            ],
-          ),
+                  ListTile(
+                    title: const Text('Postcode'),
+                    trailing: Text(a.postcode ?? ''),
+                  ),
+                  ListTile(
+                    title: const Text('City'),
+                    trailing: Text(a.city ?? ''),
+                  ),
+                  ListTile(
+                    title: const Text('Region'),
+                    trailing: Text(a.region ?? ''),
+                  ),
+                  ListTile(
+                    title: const Text('Country'),
+                    trailing: Text(a.country ?? ''),
+                  ),
+                ],
+              ),
+            ),
         ],
-      );
+      ),
+    ],
+  );
 }
 
 class _ItemsTile extends StatelessWidget {
@@ -318,23 +321,23 @@ class _ItemsTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          ListTile(title: Text(_title)),
-          Column(
-            children: [
-              for (final i in _items)
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: ListTile(
-                    title: Text(i.label ?? ''),
-                    trailing: Text(i.value ?? ''),
-                  ),
-                ),
-            ],
-          ),
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: <Widget>[
+      ListTile(title: Text(_title)),
+      Column(
+        children: [
+          for (final i in _items)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: ListTile(
+                title: Text(i.label ?? ''),
+                trailing: Text(i.value ?? ''),
+              ),
+            ),
         ],
-      );
+      ),
+    ],
+  );
 }
 
 /// {@template add_contact_screen}
@@ -358,96 +361,93 @@ class _AddContactScreenState extends State<AddContactScreen> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(
-          title: const Text('Add a contact'),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                _formKey.currentState?.save();
-                final newContact = contact.copyWith(postalAddresses: [address]);
-                Contactos.instance.addContact(newContact);
-                Navigator.of(context).pop();
-              },
-              child: const Icon(Icons.save, color: Colors.white),
-            )
+    appBar: AppBar(
+      title: const Text('Add a contact'),
+      actions: <Widget>[
+        TextButton(
+          onPressed: () {
+            _formKey.currentState?.save();
+            final newContact = contact.copyWith(postalAddresses: [address]);
+            Contactos.instance.addContact(newContact);
+            Navigator.of(context).pop();
+          },
+          child: const Icon(Icons.save, color: Colors.white),
+        ),
+      ],
+    ),
+    body: Container(
+      padding: const EdgeInsets.all(12),
+      child: Form(
+        key: _formKey,
+        child: ListView(
+          children: <Widget>[
+            TextFormField(
+              decoration: const InputDecoration(labelText: 'First name'),
+              onSaved: (v) => contact.copyWith(givenName: v),
+            ),
+            TextFormField(
+              decoration: const InputDecoration(labelText: 'Middle name'),
+              onSaved: (v) => contact.copyWith(middleName: v),
+            ),
+            TextFormField(
+              decoration: const InputDecoration(labelText: 'Last name'),
+              onSaved: (v) => contact = contact.copyWith(familyName: v),
+            ),
+            TextFormField(
+              decoration: const InputDecoration(labelText: 'Prefix'),
+              onSaved: (v) => contact = contact.copyWith(prefix: v),
+            ),
+            TextFormField(
+              decoration: const InputDecoration(labelText: 'Suffix'),
+              onSaved: (v) => contact = contact.copyWith(suffix: v),
+            ),
+            TextFormField(
+              decoration: const InputDecoration(labelText: 'Phone'),
+              onSaved: (v) => contact = contact.copyWith(
+                phones: [Contact$Field(label: 'mobile', value: v)],
+              ),
+              keyboardType: TextInputType.phone,
+            ),
+            TextFormField(
+              decoration: const InputDecoration(labelText: 'E-mail'),
+              onSaved: (v) => contact = contact.copyWith(
+                emails: [Contact$Field(label: 'work', value: v)],
+              ),
+              keyboardType: TextInputType.emailAddress,
+            ),
+            TextFormField(
+              decoration: const InputDecoration(labelText: 'Company'),
+              onSaved: (v) => contact = contact.copyWith(company: v),
+            ),
+            TextFormField(
+              decoration: const InputDecoration(labelText: 'Job'),
+              onSaved: (v) => contact = contact.copyWith(jobTitle: v),
+            ),
+            TextFormField(
+              decoration: const InputDecoration(labelText: 'Street'),
+              onSaved: (v) => address = address.copyWith(street: v),
+            ),
+            TextFormField(
+              decoration: const InputDecoration(labelText: 'City'),
+              onSaved: (v) => address = address.copyWith(city: v),
+            ),
+            TextFormField(
+              decoration: const InputDecoration(labelText: 'Region'),
+              onSaved: (v) => address = address.copyWith(region: v),
+            ),
+            TextFormField(
+              decoration: const InputDecoration(labelText: 'Postal code'),
+              onSaved: (v) => address = address.copyWith(postcode: v),
+            ),
+            TextFormField(
+              decoration: const InputDecoration(labelText: 'Country'),
+              onSaved: (v) => address = address.copyWith(country: v),
+            ),
           ],
         ),
-        body: Container(
-          padding: const EdgeInsets.all(12),
-          child: Form(
-            key: _formKey,
-            child: ListView(
-              children: <Widget>[
-                TextFormField(
-                  decoration: const InputDecoration(labelText: 'First name'),
-                  onSaved: (v) => contact.copyWith(givenName: v),
-                ),
-                TextFormField(
-                  decoration: const InputDecoration(labelText: 'Middle name'),
-                  onSaved: (v) => contact.copyWith(middleName: v),
-                ),
-                TextFormField(
-                  decoration: const InputDecoration(labelText: 'Last name'),
-                  onSaved: (v) => contact = contact.copyWith(familyName: v),
-                ),
-                TextFormField(
-                  decoration: const InputDecoration(labelText: 'Prefix'),
-                  onSaved: (v) => contact = contact.copyWith(prefix: v),
-                ),
-                TextFormField(
-                  decoration: const InputDecoration(labelText: 'Suffix'),
-                  onSaved: (v) => contact = contact.copyWith(suffix: v),
-                ),
-                TextFormField(
-                  decoration: const InputDecoration(labelText: 'Phone'),
-                  onSaved: (v) => contact = contact.copyWith(phones: [
-                    Contact$Field(
-                      label: 'mobile',
-                      value: v,
-                    )
-                  ]),
-                  keyboardType: TextInputType.phone,
-                ),
-                TextFormField(
-                  decoration: const InputDecoration(labelText: 'E-mail'),
-                  onSaved: (v) => contact = contact.copyWith(
-                    emails: [Contact$Field(label: 'work', value: v)],
-                  ),
-                  keyboardType: TextInputType.emailAddress,
-                ),
-                TextFormField(
-                  decoration: const InputDecoration(labelText: 'Company'),
-                  onSaved: (v) => contact = contact.copyWith(company: v),
-                ),
-                TextFormField(
-                  decoration: const InputDecoration(labelText: 'Job'),
-                  onSaved: (v) => contact = contact.copyWith(jobTitle: v),
-                ),
-                TextFormField(
-                  decoration: const InputDecoration(labelText: 'Street'),
-                  onSaved: (v) => address = address.copyWith(street: v),
-                ),
-                TextFormField(
-                  decoration: const InputDecoration(labelText: 'City'),
-                  onSaved: (v) => address = address.copyWith(city: v),
-                ),
-                TextFormField(
-                  decoration: const InputDecoration(labelText: 'Region'),
-                  onSaved: (v) => address = address.copyWith(region: v),
-                ),
-                TextFormField(
-                  decoration: const InputDecoration(labelText: 'Postal code'),
-                  onSaved: (v) => address = address.copyWith(postcode: v),
-                ),
-                TextFormField(
-                  decoration: const InputDecoration(labelText: 'Country'),
-                  onSaved: (v) => address = address.copyWith(country: v),
-                ),
-              ],
-            ),
-          ),
-        ),
-      );
+      ),
+    ),
+  );
 }
 
 class _UpdateContactsPage extends StatefulWidget {
@@ -476,112 +476,109 @@ class __UpdateContactsPageState extends State<_UpdateContactsPage> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(
-          title: const Text('Update Contact'),
-          actions: <Widget>[
-            IconButton(
-              icon: const Icon(
-                Icons.save,
-                color: Colors.white,
+    appBar: AppBar(
+      title: const Text('Update Contact'),
+      actions: <Widget>[
+        IconButton(
+          icon: const Icon(Icons.save, color: Colors.white),
+          onPressed: () async {
+            _formKey.currentState?.save();
+            final navigator = Navigator.of(context);
+            final newContact = contact?.copyWith(postalAddresses: [address]);
+            if (newContact == null) return;
+            await Contactos.instance.updateContact(newContact);
+            await navigator.pushReplacement(
+              MaterialPageRoute<void>(
+                builder: (_) => const ContactsListScreen(),
               ),
-              onPressed: () async {
-                _formKey.currentState?.save();
-                final navigator = Navigator.of(context);
-                final newContact =
-                    contact?.copyWith(postalAddresses: [address]);
-                if (newContact == null) return;
-                await Contactos.instance.updateContact(newContact);
-                await navigator.pushReplacement(
-                  MaterialPageRoute<void>(
-                    builder: (_) => const ContactsListScreen(),
-                  ),
-                );
-              },
+            );
+          },
+        ),
+      ],
+    ),
+    body: Container(
+      padding: const EdgeInsets.all(12),
+      child: Form(
+        key: _formKey,
+        child: ListView(
+          children: <Widget>[
+            TextFormField(
+              initialValue: contact?.givenName ?? '',
+              decoration: const InputDecoration(labelText: 'First name'),
+              onSaved: (v) => contact = contact?.copyWith(givenName: v),
+            ),
+            TextFormField(
+              initialValue: contact?.middleName ?? '',
+              decoration: const InputDecoration(labelText: 'Middle name'),
+              onSaved: (v) => contact = contact?.copyWith(middleName: v),
+            ),
+            TextFormField(
+              initialValue: contact?.familyName ?? '',
+              decoration: const InputDecoration(labelText: 'Last name'),
+              onSaved: (v) => contact = contact?.copyWith(familyName: v),
+            ),
+            TextFormField(
+              initialValue: contact?.prefix ?? '',
+              decoration: const InputDecoration(labelText: 'Prefix'),
+              onSaved: (v) => contact = contact?.copyWith(prefix: v),
+            ),
+            TextFormField(
+              initialValue: contact?.suffix ?? '',
+              decoration: const InputDecoration(labelText: 'Suffix'),
+              onSaved: (v) => contact = contact?.copyWith(suffix: v),
+            ),
+            TextFormField(
+              decoration: const InputDecoration(labelText: 'Phone'),
+              onSaved: (v) => contact = contact?.copyWith(
+                phones: [Contact$Field(label: 'mobile', value: v)],
+              ),
+              keyboardType: TextInputType.phone,
+            ),
+            TextFormField(
+              decoration: const InputDecoration(labelText: 'E-mail'),
+              onSaved: (v) => contact = contact?.copyWith(
+                emails: [Contact$Field(label: 'work', value: v)],
+              ),
+              keyboardType: TextInputType.emailAddress,
+            ),
+            TextFormField(
+              initialValue: contact?.company ?? '',
+              decoration: const InputDecoration(labelText: 'Company'),
+              onSaved: (v) => contact = contact?.copyWith(company: v),
+            ),
+            TextFormField(
+              initialValue: contact?.jobTitle ?? '',
+              decoration: const InputDecoration(labelText: 'Job'),
+              onSaved: (v) => contact = contact?.copyWith(jobTitle: v),
+            ),
+            TextFormField(
+              initialValue: address.street ?? '',
+              decoration: const InputDecoration(labelText: 'Street'),
+              onSaved: (v) => address = address.copyWith(street: v),
+            ),
+            TextFormField(
+              initialValue: address.city ?? '',
+              decoration: const InputDecoration(labelText: 'City'),
+              onSaved: (v) => address = address.copyWith(city: v),
+            ),
+            TextFormField(
+              initialValue: address.region ?? '',
+              decoration: const InputDecoration(labelText: 'Region'),
+              onSaved: (v) => address = address.copyWith(region: v),
+            ),
+            TextFormField(
+              initialValue: address.postcode ?? '',
+              decoration: const InputDecoration(labelText: 'Postal code'),
+              onSaved: (v) => address = address.copyWith(postcode: v),
+            ),
+            TextFormField(
+              initialValue: address.country ?? '',
+              decoration: const InputDecoration(labelText: 'Country'),
+              onSaved: (v) => address = address.copyWith(country: v),
             ),
           ],
         ),
-        body: Container(
-          padding: const EdgeInsets.all(12),
-          child: Form(
-            key: _formKey,
-            child: ListView(
-              children: <Widget>[
-                TextFormField(
-                  initialValue: contact?.givenName ?? '',
-                  decoration: const InputDecoration(labelText: 'First name'),
-                  onSaved: (v) => contact = contact?.copyWith(givenName: v),
-                ),
-                TextFormField(
-                  initialValue: contact?.middleName ?? '',
-                  decoration: const InputDecoration(labelText: 'Middle name'),
-                  onSaved: (v) => contact = contact?.copyWith(middleName: v),
-                ),
-                TextFormField(
-                  initialValue: contact?.familyName ?? '',
-                  decoration: const InputDecoration(labelText: 'Last name'),
-                  onSaved: (v) => contact = contact?.copyWith(familyName: v),
-                ),
-                TextFormField(
-                  initialValue: contact?.prefix ?? '',
-                  decoration: const InputDecoration(labelText: 'Prefix'),
-                  onSaved: (v) => contact = contact?.copyWith(prefix: v),
-                ),
-                TextFormField(
-                  initialValue: contact?.suffix ?? '',
-                  decoration: const InputDecoration(labelText: 'Suffix'),
-                  onSaved: (v) => contact = contact?.copyWith(suffix: v),
-                ),
-                TextFormField(
-                  decoration: const InputDecoration(labelText: 'Phone'),
-                  onSaved: (v) => contact = contact?.copyWith(
-                      phones: [Contact$Field(label: 'mobile', value: v)]),
-                  keyboardType: TextInputType.phone,
-                ),
-                TextFormField(
-                  decoration: const InputDecoration(labelText: 'E-mail'),
-                  onSaved: (v) => contact = contact?.copyWith(
-                    emails: [Contact$Field(label: 'work', value: v)],
-                  ),
-                  keyboardType: TextInputType.emailAddress,
-                ),
-                TextFormField(
-                  initialValue: contact?.company ?? '',
-                  decoration: const InputDecoration(labelText: 'Company'),
-                  onSaved: (v) => contact = contact?.copyWith(company: v),
-                ),
-                TextFormField(
-                  initialValue: contact?.jobTitle ?? '',
-                  decoration: const InputDecoration(labelText: 'Job'),
-                  onSaved: (v) => contact = contact?.copyWith(jobTitle: v),
-                ),
-                TextFormField(
-                  initialValue: address.street ?? '',
-                  decoration: const InputDecoration(labelText: 'Street'),
-                  onSaved: (v) => address = address.copyWith(street: v),
-                ),
-                TextFormField(
-                  initialValue: address.city ?? '',
-                  decoration: const InputDecoration(labelText: 'City'),
-                  onSaved: (v) => address = address.copyWith(city: v),
-                ),
-                TextFormField(
-                  initialValue: address.region ?? '',
-                  decoration: const InputDecoration(labelText: 'Region'),
-                  onSaved: (v) => address = address.copyWith(region: v),
-                ),
-                TextFormField(
-                  initialValue: address.postcode ?? '',
-                  decoration: const InputDecoration(labelText: 'Postal code'),
-                  onSaved: (v) => address = address.copyWith(postcode: v),
-                ),
-                TextFormField(
-                  initialValue: address.country ?? '',
-                  decoration: const InputDecoration(labelText: 'Country'),
-                  onSaved: (v) => address = address.copyWith(country: v),
-                ),
-              ],
-            ),
-          ),
-        ),
-      );
+      ),
+    ),
+  );
 }

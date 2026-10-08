@@ -43,17 +43,18 @@ class _NativeContactsPickerScreenState
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(title: const Text('Contacts Picker Example')),
-        body: SafeArea(
-            child: Column(
-          children: <Widget>[
-            ElevatedButton(
-              onPressed: _pickContact,
-              child: const Text('Pick a contact'),
-            ),
-            if (_contact != null)
-              Text('Contact selected: ${_contact?.displayName}'),
-          ],
-        )),
-      );
+    appBar: AppBar(title: const Text('Contacts Picker Example')),
+    body: SafeArea(
+      child: Column(
+        children: <Widget>[
+          ElevatedButton(
+            onPressed: _pickContact,
+            child: const Text('Pick a contact'),
+          ),
+          if (_contact != null)
+            Text('Contact selected: ${_contact?.displayName}'),
+        ],
+      ),
+    ),
+  );
 }
