@@ -131,7 +131,7 @@ jobs:
         id: upload_test_report
         if: ${{ !cancelled() && hashFiles(format('{0}/reports/tests.json', matrix.package)) != '' }}
         timeout-minutes: 1
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: test-results-${{ matrix.package }}
           path: ${{ matrix.package }}/reports/tests.json
@@ -194,7 +194,7 @@ jobs:
 
       - name: Upload Android native test reports
         if: ${{ !cancelled() }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: android-native-tests
           path: |
@@ -259,7 +259,7 @@ jobs:
 
       - name: Upload iOS native test reports
         if: ${{ !cancelled() }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ios-native-tests-${{ matrix.swift-package-manager && 'spm' || 'cocoapods' }}
           path: |
