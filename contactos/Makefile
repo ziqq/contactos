@@ -12,7 +12,7 @@ DART    := fvm dart
 FLUTTER := fvm flutter
 endif
 
-FORMAT_DIRS := $(wildcard lib test tool example/lib example/test)
+FORMAT_DIRS := $(wildcard lib test tool example/lib example/test example/screenshots)
 
 .DEFAULT_GOAL := all
 .PHONY: all
