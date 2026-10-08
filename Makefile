@@ -111,6 +111,23 @@ test-unit: ## Run unit tests for all packages
 					cd $(PWD)/$$pkg && $(FLUTTER) test --coverage || (echo "¯\_(ツ)_/¯ Test $$pkg error"; exit 1); \
 				done
 
+.PHONY: screenshots
+screenshots: ## Regenerate README and pub.dev screenshots of the example app
+				@$(MAKE) -s -C $(PWD)/contactos screenshots
+
+.PHONY: record-ios
+record-ios: ## Record the booted iOS Simulator until Ctrl+C. E.g: make record-ios OUT=build/media/ios.mov
+				@bash tool/media/record_ios.sh $(OUT)
+
+.PHONY: record-android
+record-android: ## Record the connected Android device until Ctrl+C. E.g: make record-android OUT=build/media/android.mp4
+				@bash tool/media/record_android.sh $(OUT)
+
+.PHONY: media
+media: ## Convert a recording to README mp4/webp/gif. E.g: make media IN=build/media/ios.mov NAME=example
+				@if [ -z "$(IN)" ]; then echo "¯\_(ツ)_/¯ IN is not set"; exit 1; fi
+				@bash tool/media/convert.sh $(IN) .github/images $(or $(NAME),example)
+
 .PHONY: tag
 tag: ## Tag the current commit for a package release. E.g: make tag PKG=contactos_android
 				@if [ -z "$(PKG)" ]; then echo "¯\_(ツ)_/¯ PKG is not set"; exit 1; fi

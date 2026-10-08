@@ -9,9 +9,13 @@ repository: https://github.com/ziqq/contactos/tree/main/contactos
 
 issue_tracker: https://github.com/ziqq/contactos/issues
 
-#screenshots:
-#  - description: 'Example of using the library to get contacts.'
-#    path: example.png
+screenshots:
+  - description: 'List of device contacts in the example app.'
+    path: screenshots/2_contacts_list.png
+  - description: 'Contact details in the example app.'
+    path: screenshots/3_contact_details.png
+  - description: 'Adding a new contact in the example app.'
+    path: screenshots/4_add_contact.png
 
 funding:
   - https://www.buymeacoffee.com/ziqq
