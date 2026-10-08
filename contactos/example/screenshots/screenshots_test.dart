@@ -158,8 +158,7 @@ Future<void> _loadFonts() async {
 Future<void> _capture(WidgetTester tester, String name) async {
   await tester.pumpAndSettle();
   final directory = Directory(
-    Platform.environment['SCREENSHOTS_DIR'] ??
-        '../screenshots',
+    Platform.environment['SCREENSHOTS_DIR'] ?? '../screenshots',
   )..createSync(recursive: true);
   final view = tester.view;
   await tester.runAsync(() async {
