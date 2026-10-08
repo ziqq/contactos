@@ -1,4 +1,7 @@
 ignore:
+  # Endorsed federated implementations are used only by the plugin registrant.
+  - contactos_android
+  - contactos_foundation
   - dart_code_metrics
   - integration_test
   - flutter_lints
