@@ -1,5 +1,5 @@
 import 'package:contactos_example/src/screens/contacts_list_screen.dart';
-import 'package:contactos_example/src/screens/navite_contacts_picker_screen.dart';
+import 'package:contactos_example/src/screens/native_contacts_picker_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 

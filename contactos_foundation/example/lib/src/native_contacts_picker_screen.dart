@@ -5,15 +5,15 @@
 
 import 'dart:developer';
 
-import 'package:contactos_android/contactos_android.dart';
-import 'package:contactos_example/main.dart' show kAndroidLocalizedLabels;
+import 'package:contactos_example/main.dart' show iOSLocalizedLabels;
+import 'package:contactos_foundation/contactos_foundation.dart';
 import 'package:flutter/material.dart';
 
-/// {@template navite_contacts_picker_screen}
+/// {@template native_contacts_picker_screen}
 /// NativeContactsPickerScreen widget.
 /// {@endtemplate}
 class NativeContactsPickerScreen extends StatefulWidget {
-  /// {@macro navite_contacts_picker_screen}
+  /// {@macro native_contacts_picker_screen}
   const NativeContactsPickerScreen({super.key});
 
   @override
@@ -21,7 +21,6 @@ class NativeContactsPickerScreen extends StatefulWidget {
       _NativeContactsPickerScreenState();
 }
 
-/// State for widget [NativeContactsPickerScreen].
 class _NativeContactsPickerScreenState
     extends State<NativeContactsPickerScreen> {
   Contact? _contact;
@@ -33,10 +32,8 @@ class _NativeContactsPickerScreenState
 
   Future<void> _pickContact() async {
     try {
-      final contact = await ContactosPluginAndroid.instance
-          .openDeviceContactPicker(
-            androidLocalizedLabels: kAndroidLocalizedLabels,
-          );
+      final contact = await ContactosPluginFoundation.instance
+          .openDeviceContactPicker(iOSLocalizedLabels: iOSLocalizedLabels);
       setState(() => _contact = contact);
     } on Object catch (e) {
       log(e.toString());

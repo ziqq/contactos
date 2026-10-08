@@ -8,25 +8,20 @@ import 'package:contactos_platform_interface/contactos_platform_interface.dart';
 import 'package:flutter/foundation.dart';
 
 /// {@template contactos}
-/// The iOS implementation of [ContactosPlatform].
+/// The app-facing API of the `contactos` plugin.
 ///
-/// This class implements the `package:contactos` functionality for iOS.
+/// Delegates every call to the [ContactosPlatform] implementation
+/// registered for the current platform.
 /// {@endtemplate}
 class Contactos extends ContactosPlatform {
-  /// Use [SharePlus.instance] to access the [share] method.
   /// {@macro contactos}
   Contactos._(this._platform);
 
   /// Platform interface
   final ContactosPlatform _platform;
 
-  /// Singleton instance (instance API).
-  static Contactos? _instance;
-
   /// The default instance of [Contactos].
-  static final Contactos instance = _instance ??= Contactos._(
-    ContactosPlatform.instance,
-  );
+  static final Contactos instance = Contactos._(ContactosPlatform.instance);
 
   /// Create a custom instance of [Contactos].
   /// Use this constructor for testing purposes only.
