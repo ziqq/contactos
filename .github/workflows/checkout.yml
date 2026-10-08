@@ -245,6 +245,17 @@ jobs:
         working-directory: contactos_foundation/example
         run: flutter build ios --simulator --debug --no-codesign --no-pub
 
+      - name: Check privacy manifest is bundled
+        working-directory: contactos_foundation/example/build/ios/iphonesimulator/Runner.app
+        run: |
+          # Search relative to the app so the repository path cannot match.
+          manifests="$(find . -path '*contactos*' -name PrivacyInfo.xcprivacy)"
+          if [[ -z "$manifests" ]]; then
+            echo "::error::The contactos_foundation privacy manifest is missing from Runner.app."
+            exit 1
+          fi
+          echo "$manifests"
+
       - name: Select iOS test simulator
         id: ios_test_simulator
         run: |
