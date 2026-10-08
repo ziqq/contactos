@@ -2,107 +2,203 @@
 
 Thanks for contributing to `contactos`.
 
-This repository is a federated Flutter plugin monorepo with these packages:
+This repository is a federated Flutter plugin monorepo:
 
 - `contactos` — app-facing package
+- `contactos_platform_interface` — shared platform contract and models
 - `contactos_android` — Android implementation
 - `contactos_foundation` — iOS implementation
-- `contactos_platform_interface` — shared platform contract
 
-## Prerequisites
+See [docs/architecture.md](docs/architecture.md) for how they fit together.
 
-- Flutter is managed with [FVM](https://fvm.app/).
-- Use the Flutter version defined in `.fvmrc`.
-- Run commands from the repository root unless noted otherwise.
+
+## Toolchain
+
+Use either [mise](https://mise.jdx.dev) or [FVM](https://fvm.app).
+
+### mise
+
+[`mise.toml`](mise.toml) pins the latest stable Flutter and Temurin 17 (needed
+for Android builds and JVM tests). CI installs the same toolchain.
+
+```sh
+brew install mise
+echo 'eval "$(mise activate zsh)"' >> ~/.zshrc
+source ~/.zshrc
+
+mise install
+mise current
+flutter --version
+```
+
+Without shell activation, prefix commands with `mise exec --`:
+
+```sh
+mise exec -- make all
+```
+
+### FVM
+
+[`.fvmrc`](.fvmrc) maps the `development` flavor to `stable` and `production`
+to the minimum supported SDK (`3.44.0`). Use FVM to check changes against the
+minimum SDK:
+
+```sh
+fvm use production
+```
+
+The Makefiles prefer `fvm` when it is installed and fall back to the
+`flutter` and `dart` found on `PATH` (for example, from mise).
+
 
 ## Setup
-
-Install dependencies for all packages:
 
 ```sh
 make get
 ```
 
-## Development Workflow
 
-Before opening a pull request, run the full local validation pipeline:
+## Development workflow
+
+Run the full pipeline before opening a pull request:
 
 ```sh
-make all
+make all        # format + analyze + pana + unit tests
+make precommit  # same as make all
 ```
 
-This runs:
+Useful root targets:
 
-- formatting
-- analysis
-- unit tests
+| Command | What it does |
+|---|---|
+| `make format` | Format all packages, tools and examples |
+| `make format-check` | Fail on unformatted code, like CI |
+| `make analyze` | Analyze all packages with fatal infos and warnings |
+| `make check` | Analyze and run pana for all packages |
+| `make test-unit` | Run Dart unit tests for all packages |
+| `make publish-check` | Dry-run `pub publish` for all packages |
 
-You can also run the pre-commit alias:
-
-```sh
-make precommit
-```
-
-## Package-Specific Commands
-
-Each package has its own `Makefile` with the same targets. Examples:
+Each package has a `Makefile` with the same targets:
 
 ```sh
-cd contactos && make all
 cd contactos_android && make all
-cd contactos_foundation && make all
-cd contactos_platform_interface && make all
 ```
 
-## Release Notes
 
-When a package changes in a way that should be released:
+## Native tests
 
-- update the package version in its `pubspec.yaml`
-- add an entry to that package's `CHANGELOG.md`
-- update README documentation if SDK requirements, setup steps, or release behavior changed
+### Android
 
-## Release Validation
-
-Run a dry-run publish check from the repository root:
+JVM tests with Robolectric live in
+`contactos_android/android/src/test/` and run through the Android example:
 
 ```sh
-make publish-check
+cd contactos_android
+make test-android-native
 ```
 
-Run this from a clean git state when possible. `dart pub publish --dry-run` warns if modified files are still uncommitted.
+The JaCoCo report is written to
+`contactos_android/example/build/contactos_android/reports/jacoco/`.
 
-## Release Order
+### iOS (macOS only)
 
-Publish dependent packages before packages that consume them.
+XCTest cases live in the `RunnerTests` target of
+`contactos_foundation/example/ios`. Pass a dedicated simulator:
 
-Publish `contactos_platform_interface` first only when it changed.
+```sh
+cd contactos_foundation
+IOS_SIMULATOR_ID=<simulator-udid> make test-ios-native
+```
 
-## GitHub Publish Workflow
+Swift coverage is exported to `contactos_foundation/coverage/ios.lcov.info`.
+List simulators with `xcrun simctl list devices available`.
 
-The repository includes a GitHub Actions workflow at `.github/workflows/publish.yml`.
 
-It supports:
+## Screenshots and screen recordings
 
-- manual dispatch with package selection
-- tag-based publishing
+### Screenshots
 
-The root package can be published with either `v<version>` or `contactos-v<version>`. Federated packages use kebab-case tags.
+The example app screenshots in `contactos/screenshots/` are rendered by a
+widget test with demo contacts. They are used by the READMEs and by the
+`screenshots` field of `contactos/pubspec.yaml`. Regenerate them after UI
+changes:
 
-Current tag patterns include:
+```sh
+make screenshots
+```
 
-- `contactos-v<version>`
-- `contactos-android-v<version>`
-- `contactos-foundation-v<version>`
-- `contactos-platform-interface-v<version>`
+### Video
 
-## Known External Warning
+Record the example app on a booted iOS Simulator or a connected Android
+device, then convert the recording to README media (`.github/images/example.mp4`,
+`.webp` and `.gif`). `ffmpeg` is required.
 
-Example app builds may still show a warning for `permission_handler_apple` and Swift Package Manager support. This warning comes from an external dependency and is not currently treated as a release blocker for this repository.
+```sh
+cd contactos/example && flutter run   # in a separate terminal
 
-## Pull Requests
+make record-ios OUT=build/media/ios.mov          # Ctrl+C to stop
+make record-android OUT=build/media/android.mp4  # Ctrl+C to stop, max 180 s
 
-Please keep pull requests focused. Include:
+make media IN=build/media/ios.mov NAME=example
+```
+
+The recording scripts set a clean status bar (9:41, full battery) while
+recording. Tune the preview size with `WIDTH=` and `FPS=` (defaults: 320 px,
+15 fps).
+
+
+## Release workflow
+
+Versions are released per package.
+
+1. Update the package `version` in its `pubspec.yaml`.
+2. Add a `## <version>` entry at the top of the package `CHANGELOG.md`.
+3. Update README documentation if SDK requirements, setup steps or behavior
+   changed.
+4. Run `make publish-check` from a clean git state.
+5. Merge to `main`, then create and push the package tag:
+
+   ```sh
+   make tag PKG=contactos_android
+   ```
+
+Release dependencies before the packages that use them:
+`contactos_platform_interface` first (only when it changed), then
+`contactos_android` and `contactos_foundation`, then `contactos`.
+
+### Tags
+
+| Package | Tag |
+|---|---|
+| `contactos` | `contactos-v<version>` |
+| `contactos_android` | `contactos-android-v<version>` |
+| `contactos_foundation` | `contactos-foundation-v<version>` |
+| `contactos_platform_interface` | `contactos-platform-interface-v<version>` |
+
+Pushing a tag runs [`.github/workflows/publish.yml`](.github/workflows/publish.yml).
+It checks that the tag, the pubspec version and the first CHANGELOG entry
+match, validates the package (format, analyzer, tests, pana score of at least
+150) and publishes it to pub.dev with
+[automated publishing](https://dart.dev/tools/pub/automated-publishing) (GitHub
+OIDC, no stored credentials). It then creates a GitHub release from the
+CHANGELOG entry, moves released issues to `done` and sends a notification.
+
+Automated publishing must be enabled once per package on pub.dev
+(**Admin → Automated publishing**) for the `ziqq/contactos` repository with
+the tag pattern from the table above, for example
+`contactos-android-v{{version}}`.
+
+
+## Known external warning
+
+Example app builds may show a warning for `permission_handler_apple` and Swift
+Package Manager support. It comes from an external dependency and is not a
+release blocker.
+
+
+## Pull requests
+
+Keep pull requests focused. Include:
 
 - what changed
 - why it changed
