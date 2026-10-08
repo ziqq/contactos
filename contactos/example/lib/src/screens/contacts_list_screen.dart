@@ -383,11 +383,11 @@ class _AddContactScreenState extends State<AddContactScreen> {
           children: <Widget>[
             TextFormField(
               decoration: const InputDecoration(labelText: 'First name'),
-              onSaved: (v) => contact.copyWith(givenName: v),
+              onSaved: (v) => contact = contact.copyWith(givenName: v),
             ),
             TextFormField(
               decoration: const InputDecoration(labelText: 'Middle name'),
-              onSaved: (v) => contact.copyWith(middleName: v),
+              onSaved: (v) => contact = contact.copyWith(middleName: v),
             ),
             TextFormField(
               decoration: const InputDecoration(labelText: 'Last name'),

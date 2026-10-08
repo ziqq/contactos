@@ -35,6 +35,9 @@ dev_dependencies:
   # Unit & Widget tests for Flutter
   flutter_test:
     sdk: flutter
+  # Widget tests shared by all example apps.
+  contactos_example_app_test:
+    path: ../../tool/example_app_test
 
   # Linting
   flutter_lints: ^6.0.0
