@@ -56,7 +56,18 @@ void main() => runZonedGuarded<void>(
       exit(1);
     }
 
-    final tagName = 'v$version'; // Tag format: v1.2.3
+    final nameLine = pubspecContent.firstWhereOrNull(
+      (line) => line.trim().startsWith('name:'),
+    );
+    if (nameLine == null || nameLine.isEmpty) {
+      l.e('Package name not found in pubspec.yaml.');
+      exit(1);
+    }
+    final name = nameLine.split(':')[1].trim();
+
+    // Tag format: contactos-platform-interface-v1.2.3
+    // Each package has its own tag pattern for pub.dev automated publishing.
+    final tagName = '${name.replaceAll('_', '-')}-v$version';
 
     // Check if the tag already exists
     final tagResult = await Process.run('git', ['tag', '-l', tagName]);
