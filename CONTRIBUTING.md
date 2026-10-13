@@ -8,6 +8,7 @@ This repository is a federated Flutter plugin monorepo:
 - `contactos_platform_interface` — shared platform contract and models
 - `contactos_android` — Android implementation
 - `contactos_foundation` — iOS implementation
+- `contactos_test` — widget tests shared by the example apps (not published)
 
 See [docs/architecture.md](docs/architecture.md) for how they fit together.
 

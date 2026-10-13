@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 /** In-memory replacement of the contacts provider for JVM tests. */
-public class FakeContactsProvider extends ContentProvider {
+public class ContactsProviderFake extends ContentProvider {
 
   /** A recorded {@link #query} call. */
   static final class Query {

@@ -75,14 +75,14 @@ public class ContactosPluginTest {
     }
   }
 
-  private FakeContactsProvider provider;
+  private ContactsProviderFake provider;
   private ContactosPlugin plugin;
   private FlutterPlugin.FlutterPluginBinding engineBinding;
 
   @Before
   public void setUp() {
     provider =
-        Robolectric.setupContentProvider(FakeContactsProvider.class, ContactsContract.AUTHORITY);
+        Robolectric.setupContentProvider(ContactsProviderFake.class, ContactsContract.AUTHORITY);
     engineBinding = mock(FlutterPlugin.FlutterPluginBinding.class);
     when(engineBinding.getApplicationContext()).thenReturn(RuntimeEnvironment.getApplication());
     when(engineBinding.getBinaryMessenger()).thenReturn(mock(BinaryMessenger.class));
@@ -135,7 +135,7 @@ public class ContactosPluginTest {
 
   private void addJohnDoe() {
     provider.dataRows.add(
-        FakeContactsProvider.row(
+        ContactsProviderFake.row(
             "1",
             "John Doe",
             StructuredName.CONTENT_ITEM_TYPE,
@@ -146,31 +146,31 @@ public class ContactosPluginTest {
                 StructuredName.PREFIX, "Mr",
                 StructuredName.SUFFIX, "Jr")));
     provider.dataRows.add(
-        FakeContactsProvider.row(
+        ContactsProviderFake.row(
             "1",
             "John Doe",
             Phone.CONTENT_ITEM_TYPE,
             data(Phone.NUMBER, "+1 555 0100", Phone.TYPE, Phone.TYPE_MOBILE)));
     provider.dataRows.add(
-        FakeContactsProvider.row(
+        ContactsProviderFake.row(
             "1",
             "John Doe",
             Phone.CONTENT_ITEM_TYPE,
             data(Phone.NUMBER, "", Phone.TYPE, Phone.TYPE_HOME)));
     provider.dataRows.add(
-        FakeContactsProvider.row(
+        ContactsProviderFake.row(
             "1",
             "John Doe",
             Email.CONTENT_ITEM_TYPE,
             data(Email.ADDRESS, "john@example.com", Email.TYPE, Email.TYPE_WORK)));
     provider.dataRows.add(
-        FakeContactsProvider.row(
+        ContactsProviderFake.row(
             "1",
             "John Doe",
             Organization.CONTENT_ITEM_TYPE,
             data(Organization.COMPANY, "Acme", Organization.TITLE, "Engineer")));
     provider.dataRows.add(
-        FakeContactsProvider.row(
+        ContactsProviderFake.row(
             "1",
             "John Doe",
             StructuredPostal.CONTENT_ITEM_TYPE,
@@ -182,10 +182,10 @@ public class ContactosPluginTest {
                 StructuredPostal.REGION, "IL",
                 StructuredPostal.COUNTRY, "USA")));
     provider.dataRows.add(
-        FakeContactsProvider.row(
+        ContactsProviderFake.row(
             "1", "John Doe", Note.CONTENT_ITEM_TYPE, data(Note.NOTE, "Met at a conference")));
     provider.dataRows.add(
-        FakeContactsProvider.row(
+        ContactsProviderFake.row(
             "1",
             "John Doe",
             Event.CONTENT_ITEM_TYPE,
@@ -194,7 +194,7 @@ public class ContactosPluginTest {
 
   private void addAlice() {
     provider.dataRows.add(
-        FakeContactsProvider.row(
+        ContactsProviderFake.row(
             "2",
             "Alice Smith",
             StructuredName.CONTENT_ITEM_TYPE,
@@ -247,9 +247,9 @@ public class ContactosPluginTest {
     return contact;
   }
 
-  private List<FakeContactsProvider.Write> writes(String kind, String mimeType) {
-    List<FakeContactsProvider.Write> matching = new ArrayList<>();
-    for (FakeContactsProvider.Write write : provider.writes) {
+  private List<ContactsProviderFake.Write> writes(String kind, String mimeType) {
+    List<ContactsProviderFake.Write> matching = new ArrayList<>();
+    for (ContactsProviderFake.Write write : provider.writes) {
       if (!write.kind.equals(kind)) continue;
       String writeMimeType =
           write.values != null
@@ -364,7 +364,7 @@ public class ContactosPluginTest {
   public void getContacts_withQuery_filtersByDisplayNamePrefix() {
     call("getContacts", queryArguments("query", "jo"));
 
-    FakeContactsProvider.Query query = provider.queries.get(0);
+    ContactsProviderFake.Query query = provider.queries.get(0);
     assertThat(query.uri).isEqualTo(ContactsContract.Data.CONTENT_URI);
     assertThat(query.selection)
         .isEqualTo(ContactsContract.Contacts.DISPLAY_NAME_PRIMARY + " LIKE ?");
@@ -390,7 +390,7 @@ public class ContactosPluginTest {
         contacts(call("getContactsForEmail", queryArguments("email", "john@")));
 
     assertThat(contacts).hasSize(1);
-    FakeContactsProvider.Query query = provider.queries.get(0);
+    ContactsProviderFake.Query query = provider.queries.get(0);
     assertThat(query.selection).isEqualTo(Email.ADDRESS + " LIKE ?");
     assertThat(query.selectionArgs).asList().containsExactly("%john@%");
   }
@@ -460,14 +460,14 @@ public class ContactosPluginTest {
     assertThat(writes("insert", null).get(0).uri)
         .isEqualTo(ContactsContract.RawContacts.CONTENT_URI);
 
-    FakeContactsProvider.Write name = writes("insert", StructuredName.CONTENT_ITEM_TYPE).get(0);
+    ContactsProviderFake.Write name = writes("insert", StructuredName.CONTENT_ITEM_TYPE).get(0);
     assertThat(name.values.getAsString(StructuredName.GIVEN_NAME)).isEqualTo("John");
     assertThat(name.values.getAsString(StructuredName.MIDDLE_NAME)).isEqualTo("Q");
     assertThat(name.values.getAsString(StructuredName.FAMILY_NAME)).isEqualTo("Doe");
     // Data rows reference the inserted raw contact.
     assertThat(name.values.getAsLong(ContactsContract.Data.RAW_CONTACT_ID)).isNotNull();
 
-    List<FakeContactsProvider.Write> phones = writes("insert", Phone.CONTENT_ITEM_TYPE);
+    List<ContactsProviderFake.Write> phones = writes("insert", Phone.CONTENT_ITEM_TYPE);
     assertThat(phones).hasSize(2);
     assertThat(phones.get(0).values.getAsInteger(Phone.TYPE)).isEqualTo(Phone.TYPE_MOBILE);
     assertThat(phones.get(1).values.getAsInteger(Phone.TYPE)).isEqualTo(Phone.TYPE_CUSTOM);
@@ -475,10 +475,10 @@ public class ContactosPluginTest {
 
     assertThat(writes("insert", Email.CONTENT_ITEM_TYPE)).hasSize(1);
     assertThat(writes("insert", StructuredPostal.CONTENT_ITEM_TYPE)).hasSize(1);
-    FakeContactsProvider.Write organization =
+    ContactsProviderFake.Write organization =
         writes("insert", Organization.CONTENT_ITEM_TYPE).get(0);
     assertThat(organization.values.getAsString(Organization.COMPANY)).isEqualTo("Acme");
-    FakeContactsProvider.Write birthday = writes("insert", Event.CONTENT_ITEM_TYPE).get(0);
+    ContactsProviderFake.Write birthday = writes("insert", Event.CONTENT_ITEM_TYPE).get(0);
     assertThat(birthday.values.getAsString(Event.START_DATE)).isEqualTo("1990-01-02");
   }
 
@@ -496,7 +496,7 @@ public class ContactosPluginTest {
     RecordingResult result = call("deleteContact", contactArguments("7"));
 
     assertThat(result.errorMessage).isNull();
-    FakeContactsProvider.Write delete = writes("delete", null).get(0);
+    ContactsProviderFake.Write delete = writes("delete", null).get(0);
     assertThat(delete.uri).isEqualTo(ContactsContract.RawContacts.CONTENT_URI);
     assertThat(delete.selection).isEqualTo(ContactsContract.RawContacts.CONTACT_ID + "=?");
     assertThat(delete.selectionArgs).asList().containsExactly("7");
@@ -518,10 +518,10 @@ public class ContactosPluginTest {
     assertThat(result.errorMessage).isNull();
     // Organization, phones, emails, note, addresses and photo are replaced.
     assertThat(writes("delete", null)).hasSize(6);
-    for (FakeContactsProvider.Write delete : writes("delete", null)) {
+    for (ContactsProviderFake.Write delete : writes("delete", null)) {
       assertThat(delete.selectionArgs[0]).isEqualTo("7");
     }
-    FakeContactsProvider.Write name = writes("update", null).get(0);
+    ContactsProviderFake.Write name = writes("update", null).get(0);
     assertThat(name.selectionArgs)
         .asList()
         .containsExactly("7", StructuredName.CONTENT_ITEM_TYPE)
@@ -530,7 +530,7 @@ public class ContactosPluginTest {
     assertThat(writes("insert", Phone.CONTENT_ITEM_TYPE)).hasSize(2);
     assertThat(writes("insert", Email.CONTENT_ITEM_TYPE)).hasSize(1);
     assertThat(writes("insert", StructuredPostal.CONTENT_ITEM_TYPE)).hasSize(1);
-    FakeContactsProvider.Write organization =
+    ContactsProviderFake.Write organization =
         writes("insert", Organization.CONTENT_ITEM_TYPE).get(0);
     assertThat(organization.values.getAsString(ContactsContract.Data.RAW_CONTACT_ID))
         .isEqualTo("7");
@@ -793,13 +793,13 @@ public class ContactosPluginTest {
   @Test
   public void getContacts_skipsEmptyEmailsAndNonBirthdayEvents() {
     provider.dataRows.add(
-        FakeContactsProvider.row(
+        ContactsProviderFake.row(
             "1",
             "John Doe",
             Email.CONTENT_ITEM_TYPE,
             data(Email.ADDRESS, "", Email.TYPE, Email.TYPE_HOME)));
     provider.dataRows.add(
-        FakeContactsProvider.row(
+        ContactsProviderFake.row(
             "1",
             "John Doe",
             Event.CONTENT_ITEM_TYPE,

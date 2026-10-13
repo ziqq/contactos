@@ -26,11 +26,11 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  integration_test:
+    sdk: flutter
   # Widget tests shared by all example apps.
   contactos_test:
     path: ../../contactos_test
-  integration_test:
-    sdk: flutter
 
 
 flutter:

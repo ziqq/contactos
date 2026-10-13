@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-const _contactsChannel = MethodChannel('github.com/ziqq/contactos');
+const _contactosChannel = MethodChannel('github.com/ziqq/contactos');
 const _permissionsChannel = MethodChannel(
   'flutter.baseflow.com/permissions/methods',
 );
@@ -103,10 +103,8 @@ void runExampleAppTests(Widget Function() app) {
   setUp(() {
     platform = _FakeContactsPlatform();
     permissionStatus = _granted;
-    final messenger =
-        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
-    messenger
-      ..setMockMethodCallHandler(_contactsChannel, platform.handle)
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+      ..setMockMethodCallHandler(_contactosChannel, platform.handle)
       ..setMockMethodCallHandler(
         _permissionsChannel,
         (call) async => switch (call.method) {
@@ -125,7 +123,7 @@ void runExampleAppTests(Widget Function() app) {
 
   tearDown(() {
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-      ..setMockMethodCallHandler(_contactsChannel, null)
+      ..setMockMethodCallHandler(_contactosChannel, null)
       ..setMockMethodCallHandler(_permissionsChannel, null);
   });
 
