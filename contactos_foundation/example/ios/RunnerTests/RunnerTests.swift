@@ -578,10 +578,13 @@ final class NativeFormTests: XCTestCase {
     super.tearDown()
   }
 
-  func testContactFormIsPresented() {
+  func testContactFormWaitsForTheUser() {
+    // The form is a remote view service, its appearance is not asserted.
     start("openContactForm")
 
-    XCTAssertNotNil(rootViewController?.presentedViewController)
+    plugin.cancelContactForm()
+
+    XCTAssertEqual(reply as? Int, 1)
   }
 
   private func start(_ method: String) {
