@@ -56,7 +56,6 @@ contactos/
 │   ├── example/                   # Example app with the RunnerTests XCTest target
 │   └── tool/                      # iOS native test and coverage scripts
 ├── contactos_test/                # Widget tests shared by the example apps (not published)
-├── tool/media/                    # Screen recording and media conversion scripts
 ├── docs/                          # Architecture notes
 ├── mise.toml                      # Toolchain for mise
 ├── .fvmrc                         # Toolchain for FVM
@@ -77,7 +76,7 @@ make all       # format + analyze + pana + unit tests
 
 The Makefiles use `fvm` when it is installed and the SDK from `PATH`
 otherwise. See [CONTRIBUTING.md](CONTRIBUTING.md) for the toolchain setup,
-native tests, screenshots, screen recordings and the release workflow, and
+native tests, screenshots and the release workflow, and
 [.github/AUTOMATION.md](.github/AUTOMATION.md) for CI, publishing, labels and
 notifications.
 

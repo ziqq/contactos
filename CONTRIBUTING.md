@@ -114,9 +114,7 @@ Swift coverage is exported to `contactos_foundation/coverage/ios.lcov.info`.
 List simulators with `xcrun simctl list devices available`.
 
 
-## Screenshots and screen recordings
-
-### Screenshots
+## Screenshots
 
 The example app screenshots in `contactos/screenshots/` are rendered by a
 widget test with demo contacts. They are used by the READMEs and by the
@@ -126,25 +124,6 @@ changes:
 ```sh
 make screenshots
 ```
-
-### Video
-
-Record the example app on a booted iOS Simulator or a connected Android
-device, then convert the recording to README media (`.github/images/example.mp4`,
-`.webp` and `.gif`). `ffmpeg` is required.
-
-```sh
-cd contactos/example && flutter run   # in a separate terminal
-
-make record-ios OUT=build/media/ios.mov          # Ctrl+C to stop
-make record-android OUT=build/media/android.mp4  # Ctrl+C to stop, max 180 s
-
-make media IN=build/media/ios.mov NAME=example
-```
-
-The recording scripts set a clean status bar (9:41, full battery) while
-recording. Tune the preview size with `WIDTH=` and `FPS=` (defaults: 320 px,
-15 fps).
 
 
 ## Release workflow
