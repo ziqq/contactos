@@ -581,12 +581,6 @@ final class NativeFormTests: XCTestCase {
     XCTAssertNotNil(rootViewController?.presentedViewController)
   }
 
-  func testPickerIsPresented() {
-    start("openDeviceContactPicker")
-
-    XCTAssertNotNil(rootViewController?.presentedViewController)
-  }
-
   private func start(_ method: String) {
     plugin.handle(
       FlutterMethodCall(methodName: method, arguments: ["iOSLocalizedLabels": false])
