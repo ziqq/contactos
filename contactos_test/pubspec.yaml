@@ -1,4 +1,4 @@
-name: contactos_example_app_test
+name: contactos_test
 description: Shared widget tests for the contactos example apps.
 publish_to: 'none'
 

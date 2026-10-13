@@ -16,7 +16,7 @@ endif
 PACKAGES := contactos_platform_interface contactos_android contactos_foundation contactos
 
 # Widget tests shared by the example apps
-EXAMPLE_TESTS := tool/example_app_test
+EXAMPLE_TESTS := contactos_test
 
 .DEFAULT_GOAL := all
 .PHONY: all

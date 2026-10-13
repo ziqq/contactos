@@ -54,4 +54,4 @@ reports/
 **/Flutter/ephemeral/
 
 # Shared example tests are not a published package
-tool/example_app_test/pubspec.lock
+contactos_test/pubspec.lock

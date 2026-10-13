@@ -111,9 +111,12 @@ void runExampleAppTests(Widget Function() app) {
         _permissionsChannel,
         (call) async => switch (call.method) {
           'checkPermissionStatus' => permissionStatus,
-          'requestPermissions' => <int, int>{
-            for (final permission in call.arguments as List<Object?>)
-              permission! as int: permissionStatus,
+          'requestPermissions' => switch (call.arguments) {
+            List<Object?> permissions => <int, int>{
+              for (final permission in permissions)
+                if (permission case int id) id: permissionStatus,
+            },
+            _ => <int, int>{},
           },
           _ => null,
         },
@@ -174,23 +177,22 @@ void runExampleAppTests(Widget Function() app) {
       expect(find.text('AJ'), findsOneWidget);
       expect(find.text('BS'), findsOneWidget);
 
-      final getContacts = platform.callsTo('getContacts').single;
       expect(
-        (getContacts.arguments as Map<Object?, Object?>)['withThumbnails'],
-        isFalse,
+        platform.callsTo('getContacts').single.arguments,
+        containsPair('withThumbnails', false),
       );
     });
 
     testWidgets('loads avatars lazily for every contact', (tester) async {
       await openContactsList(tester);
 
-      final identifiers = platform
-          .callsTo('getAvatar')
-          .map(
-            (call) => (call.arguments as Map<Object?, Object?>)['identifier'],
-          )
-          .toList();
-      expect(identifiers, unorderedEquals(<String>['1', '2']));
+      expect(
+        platform.callsTo('getAvatar').map((call) => call.arguments),
+        unorderedEquals(<Matcher>[
+          containsPair('identifier', '1'),
+          containsPair('identifier', '2'),
+        ]),
+      );
     });
 
     testWidgets('shows an empty list without contacts', (tester) async {
@@ -232,8 +234,10 @@ void runExampleAppTests(Widget Function() app) {
       await tester.tap(find.byIcon(Icons.delete));
       await tester.pumpAndSettle();
 
-      final delete = platform.callsTo('deleteContact').single;
-      expect((delete.arguments as Map<Object?, Object?>)['identifier'], '1');
+      expect(
+        platform.callsTo('deleteContact').single.arguments,
+        containsPair('identifier', '1'),
+      );
     });
   });
 
@@ -269,23 +273,27 @@ void runExampleAppTests(Widget Function() app) {
       await tester.tap(find.byIcon(Icons.save));
       await tester.pumpAndSettle();
 
-      final added =
-          platform.callsTo('addContact').single.arguments
-              as Map<Object?, Object?>;
-      expect(added['givenName'], 'John');
-      expect(added['middleName'], 'Q');
-      expect(added['familyName'], 'Doe');
-      expect(added['company'], 'Globex');
-      expect(added['phones'], [
-        {'label': 'mobile', 'value': '+1 555 0199'},
-      ]);
-      expect(added['emails'], [
-        {'label': 'work', 'value': 'doe@example.com'},
-      ]);
-      final addresses = added['postalAddresses']! as List<Object?>;
-      final address = addresses.single! as Map<Object?, Object?>;
-      expect(address['label'], 'Home');
-      expect(address['city'], 'Springfield');
+      expect(
+        platform.callsTo('addContact').single.arguments,
+        allOf(<Matcher>[
+          containsPair('givenName', 'John'),
+          containsPair('middleName', 'Q'),
+          containsPair('familyName', 'Doe'),
+          containsPair('company', 'Globex'),
+          containsPair('phones', [
+            {'label': 'mobile', 'value': '+1 555 0199'},
+          ]),
+          containsPair('emails', [
+            {'label': 'work', 'value': 'doe@example.com'},
+          ]),
+          containsPair('postalAddresses', [
+            allOf(
+              containsPair('label', 'Home'),
+              containsPair('city', 'Springfield'),
+            ),
+          ]),
+        ]),
+      );
 
       // The list is reloaded after returning from the form.
       expect(find.text('Add a contact'), findsNothing);

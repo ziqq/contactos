@@ -9,6 +9,7 @@ contactos/                         # App-facing package (what users depend on)
 contactos_platform_interface/      # Platform interface (abstract contract + types)
 contactos_android/                 # Android implementation
 contactos_foundation/              # iOS (Darwin) implementation
+contactos_test/                    # Widget tests shared by the example apps (not published)
 ```
 
 - `contactos/lib/src/contactos.dart` — `Contactos` class, delegates to `ContactosPlatform`

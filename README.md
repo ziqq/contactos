@@ -55,6 +55,7 @@ contactos/
 │   ├── darwin/                    # Swift plugin (CocoaPods and Swift Package Manager)
 │   ├── example/                   # Example app with the RunnerTests XCTest target
 │   └── tool/                      # iOS native test and coverage scripts
+├── contactos_test/                # Widget tests shared by the example apps (not published)
 ├── tool/media/                    # Screen recording and media conversion scripts
 ├── docs/                          # Architecture notes
 ├── mise.toml                      # Toolchain for mise

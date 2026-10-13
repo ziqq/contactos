@@ -50,4 +50,5 @@ API, usually with `permission_handler`.
 | Dart unit tests | `<package>/test/` | `package` job, every package |
 | Android JVM tests (Robolectric, JaCoCo) | `contactos_android/android/src/test/` | `android` job |
 | iOS XCTest (Swift coverage) | `contactos_foundation/example/ios/RunnerTests/` | `ios` job, CocoaPods and SPM |
+| Example widget tests | `contactos_test/`, run from every `<package>/example/test/` | `package` job, every example |
 | Screenshot generator | `contactos/example/screenshots/` | No, run `make screenshots` |

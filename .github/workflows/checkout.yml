@@ -11,6 +11,7 @@ on:
       - "contactos_android/**"
       - "contactos_foundation/**"
       - "contactos_platform_interface/**"
+      - "contactos_test/**"
       - "codecov.yml"
       - "Makefile"
       - "mise.toml"
@@ -24,6 +25,7 @@ on:
       - "contactos_android/**"
       - "contactos_foundation/**"
       - "contactos_platform_interface/**"
+      - "contactos_test/**"
       - "codecov.yml"
       - "Makefile"
       - "mise.toml"
@@ -134,7 +136,7 @@ jobs:
       - name: Check shared example tests
         if: matrix.package == 'contactos'
         timeout-minutes: 3
-        working-directory: tool/example_app_test
+        working-directory: contactos_test
         run: |
           flutter pub get
           dart format -l 80 --set-exit-if-changed -o none lib
