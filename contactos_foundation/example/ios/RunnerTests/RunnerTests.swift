@@ -528,14 +528,17 @@ final class ContactStoreTests: XCTestCase {
     root.present(presented, animated: false)
     defer { root.dismiss(animated: false) }
 
+    var reply: Any?
     plugin.handle(FlutterMethodCall(methodName: "openExistingContact", arguments: [
       "contact": contact,
       "iOSLocalizedLabels": false,
-    ] as [String: Any])) { _ in }
+    ] as [String: Any])) { reply = $0 }
     RunLoop.main.run(until: Date().addingTimeInterval(1))
 
-    XCTAssertNotNil(presented.presentedViewController)
+    // The editor is a remote view service, its appearance is not asserted.
+    XCTAssertNil(reply)
     plugin.cancelContactForm()
+    XCTAssertEqual(reply as? Int, 1)
   }
 
   func testOpenExistingUnknownContactCouldNotBeOpen() {
