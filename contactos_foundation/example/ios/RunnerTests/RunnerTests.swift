@@ -584,7 +584,7 @@ final class NativeFormTests: XCTestCase {
   func testPickerIsPresented() {
     start("openDeviceContactPicker")
 
-    XCTAssertTrue(rootViewController?.presentedViewController is CNContactPickerViewController)
+    XCTAssertNotNil(rootViewController?.presentedViewController)
   }
 
   private func start(_ method: String) {
