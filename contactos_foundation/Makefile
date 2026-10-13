@@ -1,6 +1,19 @@
 SHELL :=/bin/bash -e -o pipefail
 PWD   :=$(shell pwd)
 
+# Prefer FVM when it is installed, otherwise use the SDK from PATH
+# (for example, the one activated by mise).
+FVM := $(shell command -v fvm 2>/dev/null)
+ifeq ($(strip $(FVM)),)
+DART    := dart
+FLUTTER := flutter
+else
+DART    := fvm dart
+FLUTTER := fvm flutter
+endif
+
+FORMAT_DIRS := $(wildcard lib test tool example/lib example/test)
+
 .DEFAULT_GOAL := all
 .PHONY: all
 all: ## build pipeline
@@ -22,49 +35,53 @@ help: ## Help dialog
 
 .PHONY: doctor
 doctor: ## Check flutter doctor
-				@fvm flutter doctor
+				@$(FLUTTER) doctor
 
 .PHONY: version
 version: ## Check flutter version
-				@fvm flutter --version
+				@$(FLUTTER) --version
 
 .PHONY: format
 format: ## Format code
-				@fvm dart format -l 80 lib test || (echo "¯\_(ツ)_/¯ Format code error"; exit 1)
+				@$(DART) format -l 80 $(FORMAT_DIRS) || (echo "¯\_(ツ)_/¯ Format code error"; exit 1)
+
+.PHONY: format-check
+format-check: ## Check formatting without changing files
+				@$(DART) format -l 80 --set-exit-if-changed -o none $(FORMAT_DIRS) || (echo "¯\_(ツ)_/¯ Format check error"; exit 1)
 
 .PHONY: fix
 fix: format ## Fix code
-				@fvm dart fix --apply lib
+				@$(DART) fix --apply lib
 
 .PHONY: clean-cache
 clean-cache: ## Clean the pub cache
-				@fvm flutter pub cache repair
+				@$(FLUTTER) pub cache repair
 
 .PHONY: clean
 clean: ## Clean flutter
-				@fvm flutter clean
+				@$(FLUTTER) clean
 
 .PHONY: get
 get: ## Get dependencies
-				@fvm flutter pub get || (echo "¯\_(ツ)_/¯ Get contactos_foundation dependencies error"; exit 1)
+				@$(FLUTTER) pub get || (echo "¯\_(ツ)_/¯ Get contactos_foundation dependencies error"; exit 1)
 
 .PHONY: analyze
 analyze: get format ## Analyze code
-				@fvm dart analyze --fatal-infos --fatal-warnings || (echo "¯\_(ツ)_/¯ Analyze code error"; exit 1)
+				@$(DART) analyze --fatal-infos --fatal-warnings || (echo "¯\_(ツ)_/¯ Analyze code error"; exit 1)
 
 .PHONY: check
 check: analyze ## Check the code
-				@fvm dart pub global deactivate pana > /dev/null 2>&1 || true
-				@fvm dart pub global activate pana
-				@fvm dart pub global run pana --json > log.pana.json || (echo "¯\_(ツ)_/¯ Pana analysis error"; exit 1)
+				@$(DART) pub global deactivate pana > /dev/null 2>&1 || true
+				@$(DART) pub global activate pana
+				@$(DART) pub global run pana --json > log.pana.json || (echo "¯\_(ツ)_/¯ Pana analysis error"; exit 1)
 
 .PHONY: publish-check
 publish-check: check ## Check the code before publish
-				@fvm dart pub publish --dry-run || (echo "¯\_(ツ)_/¯ Publish check error"; exit 1)
+				@$(DART) pub publish --dry-run || (echo "¯\_(ツ)_/¯ Publish check error"; exit 1)
 
 .PHONY: publish
 publish: ## Publish package
-				@fvm dart pub publish --server=https://pub.dartlang.org || (echo "¯\_(ツ)_/¯ Publish error"; exit 1)
+				@$(DART) pub publish --server=https://pub.dartlang.org || (echo "¯\_(ツ)_/¯ Publish error"; exit 1)
 
 .PHONY: coverage
 coverage: ## Runs get coverage
@@ -76,12 +93,12 @@ run-genhtml: ## Runs generage coverage html
 
 .PHONY: test-unit
 test-unit: ## Runs unit tests
-				@fvm flutter test --coverage test/contactos_foundation_test.dart || (echo "¯\_(ツ)_/¯ Error while running test-unit"; exit 1)
+				@$(FLUTTER) test --coverage test/contactos_foundation_test.dart || (echo "¯\_(ツ)_/¯ Error while running test-unit"; exit 1)
 				@genhtml coverage/lcov.info --output=coverage -o coverage/html || (echo "¯\_(ツ)_/¯ Error while running genhtml with coverage"; exit 2)
 
 .PHONY: tag
 tag: ## Add a tag to the current commit
-	@fvm dart run tool/tag.dart
+	@$(DART) run tool/tag.dart
 
 .PHONY: tag-add
 tag-add: ## Add TAG. E.g: make tag-add TAG=v1.0.0
