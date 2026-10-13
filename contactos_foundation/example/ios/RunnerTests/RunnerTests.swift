@@ -515,6 +515,29 @@ final class ContactStoreTests: XCTestCase {
     XCTAssertEqual(reply as? Int, 1)
   }
 
+  func testOpenExistingContactPresentsOverAPresentedController() throws {
+    addContact()
+    let contact = try XCTUnwrap(contacts(named: familyName).first)
+    let root = try XCTUnwrap(
+      UIApplication.shared.connectedScenes
+        .compactMap { $0 as? UIWindowScene }
+        .flatMap { $0.windows }
+        .first?.rootViewController
+    )
+    let presented = UIViewController()
+    root.present(presented, animated: false)
+    defer { root.dismiss(animated: false) }
+
+    plugin.handle(FlutterMethodCall(methodName: "openExistingContact", arguments: [
+      "contact": contact,
+      "iOSLocalizedLabels": false,
+    ] as [String: Any])) { _ in }
+    RunLoop.main.run(until: Date().addingTimeInterval(1))
+
+    XCTAssertNotNil(presented.presentedViewController)
+    plugin.cancelContactForm()
+  }
+
   func testOpenExistingUnknownContactCouldNotBeOpen() {
     let value = invoke("openExistingContact", [
       "contact": ["identifier": "unknown"],
@@ -539,11 +562,29 @@ final class NativeFormTests: XCTestCase {
   private let plugin = ContactosPlugin()
   private var reply: Any?
 
+  private var rootViewController: UIViewController? {
+    UIApplication.shared.connectedScenes
+      .compactMap { $0 as? UIWindowScene }
+      .flatMap { $0.windows }
+      .first?.rootViewController
+  }
+
   override func tearDown() {
-    let root = UIApplication.shared.delegate?.window??.rootViewController
-    root?.dismiss(animated: false)
+    rootViewController?.dismiss(animated: false)
     RunLoop.main.run(until: Date().addingTimeInterval(0.5))
     super.tearDown()
+  }
+
+  func testContactFormIsPresented() {
+    start("openContactForm")
+
+    XCTAssertNotNil(rootViewController?.presentedViewController)
+  }
+
+  func testPickerIsPresented() {
+    start("openDeviceContactPicker")
+
+    XCTAssertTrue(rootViewController?.presentedViewController is CNContactPickerViewController)
   }
 
   private func start(_ method: String) {

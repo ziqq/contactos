@@ -22,7 +22,12 @@ public class ContactosPlugin: NSObject, FlutterPlugin, CNContactViewControllerDe
     }
 
     private func getRootViewController() -> UIViewController? {
-        return UIApplication.shared.delegate?.window??.rootViewController
+        // Apps on the UIScene lifecycle have no window on the app delegate.
+        let windows = UIApplication.shared.connectedScenes
+            .compactMap { $0 as? UIWindowScene }
+            .flatMap { $0.windows }
+        let window = windows.first { $0.isKeyWindow } ?? windows.first
+        return window?.rootViewController ?? UIApplication.shared.delegate?.window??.rootViewController
     }
 
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
