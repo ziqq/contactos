@@ -96,6 +96,10 @@ test-unit: ## Runs unit tests
 				@$(FLUTTER) test --coverage test/contactos_test.dart || (echo "¯\_(ツ)_/¯ Error while running test-unit"; exit 1)
 				@genhtml coverage/lcov.info --output=coverage -o coverage/html || (echo "¯\_(ツ)_/¯ Error while running genhtml with coverage"; exit 2)
 
+.PHONY: screenshots
+screenshots: ## Regenerate README and pub.dev screenshots of the example app
+				@cd example && $(FLUTTER) pub get && $(FLUTTER) test screenshots/screenshots_test.dart
+
 .PHONY: tag
 tag: ## Add a tag to the current commit
 	@$(DART) run tool/tag.dart
