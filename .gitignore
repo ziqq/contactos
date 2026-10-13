@@ -50,3 +50,5 @@ reports/
 
 # Android
 **/.cxx/
+# Flutter generated native integration files
+**/Flutter/ephemeral/
