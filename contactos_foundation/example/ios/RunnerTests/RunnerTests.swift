@@ -153,6 +153,12 @@ final class RunnerTests: XCTestCase {
     XCTAssertEqual(address?.value.country, "USA")
   }
 
+  func testDictionaryToContactIgnoresMalformedBirthday() {
+    let contact = plugin.dictionaryToContact(dictionary: ["birthday": "02.01.1990"])
+
+    XCTAssertNil(contact.birthday)
+  }
+
   func testDictionaryToContactParsesBirthday() {
     let contact = plugin.dictionaryToContact(dictionary: ["birthday": "1990-01-02"])
 
@@ -249,5 +255,224 @@ final class RunnerTests: XCTestCase {
     let result = plugin.contactToDictionary(contact: makeContact(), localizedLabels: false)
 
     XCTAssertNil(result["birthday"])
+  }
+}
+
+/// Exercises the plugin against the simulator's contact store.
+///
+/// `tool/test_ios_native.sh` grants the contacts permission before running.
+final class ContactStoreTests: XCTestCase {
+  private let plugin = ContactosPlugin()
+  /// Unique family name that marks the contacts created by one test.
+  private var familyName = ""
+
+  override func setUpWithError() throws {
+    try super.setUpWithError()
+    XCTAssertEqual(
+      CNContactStore.authorizationStatus(for: .contacts), .authorized,
+      "Grant the contacts permission to the example app before running the tests."
+    )
+    familyName = "Contactos\(UUID().uuidString.prefix(8))"
+  }
+
+  override func tearDownWithError() throws {
+    let store = CNContactStore()
+    let predicate = CNContact.predicateForContacts(matchingName: familyName)
+    let keys = [CNContactIdentifierKey as CNKeyDescriptor]
+    let created = try store.unifiedContacts(matching: predicate, keysToFetch: keys)
+    if !created.isEmpty {
+      let request = CNSaveRequest()
+      for contact in created {
+        if let mutable = contact.mutableCopy() as? CNMutableContact {
+          request.delete(mutable)
+        }
+      }
+      try store.execute(request)
+    }
+    try super.tearDownWithError()
+  }
+
+  // MARK: - Helpers
+
+  private func invoke(_ method: String, _ arguments: Any? = nil) -> Any? {
+    var value: Any?
+    let expectation = expectation(description: method)
+    plugin.handle(FlutterMethodCall(methodName: method, arguments: arguments)) { result in
+      value = result
+      expectation.fulfill()
+    }
+    wait(for: [expectation], timeout: 10)
+    return value
+  }
+
+  private func queryArguments(_ key: String, _ value: String) -> [String: Any] {
+    [
+      key: value,
+      "withThumbnails": false,
+      "photoHighResolution": false,
+      "orderByGivenName": true,
+      "iOSLocalizedLabels": false,
+    ]
+  }
+
+  private func addContact(givenName: String = "John") {
+    let value = invoke("addContact", [
+      "givenName": givenName,
+      "familyName": familyName,
+      "company": "Acme",
+      "jobTitle": "Engineer",
+      "phones": [["label": "mobile", "value": "+1 555 0100"]],
+      "emails": [["label": "work", "value": "\(familyName.lowercased())@example.com"]],
+      "postalAddresses": [["label": "home", "city": "Springfield"]],
+      "birthday": "1990-01-02",
+    ] as [String: Any])
+    XCTAssertNil(value)
+  }
+
+  private func contacts(named name: String) -> [[String: Any]] {
+    invoke("getContacts", queryArguments("query", name)) as? [[String: Any]] ?? []
+  }
+
+  // MARK: - Tests
+
+  func testAddedContactCanBeFoundByName() throws {
+    addContact()
+
+    let found = contacts(named: familyName)
+
+    XCTAssertEqual(found.count, 1)
+    let contact = try XCTUnwrap(found.first)
+    XCTAssertEqual(contact["givenName"] as? String, "John")
+    XCTAssertEqual(contact["familyName"] as? String, familyName)
+    XCTAssertEqual(contact["company"] as? String, "Acme")
+    XCTAssertEqual(contact["jobTitle"] as? String, "Engineer")
+    XCTAssertEqual(contact["birthday"] as? String, "1990-01-02")
+    XCTAssertEqual(
+      contact["phones"] as? [[String: String]],
+      [["label": "mobile", "value": "+1 555 0100"]]
+    )
+    let addresses = contact["postalAddresses"] as? [[String: String]]
+    XCTAssertEqual(addresses?.first?["city"], "Springfield")
+    XCTAssertEqual(addresses?.first?["label"], "home")
+  }
+
+  func testContactsAreOrderedByGivenName() {
+    addContact(givenName: "Zed")
+    addContact(givenName: "Anna")
+
+    let names = contacts(named: familyName).compactMap { $0["givenName"] as? String }
+
+    XCTAssertEqual(names, ["Anna", "Zed"])
+  }
+
+  func testContactCanBeFoundByEmail() {
+    addContact()
+
+    let found =
+      invoke(
+        "getContactsForEmail",
+        queryArguments("email", "\(familyName.lowercased())@example.com")
+      ) as? [[String: Any]]
+
+    XCTAssertEqual(found?.count, 1)
+    XCTAssertEqual(found?.first?["familyName"] as? String, familyName)
+  }
+
+  func testContactCanBeFoundByPhone() {
+    addContact()
+
+    let found =
+      invoke("getContactsForPhone", queryArguments("phone", "+1 555 0100")) as? [[String: Any]]
+
+    XCTAssertTrue(
+      found?.contains { $0["familyName"] as? String == familyName } ?? false
+    )
+  }
+
+  func testWithThumbnailsLoadsContactsWithoutPhoto() {
+    addContact()
+    var arguments = queryArguments("query", familyName)
+    arguments["withThumbnails"] = true
+
+    let found = invoke("getContacts", arguments) as? [[String: Any]]
+
+    XCTAssertEqual(found?.count, 1)
+    XCTAssertNil(found?.first?["avatar"])
+  }
+
+  func testUpdateContactChangesStoredFields() throws {
+    addContact()
+    var contact = try XCTUnwrap(contacts(named: familyName).first)
+    contact["jobTitle"] = "Manager"
+    contact["phones"] = [["label": "work", "value": "+1 555 0199"]]
+
+    XCTAssertNil(invoke("updateContact", contact))
+
+    let updated = try XCTUnwrap(contacts(named: familyName).first)
+    XCTAssertEqual(updated["jobTitle"] as? String, "Manager")
+    XCTAssertEqual(
+      updated["phones"] as? [[String: String]],
+      [["label": "work", "value": "+1 555 0199"]]
+    )
+  }
+
+  func testDeleteContactRemovesIt() throws {
+    addContact()
+    let contact = try XCTUnwrap(contacts(named: familyName).first)
+
+    XCTAssertNil(invoke("deleteContact", contact))
+
+    XCTAssertTrue(contacts(named: familyName).isEmpty)
+  }
+
+  func testUpdateUnknownContactFails() {
+    let value = invoke("updateContact", ["identifier": "unknown", "givenName": "Nobody"])
+
+    XCTAssertNotNil(value as? FlutterError)
+  }
+
+  func testDeleteUnknownContactFails() {
+    let value = invoke("deleteContact", ["identifier": "unknown"])
+
+    XCTAssertNotNil(value as? FlutterError)
+  }
+
+  func testDeleteWithoutIdentifierFails() {
+    let value = invoke("deleteContact", [String: Any]())
+
+    XCTAssertNotNil(value as? FlutterError)
+  }
+
+  func testGetAvatarOfUnknownContactFails() {
+    let value = invoke("getAvatar", ["identifier": "unknown"])
+
+    XCTAssertEqual((value as? FlutterError)?.code, "FETCH_ERROR")
+  }
+
+  func testGetAvatarWithoutPhotoReturnsNil() throws {
+    addContact()
+    let contact = try XCTUnwrap(contacts(named: familyName).first)
+
+    let value = invoke("getAvatar", ["identifier": contact["identifier"] as Any])
+
+    XCTAssertNil(value)
+  }
+
+  func testOpenExistingUnknownContactCouldNotBeOpen() {
+    let value = invoke("openExistingContact", [
+      "contact": ["identifier": "unknown"],
+      "iOSLocalizedLabels": false,
+    ] as [String: Any])
+
+    XCTAssertEqual(value as? Int, 2)
+  }
+
+  func testOpenExistingContactWithoutIdentifierCouldNotBeOpen() {
+    let value = invoke("openExistingContact", [
+      "contact": [String: Any](),
+      "iOSLocalizedLabels": false,
+    ] as [String: Any])
+
+    XCTAssertEqual(value as? Int, 2)
   }
 }

@@ -505,8 +505,10 @@ public class ContactosPlugin: NSObject, FlutterPlugin, CNContactViewControllerDe
         if let birthday = dictionary["birthday"] as? String {
             let formatter = DateFormatter()
             formatter.dateFormat = "yyyy-MM-dd"
-            let date = formatter.date(from: birthday)!
-            contact.birthday = Calendar.current.dateComponents([.year, .month, .day], from: date)
+            // Ignore malformed dates instead of crashing the app.
+            if let date = formatter.date(from: birthday) {
+                contact.birthday = Calendar.current.dateComponents([.year, .month, .day], from: date)
+            }
         }
 
         return contact
