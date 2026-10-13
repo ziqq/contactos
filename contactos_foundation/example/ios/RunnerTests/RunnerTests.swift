@@ -3,6 +3,7 @@
 // file.
 
 import Contacts
+import ContactsUI
 import Flutter
 import XCTest
 
