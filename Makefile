@@ -112,8 +112,9 @@ test-unit: ## Run unit tests for all packages
 				done
 
 .PHONY: tag
-tag: ## Add a tag to the current commit
-	@dart run tool/tag.dart
+tag: ## Tag the current commit for a package release. E.g: make tag PKG=contactos_android
+				@if [ -z "$(PKG)" ]; then echo "¯\_(ツ)_/¯ PKG is not set"; exit 1; fi
+				@$(MAKE) -s -C $(PWD)/$(PKG) tag
 
 .PHONY: tag-add
 tag-add: ## Add TAG. E.g: make tag-add TAG=v1.0.0
