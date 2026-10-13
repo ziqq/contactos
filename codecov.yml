@@ -1,3 +1,22 @@
+coverage:
+  status:
+    project:
+      # Dart packages keep their coverage relative to the base branch.
+      default:
+        target: auto
+        threshold: 1%
+        flags:
+          - contactos
+          - contactos_platform_interface
+          - contactos_android
+          - contactos_foundation
+      # Native coverage is reported but does not block pull requests yet.
+      native:
+        informational: true
+        flags:
+          - android
+          - ios
+
 flags:
   contactos:
     paths:
