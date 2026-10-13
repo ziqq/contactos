@@ -29,6 +29,8 @@ make format                            # Format all packages (line length 80)
 make analyze                           # Analyze all packages
 make check                             # Analyze + pana for all packages
 make test-unit                         # Unit tests for all packages
+make format-check                      # Fail on unformatted code (as CI does)
+make screenshots                       # Regenerate example screenshots
 ```
 
 ### Per-package
@@ -43,7 +45,7 @@ cd contactos_foundation && make all
 ## Conventions
 
 - **Commits**: Conventional Commits — `<type>(github-<number>): <description>`
-- **Flutter version**: managed via FVM (see `.fvmrc`). Always prefix commands with `fvm`
+- **Flutter version**: managed via mise (`mise.toml`) or FVM (`.fvmrc`). Makefiles use `fvm` when it is installed, otherwise the SDK from `PATH`
 - **Dart format**: line length **80**, enforced by `make format`
 - **No `print()`** — use `dart:developer` (`dev.log`)
 - **No `dynamic`** in JSON parsing — pattern matching + `switch`, errors → `FormatException`

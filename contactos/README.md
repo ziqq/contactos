@@ -1,33 +1,60 @@
-# Contactos Plugin for Flutter
+# Contactos
+
 [![pub package](https://img.shields.io/pub/v/contactos.svg)](https://pub.dev/packages/contactos)
+[![CI](https://github.com/ziqq/contactos/actions/workflows/checkout.yml/badge.svg)](https://github.com/ziqq/contactos/actions/workflows/checkout.yml)
 [![codecov](https://codecov.io/gh/ziqq/contactos/graph/badge.svg?token=S5CVNZKDAE)](https://codecov.io/gh/ziqq/contactos)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/ziqq/contactos/blob/main/LICENSE)
 [![style: flutter lints](https://img.shields.io/badge/style-flutter__lints-blue)](https://pub.dev/packages/flutter_lints)
 
 
-##  Description
+## Description
 
-A Flutter plugin to access and manage the device's contacts.
+A Flutter plugin to read, create, update and delete the device's contacts and
+to open the native contact form and picker on Android and iOS.
+
+<img src="https://raw.githubusercontent.com/ziqq/contactos/main/contactos/screenshots/2_contacts_list.png" width="240" alt="Contacts list"> <img src="https://raw.githubusercontent.com/ziqq/contactos/main/contactos/screenshots/3_contact_details.png" width="240" alt="Contact details"> <img src="https://raw.githubusercontent.com/ziqq/contactos/main/contactos/screenshots/4_add_contact.png" width="240" alt="Add a contact">
 
 
-<!-- <img src="https://raw.githubusercontent.com/ziqq/contactos/refs/heads/main/.docs/images/full_example_light.png" width="385px"> <img src="https://raw.githubusercontent.com/ziqq/contactos/refs/heads/main/.docs/images/full_example_dark.png"  width="385px"> <img src="https://raw.githubusercontent.com/ziqq/contactos/refs/heads/main/.docs/images/filtered_example_light.png" width="385px">  <img src="https://raw.githubusercontent.com/ziqq/contactos/refs/heads/main/.docs/images/filtered_example_dark.png" width="385px"> -->
+## Features
+
+| Feature | Method | Android | iOS |
+|---|---|:---:|:---:|
+| List contacts, optionally filtered by name | `getContacts` | ✅ | ✅ |
+| Find contacts by phone number | `getContactsForPhone` | ✅ | ✅ |
+| Find contacts by email | `getContactsForEmail` | ✅ | ✅ |
+| Load a contact avatar | `getAvatar` | ✅ | ✅ |
+| Add a contact | `addContact` | ✅ | ✅ |
+| Update a contact | `updateContact` | ✅ | ✅ |
+| Delete a contact | `deleteContact` | ✅ | ✅ |
+| Open the native "new contact" form | `openContactForm` | ✅ | ✅ |
+| Open the native form for an existing contact | `openExistingContact` | ✅ | ✅ |
+| Pick a contact with the native picker | `openDeviceContactPicker` | ✅ | ✅ |
 
 
 ## Installation
 
-To use this plugin, add `contactos` as a [dependency in your `pubspec.yaml` file](https://flutter.dev/to/using-packages).
-For example:
+Add `contactos` to your `pubspec.yaml`:
+
 ```yaml
 dependencies:
-    contactos: ^latest_version
+  contactos: ^2.1.0
 ```
 
-Starting with `2.1.0`, this package requires Dart `>=3.12.0 <4.0.0` and Flutter `>=3.44.0`.
+| `contactos` | Dart | Flutter |
+|---|---|---|
+| `>=2.1.0` | `>=3.12.0 <4.0.0` | `>=3.44.0` |
 
 
 ## Permissions
 
+`contactos` does not request permissions. Request the contacts permission
+before calling the plugin, for example with
+[permission_handler](https://pub.dev/packages/permission_handler).
+Calls made without the permission fail.
+
 ### Android
-Add the following permissions to your AndroidManifest.xml:
+
+Add the permissions to `android/app/src/main/AndroidManifest.xml`:
 
 ```xml
 <uses-permission android:name="android.permission.READ_CONTACTS" />
@@ -35,101 +62,128 @@ Add the following permissions to your AndroidManifest.xml:
 ```
 
 ### iOS
-Set the `NSContactsUsageDescription` in your `Info.plist` file.
+
+Describe why the app needs contacts in `ios/Runner/Info.plist`:
+
 ```xml
 <key>NSContactsUsageDescription</key>
 <string>This app requires contacts access to function properly.</string>
 ```
 
-And add PermissionGroup.contacts in your Podfile
-```Ruby
-target.build_configurations.each do |config|
-    config.build_settings
-    ['GCC_PREPROCESSOR_DEFINITIONS'] ||= [
-        '$(inherited)',
+If you use `permission_handler`, also enable its contacts permission in
+`ios/Podfile`:
 
+```ruby
+post_install do |installer|
+  installer.pods_project.targets.each do |target|
+    flutter_additional_ios_build_settings(target)
+    target.build_configurations.each do |config|
+      config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= [
+        '$(inherited)',
         ## dart: PermissionGroup.contacts
         'PERMISSION_CONTACTS=1',
-    ]
+      ]
+    end
+  end
 end
 ```
-
-
-**Note**
-`contactos` does not handle the process of asking and checking for permissions. To check and request user permission to access contacts, try using the following plugins: [permission_handler](https://pub.dev/packages/permission_handler).
-
-If you do not request user permission or have it granted, the application will fail. For testing purposes, you can manually set the permissions for your test app in Settings for your app on the device that you are using. For Android, go to "Settings" - "Apps" - select your test app - "Permissions" - then turn "on" the slider for contacts.
 
 
 ## Example
 
 ```dart
-// Import package
 import 'package:contactos/contactos.dart';
 
-// Get all contacts on device.
-List<Contact> contacts = await Contactos.instance.getContacts();
+final contactos = Contactos.instance;
 
-// Get all contacts without thumbnail (faster).
-List<Contact> contacts = await Contactos.instance.getContacts(withThumbnails: false);
+// All contacts. Thumbnails are loaded by default.
+final contacts = await contactos.getContacts();
 
-// Android only: Get thumbnail for an avatar afterwards (only necessary if `withThumbnails: false` is used).
-Uint8List avatar = await Contactos.instance.getAvatar(contact);
+// Faster: load the list without thumbnails, then load avatars lazily.
+final lightweight = await contactos.getContacts(withThumbnails: false);
+final avatar = await contactos.getAvatar(lightweight.first);
 
-// Get contacts matching a string.
-List<Contact> johns = await Contactos.instance.getContacts(query: "john");
+// Search.
+final johns = await contactos.getContacts(query: 'john');
+final byPhone = await contactos.getContactsForPhone('+1 555 0100');
+final byEmail = await contactos.getContactsForEmail('john@example.com');
 
-// Add a contact.
-// The contact must have a firstName / lastName to be successfully added.
-await Contactos.instance.addContact(newContact);
+// Add a contact. It needs at least a given or a family name.
+await contactos.addContact(
+  const Contact(
+    givenName: 'John',
+    familyName: 'Doe',
+    phones: [Contact$Field(label: 'mobile', value: '+1 555 0100')],
+    emails: [Contact$Field(label: 'work', value: 'john@example.com')],
+  ),
+);
 
-// Delete a contact.
-// The contact must have a valid identifier.
-await Contactos.instance.deleteContact(contact);
-
-// Update a contact.
-// The contact must have a valid identifier.
-await Contactos.instance.updateContact(contact);
-
-// Usage of the native device form for creating a Contact.
-// Throws an error if the form could not be opened or the operation is canceled by the user.
-await Contactos.instance.openContactForm();
-
-// Usage of the native device form for editing a Contact.
-// The contact must have a valid identifier.
-// Throws an error if the form could not be opened or the operation is canceled by the user.
-await Contactos.instance.openExistingContact(contact);
-
+// Update and delete need a contact with a valid identifier,
+// for example one returned by getContacts.
+final john = johns.first;
+await contactos.updateContact(john.copyWith(jobTitle: 'Engineer'));
+await contactos.deleteContact(john);
 ```
-**Contact Model**
+
+### Native forms and picker
+
 ```dart
-// Name
-String displayName, givenName, middleName, prefix, suffix, familyName;
+try {
+  // Create a contact in the native form.
+  final created = await contactos.openContactForm();
 
-// Company
-String company, jobTitle;
+  // Edit an existing contact in the native form.
+  final edited = await contactos.openExistingContact(created);
 
-// Email addresses
-List<Contact$Field> emails = [];
-
-// Phone numbers
-List<Contact$Field> phones = [];
-
-// Post addresses
-List<Contact$PostalAddress> postalAddresses = [];
-
-// Contact avatar/thumbnail
-Uint8List avatar;
+  // Let the user pick a contact. Returns null when nothing is picked.
+  final picked = await contactos.openDeviceContactPicker();
+} on FormOperationException catch (error) {
+  switch (error.errorCode) {
+    case FormOperationErrorCode.canceled:
+      // The user closed the form.
+      break;
+    case FormOperationErrorCode.couldNotBeOpen:
+    case FormOperationErrorCode.unknown:
+    case null:
+      // Report the error.
+      break;
+  }
+}
 ```
 
-![Example](https://raw.githubusercontent.com/ziqq/contactos/refs/heads/main/.github/images/example.gif "Example screenshot")
+### Labels
+
+Phone, email and address labels are localized by default. Pass
+`iOSLocalizedLabels: false` or `androidLocalizedLabels: false` to get stable
+English labels such as `mobile`, `home` and `work` instead.
+
+A complete app is available in the
+[example](https://github.com/ziqq/contactos/tree/main/contactos/example).
+
+
+## Contact model
+
+`Contact` is immutable. Use `copyWith` to change it.
+
+| Field | Type | Notes |
+|---|---|---|
+| `identifier` | `String?` | Platform contact identifier |
+| `displayName` | `String?` | Read only, built by the platform |
+| `givenName`, `middleName`, `familyName` | `String?` | |
+| `prefix`, `suffix` | `String?` | |
+| `company`, `jobTitle` | `String?` | |
+| `phones`, `emails` | `List<Contact$Field>?` | `label` and `value` |
+| `postalAddresses` | `List<Contact$PostalAddress>?` | `street`, `city`, `postcode`, `region`, `country` |
+| `birthday` | `DateTime?` | |
+| `avatar` | `Uint8List?` | Thumbnail or full-size photo |
+| `androidAccountType`, `androidAccountName` | `AndroidAccountType?`, `String?` | Android only |
 
 
 ## Changelog
 
-Refer to the [Changelog](https://github.com/ziqq/contactos/blob/main/contactos/CHANGELOG.md) to get all release notes.
-
-For repository-level contribution and release workflow details, see the [main CONTRIBUTING guide](https://github.com/ziqq/contactos/blob/main/CONTRIBUTING.md).
+See the [CHANGELOG](https://github.com/ziqq/contactos/blob/main/contactos/CHANGELOG.md).
+Contribution and release workflow details are in the
+[CONTRIBUTING guide](https://github.com/ziqq/contactos/blob/main/CONTRIBUTING.md).
 
 
 ## Maintainers
@@ -142,20 +196,9 @@ For repository-level contribution and release workflow details, see the [main CO
 [MIT](https://github.com/ziqq/contactos/blob/main/LICENSE)
 
 
-## Contributions
-
-Contributions are welcome! If you find a bug or want a feature, please fill an issue.
-If you want to contribute code please create a pull request.
-
-
 ## Funding
 
-If you want to support the development of our library, there are several ways you can do it:
+If you want to support the development of the library:
 
 - [Buy me a coffee](https://www.buymeacoffee.com/ziqq)
 - [Subscribe through Boosty](https://boosty.to/ziqq)
-
-
-## Coverage
-
-<img src="https://codecov.io/gh/ziqq/contactos/graphs/sunburst.svg?token=S5CVNZKDAE" width="375">
