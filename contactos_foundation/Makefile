@@ -96,6 +96,11 @@ test-unit: ## Runs unit tests
 				@$(FLUTTER) test --coverage test/contactos_foundation_test.dart || (echo "¯\_(ツ)_/¯ Error while running test-unit"; exit 1)
 				@genhtml coverage/lcov.info --output=coverage -o coverage/html || (echo "¯\_(ツ)_/¯ Error while running genhtml with coverage"; exit 2)
 
+.PHONY: test-ios-native
+test-ios-native: ## Run iOS XCTest on IOS_SIMULATOR_ID and export Swift coverage (macOS only)
+				@cd example && $(FLUTTER) pub get
+				@bash tool/test_ios_native.sh
+
 .PHONY: tag
 tag: ## Add a tag to the current commit
 	@$(DART) run tool/tag.dart
