@@ -21,4 +21,4 @@ xcodebuild test \
   -enableCodeCoverage YES -parallel-testing-enabled NO \
   CODE_SIGNING_ALLOWED=NO
 
-bash "$package_dir/tool/export_ios_coverage.sh" "$results/Tests.xcresult"
+python3 "$package_dir/tool/export_ios_coverage.py" "$results/Tests.xcresult"
