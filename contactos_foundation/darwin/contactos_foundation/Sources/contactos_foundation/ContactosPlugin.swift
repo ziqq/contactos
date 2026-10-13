@@ -23,11 +23,15 @@ public class ContactosPlugin: NSObject, FlutterPlugin, CNContactViewControllerDe
 
     private func getRootViewController() -> UIViewController? {
         // Apps on the UIScene lifecycle have no window on the app delegate.
-        let windows = UIApplication.shared.connectedScenes
-            .compactMap { $0 as? UIWindowScene }
-            .flatMap { $0.windows }
-        let window = windows.first { $0.isKeyWindow } ?? windows.first
-        return window?.rootViewController ?? UIApplication.shared.delegate?.window??.rootViewController
+        if #available(iOS 13.0, *) {
+            let windows = UIApplication.shared.connectedScenes
+                .compactMap { $0 as? UIWindowScene }
+                .flatMap { $0.windows }
+            if let window = windows.first(where: { $0.isKeyWindow }) ?? windows.first {
+                return window.rootViewController
+            }
+        }
+        return UIApplication.shared.delegate?.window??.rootViewController // coverage:ignore-line (iOS 12 only)
     }
 
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
