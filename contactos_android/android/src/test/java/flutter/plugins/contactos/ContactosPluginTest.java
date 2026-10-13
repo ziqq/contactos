@@ -617,6 +617,18 @@ public class ContactosPluginTest {
   }
 
   @Test
+  public void openExistingContact_withoutIdentifier_couldNotBeOpen() {
+    addJohnDoe();
+    attachActivity(Robolectric.buildActivity(Activity.class).setup().get());
+    HashMap<String, Object> arguments = formArguments();
+    arguments.put("contact", contactArguments(null));
+
+    RecordingResult result = call("openExistingContact", arguments);
+
+    assertThat(result.value).isEqualTo(2);
+  }
+
+  @Test
   public void openExistingContact_opensTheEditor() {
     addJohnDoe();
     Uri contactUri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_URI, "1");
@@ -696,6 +708,215 @@ public class ContactosPluginTest {
     plugin.onDetachedFromActivity();
 
     verify(binding).removeActivityResultListener(listener);
+  }
+
+  // endregion
+
+  // region Lifecycle and edge cases
+
+  @Test
+  public void activityConfigChange_rebindsTheResultListener() {
+    ActivityPluginBinding first =
+        attachActivity(Robolectric.buildActivity(Activity.class).setup().get());
+    PluginRegistry.ActivityResultListener listener = activityResultListener(first);
+
+    plugin.onDetachedFromActivityForConfigChanges();
+    ActivityPluginBinding second = mock(ActivityPluginBinding.class);
+    plugin.onReattachedToActivityForConfigChanges(second);
+
+    verify(first).removeActivityResultListener(listener);
+    verify(second).addActivityResultListener(listener);
+  }
+
+  @Test
+  public void formsAfterDetachingFromEngine_couldNotBeOpen() {
+    plugin.onDetachedFromEngine(engineBinding);
+    HashMap<String, Object> existing = formArguments();
+    existing.put("contact", contactArguments("1"));
+
+    assertThat(call("openContactForm", formArguments()).value).isEqualTo(2);
+    assertThat(call("openExistingContact", existing).value).isEqualTo(2);
+    assertThat(call("openDeviceContactPicker", formArguments()).value).isEqualTo(2);
+  }
+
+  @Test
+  public void openContactForm_withoutActivity_couldNotBeOpen() {
+    // Starting an activity from the application context without
+    // FLAG_ACTIVITY_NEW_TASK throws, so the form cannot be shown.
+    RecordingResult result = call("openContactForm", formArguments());
+
+    assertThat(result.value).isEqualTo(2);
+  }
+
+  @Test
+  public void getAvatar_withoutIdentifier_returnsNull() {
+    HashMap<String, Object> arguments = new HashMap<>();
+    arguments.put("contact", contactArguments(null));
+    arguments.put("photoHighResolution", true);
+
+    assertThat(call("getAvatar", arguments).value).isNull();
+  }
+
+  private static byte[] png() {
+    android.graphics.Bitmap bitmap =
+        android.graphics.Bitmap.createBitmap(2, 2, android.graphics.Bitmap.Config.ARGB_8888);
+    java.io.ByteArrayOutputStream stream = new java.io.ByteArrayOutputStream();
+    bitmap.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, stream);
+    return stream.toByteArray();
+  }
+
+  @Test
+  public void getAvatar_withDisplayPhoto_returnsPngBytes() {
+    provider.displayPhotos.put("1", png());
+    HashMap<String, Object> arguments = new HashMap<>();
+    arguments.put("contact", contactArguments("1"));
+    arguments.put("photoHighResolution", true);
+
+    byte[] avatar = (byte[]) call("getAvatar", arguments).value;
+
+    assertThat(avatar).isNotEmpty();
+  }
+
+  @Test
+  public void getContacts_withThumbnails_loadsTheDisplayPhoto() {
+    addJohnDoe();
+    provider.displayPhotos.put("1", png());
+    HashMap<String, Object> arguments = queryArguments("query", null);
+    arguments.put("withThumbnails", true);
+    arguments.put("photoHighResolution", true);
+
+    List<Map<String, Object>> contacts = contacts(call("getContacts", arguments));
+
+    assertThat((byte[]) contacts.get(0).get("avatar")).isNotEmpty();
+  }
+
+  @Test
+  public void getContacts_skipsEmptyEmailsAndNonBirthdayEvents() {
+    provider.dataRows.add(
+        FakeContactsProvider.row(
+            "1",
+            "John Doe",
+            Email.CONTENT_ITEM_TYPE,
+            data(Email.ADDRESS, "", Email.TYPE, Email.TYPE_HOME)));
+    provider.dataRows.add(
+        FakeContactsProvider.row(
+            "1",
+            "John Doe",
+            Event.CONTENT_ITEM_TYPE,
+            data(Event.TYPE, Event.TYPE_ANNIVERSARY, Event.START_DATE, "2010-06-01")));
+
+    Map<String, Object> john = contacts(call("getContacts", queryArguments("query", null))).get(0);
+
+    assertThat((List<?>) john.get("emails")).isEmpty();
+    assertThat(john.get("birthday")).isNull();
+  }
+
+  @Test
+  public void searchesWithoutValue_returnNoContacts() {
+    assertThat(contacts(call("getContactsForPhone", queryArguments("phone", null)))).isEmpty();
+    assertThat(contacts(call("getContactsForEmail", queryArguments("email", null)))).isEmpty();
+    assertThat(provider.queries).isEmpty();
+  }
+
+  @Test
+  public void openContactForm_withoutResultData_isCanceled() {
+    Intent insert = new Intent(Intent.ACTION_INSERT, ContactsContract.Contacts.CONTENT_URI);
+    registerHandler(insert);
+    Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
+    ActivityPluginBinding binding = attachActivity(activity);
+    RecordingResult result = new RecordingResult();
+    plugin.onMethodCall(new MethodCall("openContactForm", formArguments()), result);
+    ShadowActivity.IntentForResult started =
+        shadowOf(activity).getNextStartedActivityForResult();
+
+    activityResultListener(binding)
+        .onActivityResult(started.requestCode, Activity.RESULT_OK, new Intent());
+
+    assertThat(result.value).isEqualTo(1);
+  }
+
+  @Test
+  public void formResultAfterDetachingFromEngine_isCanceled() {
+    Intent insert = new Intent(Intent.ACTION_INSERT, ContactsContract.Contacts.CONTENT_URI);
+    registerHandler(insert);
+    Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
+    ActivityPluginBinding binding = attachActivity(activity);
+    RecordingResult result = new RecordingResult();
+    plugin.onMethodCall(new MethodCall("openContactForm", formArguments()), result);
+    ShadowActivity.IntentForResult started =
+        shadowOf(activity).getNextStartedActivityForResult();
+    plugin.onDetachedFromEngine(engineBinding);
+
+    Intent saved =
+        new Intent().setData(Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_URI, "1"));
+    activityResultListener(binding)
+        .onActivityResult(started.requestCode, Activity.RESULT_OK, saved);
+
+    assertThat(result.value).isEqualTo(1);
+  }
+
+  private ShadowActivity.IntentForResult openPicker(
+      Activity activity, RecordingResult result) {
+    Intent pick = new Intent(Intent.ACTION_PICK);
+    pick.setType(ContactsContract.Contacts.CONTENT_TYPE);
+    registerHandler(pick);
+    plugin.onMethodCall(new MethodCall("openDeviceContactPicker", formArguments()), result);
+    return shadowOf(activity).getNextStartedActivityForResult();
+  }
+
+  @Test
+  public void pickerResultWithoutIntent_couldNotBeOpen() {
+    Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
+    ActivityPluginBinding binding = attachActivity(activity);
+    RecordingResult result = new RecordingResult();
+    ShadowActivity.IntentForResult started = openPicker(activity, result);
+
+    activityResultListener(binding).onActivityResult(started.requestCode, Activity.RESULT_OK, null);
+
+    assertThat(result.value).isEqualTo(2);
+  }
+
+  @Test
+  public void pickerResultWithoutContactUri_couldNotBeOpen() {
+    Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
+    ActivityPluginBinding binding = attachActivity(activity);
+    RecordingResult result = new RecordingResult();
+    ShadowActivity.IntentForResult started = openPicker(activity, result);
+
+    activityResultListener(binding)
+        .onActivityResult(started.requestCode, Activity.RESULT_OK, new Intent());
+
+    assertThat(result.value).isEqualTo(2);
+  }
+
+  @Test
+  public void pickerResultWithMissingContact_isCanceled() {
+    Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
+    ActivityPluginBinding binding = attachActivity(activity);
+    RecordingResult result = new RecordingResult();
+    ShadowActivity.IntentForResult started = openPicker(activity, result);
+
+    Intent picked =
+        new Intent().setData(Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_URI, "404"));
+    activityResultListener(binding)
+        .onActivityResult(started.requestCode, Activity.RESULT_OK, picked);
+
+    assertThat(result.value).isEqualTo(1);
+  }
+
+  @Test
+  public void unknownActivityResult_isNotHandled() {
+    Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
+    ActivityPluginBinding binding = attachActivity(activity);
+    RecordingResult result = new RecordingResult();
+    ShadowActivity.IntentForResult started = openPicker(activity, result);
+
+    boolean handled =
+        activityResultListener(binding).onActivityResult(1, Activity.RESULT_OK, new Intent());
+
+    assertThat(handled).isFalse();
+    assertThat(started.requestCode).isNotEqualTo(1);
+    assertThat(result.value).isEqualTo(2);
   }
 
   // endregion

@@ -64,6 +64,9 @@ public class FakeContactsProvider extends ContentProvider {
   /** When set, {@link #applyBatch} fails like a provider without permission. */
   boolean failBatches;
 
+  /** Display photo bytes per contact id. */
+  final Map<String, byte[]> displayPhotos = new java.util.HashMap<>();
+
   private long nextId = 100;
 
   @Override
@@ -75,6 +78,14 @@ public class FakeContactsProvider extends ContentProvider {
   public Cursor query(
       Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
     queries.add(new Query(uri, selection, selectionArgs));
+    if (selectionArgs != null) {
+      for (String argument : selectionArgs) {
+        // SQLite rejects null bind values like the real contacts provider.
+        if (argument == null) {
+          throw new IllegalArgumentException("the bind value is null");
+        }
+      }
+    }
 
     if (isPhoneLookup(uri)) {
       MatrixCursor cursor = new MatrixCursor(new String[] {BaseColumns._ID});
@@ -156,6 +167,27 @@ public class FakeContactsProvider extends ContentProvider {
   public int delete(Uri uri, String selection, String[] selectionArgs) {
     writes.add(new Write("delete", uri, null, selection, selectionArgs));
     return 1;
+  }
+
+  @Override
+  public android.os.ParcelFileDescriptor openFile(Uri uri, String mode)
+      throws java.io.FileNotFoundException {
+    // content://com.android.contacts/contacts/<id>/display_photo
+    List<String> segments = uri.getPathSegments();
+    if (segments.size() == 3 && "display_photo".equals(segments.get(2))) {
+      byte[] photo = displayPhotos.get(segments.get(1));
+      if (photo != null) {
+        try {
+          java.io.File file = java.io.File.createTempFile("photo", ".png");
+          java.nio.file.Files.write(file.toPath(), photo);
+          return android.os.ParcelFileDescriptor.open(
+              file, android.os.ParcelFileDescriptor.MODE_READ_ONLY);
+        } catch (java.io.IOException e) {
+          throw new java.io.FileNotFoundException(e.getMessage());
+        }
+      }
+    }
+    throw new java.io.FileNotFoundException(uri.toString());
   }
 
   @Override
