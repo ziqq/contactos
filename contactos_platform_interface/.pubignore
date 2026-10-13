@@ -1,5 +1,31 @@
+# .pubignore replaces .gitignore for publishing, so local and generated
+# files have to be listed here again.
 pubspec.lock
+.dart_tool/
+build/
+**/build/
 .coverage/
 coverage/
 reports/
-build/
+log.pana.json
+.DS_Store
+.idea/
+*.iml
+**/local.properties
+**/.gradle/
+**/gradlew
+**/gradlew.bat
+**/gradle-wrapper.jar
+**/GeneratedPluginRegistrant.*
+**/Flutter/ephemeral/
+**/Flutter/Generated.xcconfig
+**/Flutter/flutter_export_environment.sh
+**/Pods/
+**/.symlinks/
+**/xcuserdata/
+**/.swiftpm/
+
+# Development only: build scripts, tooling and dependency checks.
+Makefile
+tool/
+dart_dependency_validator.yaml

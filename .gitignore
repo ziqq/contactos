@@ -48,8 +48,26 @@ reports/
 # FVM Version Cache
 .fvm/
 
+# mise local overrides
+mise.local.toml
+.mise.local.toml
+
 # Android
 **/.cxx/
+**/.gradle/
+**/local.properties
+**/gradle-wrapper.jar
+**/android/gradlew
+**/android/gradlew.bat
+**/GeneratedPluginRegistrant.*
+
+# iOS
+**/Pods/
+**/.symlinks/
+**/xcuserdata/
+**/.swiftpm/
+**/Flutter/Generated.xcconfig
+**/Flutter/flutter_export_environment.sh
 # Flutter generated native integration files
 **/Flutter/ephemeral/
 
