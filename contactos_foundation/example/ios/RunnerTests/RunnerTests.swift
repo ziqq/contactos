@@ -315,8 +315,15 @@ final class ContactStoreTests: XCTestCase {
     ]
   }
 
-  private func addContact(givenName: String = "John") {
-    let value = invoke("addContact", [
+  private static func png() -> Data {
+    UIGraphicsImageRenderer(size: CGSize(width: 4, height: 4)).pngData { context in
+      UIColor.red.setFill()
+      context.fill(CGRect(x: 0, y: 0, width: 4, height: 4))
+    }
+  }
+
+  private func addContact(givenName: String = "John", avatar: Data? = nil) {
+    var arguments: [String: Any] = [
       "givenName": givenName,
       "familyName": familyName,
       "company": "Acme",
@@ -325,8 +332,11 @@ final class ContactStoreTests: XCTestCase {
       "emails": [["label": "work", "value": "\(familyName.lowercased())@example.com"]],
       "postalAddresses": [["label": "home", "city": "Springfield"]],
       "birthday": "1990-01-02",
-    ] as [String: Any])
-    XCTAssertNil(value)
+    ]
+    if let avatar = avatar {
+      arguments["avatar"] = FlutterStandardTypedData(bytes: avatar)
+    }
+    XCTAssertNil(invoke("addContact", arguments))
   }
 
   private func contacts(named name: String) -> [[String: Any]] {
@@ -458,6 +468,52 @@ final class ContactStoreTests: XCTestCase {
     XCTAssertNil(value)
   }
 
+  func testAvatarIsLoadedForAContactWithPhoto() throws {
+    addContact(avatar: Self.png())
+    let contact = try XCTUnwrap(contacts(named: familyName).first)
+
+    let value = invoke("getAvatar", ["identifier": contact["identifier"] as Any])
+
+    XCTAssertNotNil((value as? FlutterStandardTypedData)?.data)
+  }
+
+  func testThumbnailsAreLoadedWithContacts() {
+    addContact(avatar: Self.png())
+
+    for highResolution in [false, true] {
+      var arguments = queryArguments("query", familyName)
+      arguments["withThumbnails"] = true
+      arguments["photoHighResolution"] = highResolution
+
+      let found = invoke("getContacts", arguments) as? [[String: Any]]
+
+      XCTAssertNotNil(found?.first?["avatar"] as? FlutterStandardTypedData)
+    }
+  }
+
+  func testUpdateWithoutIdentifierFails() {
+    let value = invoke("updateContact", ["givenName": "Nobody"])
+
+    XCTAssertNotNil(value as? FlutterError)
+  }
+
+  func testOpenExistingContactPresentsTheEditor() throws {
+    addContact()
+    let contact = try XCTUnwrap(contacts(named: familyName).first)
+    var reply: Any?
+
+    plugin.handle(FlutterMethodCall(methodName: "openExistingContact", arguments: [
+      "contact": contact,
+      "iOSLocalizedLabels": false,
+    ] as [String: Any])) { reply = $0 }
+    RunLoop.main.run(until: Date().addingTimeInterval(1))
+
+    // The editor stays open until the user finishes.
+    XCTAssertNil(reply)
+    plugin.cancelContactForm()
+    XCTAssertEqual(reply as? Int, 1)
+  }
+
   func testOpenExistingUnknownContactCouldNotBeOpen() {
     let value = invoke("openExistingContact", [
       "contact": ["identifier": "unknown"],
@@ -474,5 +530,87 @@ final class ContactStoreTests: XCTestCase {
     ] as [String: Any])
 
     XCTAssertEqual(value as? Int, 2)
+  }
+}
+
+/// Covers the native form and picker flows through their delegates.
+final class NativeFormTests: XCTestCase {
+  private let plugin = ContactosPlugin()
+  private var reply: Any?
+
+  override func tearDown() {
+    let root = UIApplication.shared.delegate?.window??.rootViewController
+    root?.dismiss(animated: false)
+    RunLoop.main.run(until: Date().addingTimeInterval(0.5))
+    super.tearDown()
+  }
+
+  private func start(_ method: String) {
+    plugin.handle(
+      FlutterMethodCall(methodName: method, arguments: ["iOSLocalizedLabels": false])
+    ) { self.reply = $0 }
+    RunLoop.main.run(until: Date().addingTimeInterval(1))
+    XCTAssertNil(reply)
+  }
+
+  private func johnDoe() -> CNMutableContact {
+    let contact = CNMutableContact()
+    contact.givenName = "John"
+    contact.familyName = "Doe"
+    return contact
+  }
+
+  func testContactFormReturnsTheCreatedContact() {
+    start("openContactForm")
+
+    plugin.contactViewController(
+      CNContactViewController(forNewContact: nil), didCompleteWith: johnDoe()
+    )
+
+    XCTAssertEqual((reply as? [String: Any])?["givenName"] as? String, "John")
+  }
+
+  func testClosedContactFormIsCanceled() {
+    start("openContactForm")
+
+    plugin.contactViewController(
+      CNContactViewController(forNewContact: nil), didCompleteWith: nil
+    )
+
+    XCTAssertEqual(reply as? Int, 1)
+  }
+
+  func testCancelButtonCancelsTheContactForm() {
+    start("openContactForm")
+
+    plugin.cancelContactForm()
+
+    XCTAssertEqual(reply as? Int, 1)
+  }
+
+  func testPickerReturnsTheSelectedContact() {
+    start("openDeviceContactPicker")
+
+    plugin.contactPicker(CNContactPickerViewController(), didSelect: johnDoe())
+
+    XCTAssertEqual((reply as? [String: Any])?["familyName"] as? String, "Doe")
+  }
+
+  func testCanceledPickerIsCanceled() {
+    start("openDeviceContactPicker")
+
+    plugin.contactPickerDidCancel(CNContactPickerViewController())
+
+    XCTAssertEqual(reply as? Int, 1)
+  }
+
+  func testDelegateCallbacksWithoutPendingCallAreIgnored() {
+    plugin.contactPickerDidCancel(CNContactPickerViewController())
+    plugin.cancelContactForm()
+    plugin.contactViewController(
+      CNContactViewController(forNewContact: nil), didCompleteWith: nil
+    )
+
+    XCTAssertNil(reply)
   }
 }
