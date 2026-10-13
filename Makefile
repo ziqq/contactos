@@ -15,10 +15,13 @@ endif
 # All packages in dependency order
 PACKAGES := contactos_platform_interface contactos_android contactos_foundation contactos
 
+# Widget tests shared by the example apps
+EXAMPLE_TESTS := tool/example_app_test
+
 .DEFAULT_GOAL := all
 .PHONY: all
-all: ## Full pipeline: format + check + test-unit
-all: format check test-unit
+all: ## Full pipeline: format + check + test-unit + test-example
+all: format check test-unit test-example
 
 .PHONY: ci
 ci: ## CI build pipeline
@@ -48,6 +51,7 @@ format: ## Format all packages
 					echo "Formatting $$pkg..."; \
 					$(MAKE) -s -C $(PWD)/$$pkg format || (echo "¯\_(ツ)_/¯ Format $$pkg error"; exit 1); \
 				done
+				@$(DART) format -l 80 $(EXAMPLE_TESTS)/lib
 
 .PHONY: format-check
 format-check: ## Check formatting of all packages without changing files
@@ -55,6 +59,7 @@ format-check: ## Check formatting of all packages without changing files
 					echo "Checking format of $$pkg..."; \
 					$(MAKE) -s -C $(PWD)/$$pkg format-check || (echo "¯\_(ツ)_/¯ Format check $$pkg error"; exit 1); \
 				done
+				@$(DART) format -l 80 --set-exit-if-changed -o none $(EXAMPLE_TESTS)/lib
 
 .PHONY: fix
 fix: ## Fix all packages
@@ -87,6 +92,7 @@ analyze: get ## Analyze all packages
 					echo "Analyzing $$pkg..."; \
 					cd $(PWD)/$$pkg && $(DART) analyze --fatal-infos --fatal-warnings || (echo "¯\_(ツ)_/¯ Analyze $$pkg error"; exit 1); \
 				done
+				@cd $(PWD)/$(EXAMPLE_TESTS) && $(FLUTTER) pub get && $(DART) analyze --fatal-infos --fatal-warnings
 
 .PHONY: check
 check: analyze ## Analyze + pana for all packages
@@ -109,6 +115,13 @@ test-unit: ## Run unit tests for all packages
 				@for pkg in $(PACKAGES); do \
 					echo "Testing $$pkg..."; \
 					cd $(PWD)/$$pkg && $(FLUTTER) test --coverage || (echo "¯\_(ツ)_/¯ Test $$pkg error"; exit 1); \
+				done
+
+.PHONY: test-example
+test-example: ## Run the shared widget tests of every example app
+				@for pkg in contactos contactos_android contactos_foundation; do \
+					echo "Testing $$pkg example..."; \
+					cd $(PWD)/$$pkg/example && $(FLUTTER) pub get && $(FLUTTER) test --no-pub || (echo "¯\_(ツ)_/¯ Test $$pkg example error"; exit 1); \
 				done
 
 .PHONY: screenshots

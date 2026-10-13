@@ -14,6 +14,7 @@ on:
       - "codecov.yml"
       - "Makefile"
       - "mise.toml"
+      - "tool/**"
   pull_request:
     branches:
       - "main"
@@ -26,6 +27,7 @@ on:
       - "codecov.yml"
       - "Makefile"
       - "mise.toml"
+      - "tool/**"
 
 permissions:
   contents: read
@@ -122,6 +124,21 @@ jobs:
         run: |
           mkdir -p reports
           flutter test --no-pub --coverage --file-reporter=json:reports/tests.json test/
+
+      - name: Run example tests
+        if: matrix.example
+        timeout-minutes: 5
+        working-directory: ${{ matrix.package }}/example
+        run: flutter test --no-pub
+
+      - name: Check shared example tests
+        if: matrix.package == 'contactos'
+        timeout-minutes: 3
+        working-directory: tool/example_app_test
+        run: |
+          flutter pub get
+          dart format -l 80 --set-exit-if-changed -o none lib
+          flutter analyze --no-pub --fatal-infos --fatal-warnings
 
       - name: Prefix coverage paths with the package directory
         if: ${{ !cancelled() && hashFiles(format('{0}/coverage/lcov.info', matrix.package)) != '' }}
