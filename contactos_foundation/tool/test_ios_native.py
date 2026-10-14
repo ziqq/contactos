@@ -52,7 +52,7 @@ def main() -> None:
         if not arguments.any_simulator:
             sys.exit('Set IOS_SIMULATOR_ID to a dedicated test simulator')
         simulator = any_simulator()
-    print(f'Testing on simulator {simulator}')
+    print(f'Testing on simulator {simulator}', flush=True)
 
     # The store tests read and write the simulator's contacts.
     # Booting an already booted simulator fails, which is fine.
