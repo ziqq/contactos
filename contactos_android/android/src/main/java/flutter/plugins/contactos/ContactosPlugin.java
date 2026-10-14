@@ -318,7 +318,7 @@ public class ContactosPlugin implements
         executor.execute(() -> {
             ArrayList<Contact> contacts;
 
-            switch (callMethod) {
+            switch (callMethod) { // coverage:ignore-line (String switch hash collision branches)
                 case "openDeviceContactPicker":
                     contacts = getContactsFrom(getCursor(null, param), localizedLabels);
                     break;
@@ -336,19 +336,19 @@ public class ContactosPlugin implements
                     break;
             }
 
-            if (contacts != null && withThumbnails) {
+            if (contacts != null && withThumbnails) { // coverage:ignore-line (null only in the default branch)
                 for (Contact c : contacts) {
                     byte[] avatar = loadContactPhotoHighRes(c.identifier, photoHighResolution, contentResolver);
                     c.avatar = (avatar != null) ? avatar : new byte[0];
                 }
             }
 
-            if (contacts != null && orderByGivenName) {
+            if (contacts != null && orderByGivenName) { // coverage:ignore-line (null only in the default branch)
                 Collections.sort(contacts, Comparator.naturalOrder());
             }
 
             final ArrayList<HashMap> contactMaps = new ArrayList<>();
-            if (contacts != null) {
+            if (contacts != null) { // coverage:ignore-line (null only in the default branch)
                 for (Contact c : contacts) {
                     contactMaps.add(c.toMap());
                 }
@@ -356,7 +356,7 @@ public class ContactosPlugin implements
 
             // Returning the result to the main thread
             mainHandler.post(() -> {
-                if (contacts == null) {
+                if (contacts == null) { // coverage:ignore-line (null only in the default branch)
                     result.notImplemented(); // coverage:ignore-line (see the default branch above)
                 } else {
                     result.success(contactMaps);
@@ -502,7 +502,7 @@ public class ContactosPlugin implements
         if (phoneCursor != null) {
             while (phoneCursor.moveToNext()) {
                 int idIndex = phoneCursor.getColumnIndex(BaseColumns._ID);
-                if (idIndex >= 0) {
+                if (idIndex >= 0) { // coverage:ignore-line (the projection always requests _ID)
                     contactIds.add(phoneCursor.getString(idIndex));
                 }
             }
@@ -990,7 +990,7 @@ public class ContactosPlugin implements
 
         @Override
         void startIntent(Intent intent, int request) {
-            if (this.activityPluginBinding != null) {
+            if (this.activityPluginBinding != null) { // coverage:ignore-line (the else branch throws, see below)
                 if (intent.resolveActivity(context.getPackageManager()) != null) {
                     this.activityPluginBinding.getActivity().startActivityForResult(intent, request);
                 } else {

@@ -64,6 +64,9 @@ public class ContactsProviderFake extends ContentProvider {
   /** When set, {@link #applyBatch} fails like a provider without permission. */
   boolean failBatches;
 
+  /** When set, {@link #query} returns null like an unavailable provider. */
+  boolean nullCursors;
+
   /** Display photo bytes per contact id. */
   final Map<String, byte[]> displayPhotos = new java.util.HashMap<>();
 
@@ -78,6 +81,9 @@ public class ContactsProviderFake extends ContentProvider {
   public Cursor query(
       Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
     queries.add(new Query(uri, selection, selectionArgs));
+    if (nullCursors) {
+      return null;
+    }
     if (selectionArgs != null) {
       for (String argument : selectionArgs) {
         // SQLite rejects null bind values like the real contacts provider.

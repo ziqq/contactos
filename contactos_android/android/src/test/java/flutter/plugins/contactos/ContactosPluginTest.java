@@ -14,6 +14,7 @@ import static android.provider.ContactsContract.CommonDataKinds.StructuredPostal
 import static com.google.common.truth.Truth.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
@@ -917,6 +918,135 @@ public class ContactosPluginTest {
     assertThat(handled).isFalse();
     assertThat(started.requestCode).isNotEqualTo(1);
     assertThat(result.value).isEqualTo(2);
+  }
+
+
+  @Test
+  public void activityCallbacksAfterDetachingFromEngine_areIgnored() {
+    plugin.onDetachedFromEngine(engineBinding);
+    ActivityPluginBinding binding = mock(ActivityPluginBinding.class);
+
+    plugin.onAttachedToActivity(binding);
+    plugin.onDetachedFromActivityForConfigChanges();
+    plugin.onReattachedToActivityForConfigChanges(binding);
+    plugin.onDetachedFromActivity();
+
+    verify(binding, never()).addActivityResultListener(any());
+  }
+
+  @Test
+  public void detachFromActivityWithoutActivity_isIgnored() {
+    plugin.onDetachedFromActivity();
+
+    assertThat(call("openContactForm", formArguments()).value).isEqualTo(2);
+  }
+
+  @Test
+  public void getContacts_ignoresUnknownDataKinds() {
+    addJohnDoe();
+    provider.dataRows.add(
+        ContactsProviderFake.row(
+            "1",
+            "John Doe",
+            ContactsContract.CommonDataKinds.Photo.CONTENT_ITEM_TYPE,
+            data()));
+
+    List<Map<String, Object>> contacts =
+        contacts(call("getContacts", queryArguments("query", null)));
+
+    assertThat(contacts).hasSize(1);
+    assertThat(contacts.get(0).get("givenName")).isEqualTo("John");
+  }
+
+  @Test
+  public void getContactsForPhone_withEmptyPhone_returnsNoContacts() {
+    assertThat(contacts(call("getContactsForPhone", queryArguments("phone", "")))).isEmpty();
+    assertThat(provider.queries).isEmpty();
+  }
+
+  @Test
+  public void getContactsForPhone_withoutProvider_returnsNoContacts() {
+    provider.nullCursors = true;
+
+    assertThat(contacts(call("getContactsForPhone", queryArguments("phone", "+1 555 0100"))))
+        .isEmpty();
+  }
+
+  @Test
+  public void getAvatar_withEmptyIdentifier_returnsNull() {
+    HashMap<String, Object> arguments = new HashMap<>();
+    arguments.put("contact", contactArguments(""));
+    arguments.put("photoHighResolution", true);
+
+    assertThat(call("getAvatar", arguments).value).isNull();
+  }
+
+  @Test
+  public void openExistingContact_returnsTheEditedContact() {
+    addJohnDoe();
+    Uri contactUri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_URI, "1");
+    Intent edit = new Intent(Intent.ACTION_EDIT);
+    edit.setDataAndType(contactUri, ContactsContract.Contacts.CONTENT_ITEM_TYPE);
+    registerHandler(edit);
+    Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
+    ActivityPluginBinding binding = attachActivity(activity);
+    HashMap<String, Object> arguments = formArguments();
+    arguments.put("contact", contactArguments("1"));
+    RecordingResult result = new RecordingResult();
+    plugin.onMethodCall(new MethodCall("openExistingContact", arguments), result);
+    ShadowActivity.IntentForResult started =
+        shadowOf(activity).getNextStartedActivityForResult();
+
+    activityResultListener(binding)
+        .onActivityResult(started.requestCode, Activity.RESULT_OK, new Intent().setData(contactUri));
+
+    assertThat(((Map<?, ?>) result.value).get("givenName")).isEqualTo("John");
+  }
+
+  @Test
+  public void openExistingContact_withoutProvider_couldNotBeOpen() {
+    provider.nullCursors = true;
+    HashMap<String, Object> arguments = formArguments();
+    arguments.put("contact", contactArguments("1"));
+
+    assertThat(call("openExistingContact", arguments).value).isEqualTo(2);
+  }
+
+  @Test
+  public void repeatedFormResult_isIgnored() {
+    Intent insert = new Intent(Intent.ACTION_INSERT, ContactsContract.Contacts.CONTENT_URI);
+    registerHandler(insert);
+    Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
+    ActivityPluginBinding binding = attachActivity(activity);
+    RecordingResult result = new RecordingResult();
+    plugin.onMethodCall(new MethodCall("openContactForm", formArguments()), result);
+    ShadowActivity.IntentForResult started =
+        shadowOf(activity).getNextStartedActivityForResult();
+    PluginRegistry.ActivityResultListener listener = activityResultListener(binding);
+    listener.onActivityResult(started.requestCode, Activity.RESULT_CANCELED, null);
+    result.value = null;
+
+    boolean handled =
+        listener.onActivityResult(started.requestCode, Activity.RESULT_CANCELED, null);
+
+    assertThat(handled).isTrue();
+    assertThat(result.value).isNull();
+  }
+
+  @Test
+  public void pickerResultWithoutProvider_isCanceled() {
+    Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
+    ActivityPluginBinding binding = attachActivity(activity);
+    RecordingResult result = new RecordingResult();
+    ShadowActivity.IntentForResult started = openPicker(activity, result);
+    provider.nullCursors = true;
+
+    Intent picked =
+        new Intent().setData(Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_URI, "1"));
+    activityResultListener(binding)
+        .onActivityResult(started.requestCode, Activity.RESULT_OK, picked);
+
+    assertThat(result.value).isEqualTo(1);
   }
 
   // endregion
