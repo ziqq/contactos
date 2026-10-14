@@ -285,7 +285,7 @@ jobs:
         timeout-minutes: 15
         env:
           IOS_SIMULATOR_ID: ${{ steps.ios_test_simulator.outputs.id }}
-        run: bash tool/test_ios_native.sh
+        run: python3 tool/test_ios_native.py
 
       - name: Upload iOS native test reports
         if: ${{ !cancelled() }}

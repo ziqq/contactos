@@ -42,8 +42,8 @@ def xccov(*arguments: str) -> str:
     ).stdout
 
 
-def main() -> None:
-    result = sys.argv[1]
+def export(result: str) -> None:
+    """Writes coverage/ios.lcov.info from the [result] bundle."""
     package_dir = pathlib.Path(__file__).resolve().parent.parent
 
     # Xcode may record the plugin through the example's .symlinks directory,
@@ -87,6 +87,10 @@ def main() -> None:
     coverage = package_dir / 'coverage'
     coverage.mkdir(exist_ok=True)
     (coverage / 'ios.lcov.info').write_text('\n'.join(lcov) + '\n')
+
+
+def main() -> None:
+    export(sys.argv[1])
 
 
 if __name__ == '__main__':

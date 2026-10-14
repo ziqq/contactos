@@ -99,7 +99,7 @@ test-unit: ## Runs unit tests
 .PHONY: test-ios-native
 test-ios-native: ## Run iOS XCTest on IOS_SIMULATOR_ID and export Swift coverage (macOS only)
 				@cd example && $(FLUTTER) pub get
-				@bash tool/test_ios_native.sh
+				@python3 tool/test_ios_native.py
 
 .PHONY: tag
 tag: ## Add a tag to the current commit

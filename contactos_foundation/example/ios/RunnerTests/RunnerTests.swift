@@ -261,7 +261,7 @@ final class RunnerTests: XCTestCase {
 
 /// Exercises the plugin against the simulator's contact store.
 ///
-/// `tool/test_ios_native.sh` grants the contacts permission before running.
+/// `tool/test_ios_native.py` grants the contacts permission before running.
 final class ContactStoreTests: XCTestCase {
   private let plugin = ContactosPlugin()
   /// Unique family name that marks the contacts created by one test.
