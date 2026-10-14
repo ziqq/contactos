@@ -275,17 +275,9 @@ jobs:
           fi
           echo "$manifests"
 
-      - name: Select iOS test simulator
-        id: ios_test_simulator
-        run: |
-          simulator_id="$(xcrun simctl list devices available --json | jq -er '[.devices[][] | select(.isAvailable and (.name | startswith("iPhone")))][0].udid // error("No iOS Simulator available")')"
-          echo "id=$simulator_id" >> "$GITHUB_OUTPUT"
-
       - name: Run iOS native tests with coverage
         timeout-minutes: 15
-        env:
-          IOS_SIMULATOR_ID: ${{ steps.ios_test_simulator.outputs.id }}
-        run: python3 tool/test_ios_native.py
+        run: python3 tool/test_ios_native.py --any-simulator
 
       - name: Upload iOS native test reports
         if: ${{ !cancelled() }}
