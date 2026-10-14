@@ -3,13 +3,13 @@
 #
 Pod::Spec.new do |s|
   s.name             = 'contactos_foundation'
-  s.version          = '0.0.4'
+  s.version          = '0.0.5'
   s.summary          = "A Flutter plugin to retrieve and manage contacts on iOS devices"
   s.description      = <<-DESC
   A Flutter plugin to retrieve and manage contacts on iOS devices.
                        DESC
 
-  s.homepage         = 'https://github.com/ziqq/contactos/contactos_foundation'
+  s.homepage         = 'https://github.com/ziqq/contactos/tree/main/contactos_foundation'
   s.license          = { :type => 'MIT', :file => '../LICENSE' }
   s.author           = 'Anton Ustinoff'
 
@@ -33,6 +33,6 @@ Pod::Spec.new do |s|
     'LIBRARY_SEARCH_PATHS' => '$(TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)/ $(SDKROOT)/usr/lib/swift',
     'LD_RUNPATH_SEARCH_PATHS' => '/usr/lib/swift',
  }
- s.resource_bundles = {'contactos_privacy' => ['contactos/Sources/contactos/Resources/PrivacyInfo.xcprivacy']}
+ s.resource_bundles = {'contactos_privacy' => ['contactos_foundation/Sources/contactos_foundation/Resources/PrivacyInfo.xcprivacy']}
 end
 

@@ -95,6 +95,46 @@ void main() {
         final contact = Contact.fromJson(json);
         expect(contact.birthday, null);
       });
+
+      test('keeps missing and null fields as null', () {
+        final contact = Contact.fromJson(const {
+          'identifier': 'id',
+          'middleName': null,
+          'emails': [
+            {'label': null, 'value': 'email@example.com'},
+          ],
+          'postalAddresses': [
+            {'city': 'City'},
+          ],
+        });
+
+        expect(contact.identifier, 'id');
+        expect(contact.displayName, isNull);
+        expect(contact.givenName, isNull);
+        expect(contact.middleName, isNull);
+        expect(contact.familyName, isNull);
+        expect(contact.company, isNull);
+        expect(contact.androidAccountType, isNull);
+        expect(contact.androidAccountTypeRaw, isNull);
+        expect(contact.androidAccountName, isNull);
+        expect(contact.emails?.single.label, isNull);
+        expect(contact.emails?.single.value, 'email@example.com');
+        expect(contact.postalAddresses?.single.city, 'City');
+        expect(contact.postalAddresses?.single.street, isNull);
+        expect(contact.postalAddresses?.single.label, isNull);
+      });
+
+      test('converts non-string scalar values to strings', () {
+        final contact = Contact.fromJson(const {
+          'identifier': 42,
+          'phones': [
+            {'label': 'mobile', 'value': 5550100},
+          ],
+        });
+
+        expect(contact.identifier, '42');
+        expect(contact.phones?.single.value, '5550100');
+      });
     });
 
     group('toJson -', () {

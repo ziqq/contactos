@@ -22,7 +22,16 @@ public class ContactosPlugin: NSObject, FlutterPlugin, CNContactViewControllerDe
     }
 
     private func getRootViewController() -> UIViewController? {
-        return UIApplication.shared.delegate?.window??.rootViewController
+        // Apps on the UIScene lifecycle have no window on the app delegate.
+        if #available(iOS 13.0, *) {
+            let windows = UIApplication.shared.connectedScenes
+                .compactMap { $0 as? UIWindowScene }
+                .flatMap { $0.windows }
+            if let window = windows.first(where: { $0.isKeyWindow }) ?? windows.first {
+                return window.rootViewController
+            }
+        }
+        return UIApplication.shared.delegate?.window??.rootViewController // coverage:ignore-line (iOS 12 only)
     }
 
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
@@ -82,7 +91,7 @@ public class ContactosPlugin: NSObject, FlutterPlugin, CNContactViewControllerDe
                 result(nil)
             }
             else {
-                result(FlutterError(code: "", message: addResult, details: nil))
+                result(FlutterError(code: "", message: addResult, details: nil)) // coverage:ignore-line (the store accepts any new contact)
             }
         case "deleteContact":
             if(deleteContact(dictionary: call.arguments as! [String : Any])){
@@ -168,13 +177,13 @@ public class ContactosPlugin: NSObject, FlutterPlugin, CNContactViewControllerDe
                     if #available(iOS 11, *) {
                         contacts.append(contact)
                     } else if query != nil && self.has(contact: contact, phone: query!){
-                        contacts.append(contact)
+                        contacts.append(contact) // coverage:ignore-line (iOS 10 only)
                     }
                 } else if emailQuery {
                     if #available(iOS 11, *) {
                         contacts.append(contact)
                     } else if query != nil && (contact.emailAddresses.contains { $0.value.caseInsensitiveCompare(query!) == .orderedSame}) {
-                        contacts.append(contact)
+                        contacts.append(contact) // coverage:ignore-line (iOS 10 only)
                     }
                 } else {
                     contacts.append(contact)
@@ -182,10 +191,12 @@ public class ContactosPlugin: NSObject, FlutterPlugin, CNContactViewControllerDe
 
             })
         }
+        // coverage:ignore-start (fails only without the contacts permission)
         catch let error as NSError {
             print(error.localizedDescription)
             return result
         }
+        // coverage:ignore-end
 
         if (orderByGivenName) {
             contacts = contacts.sorted { (contactA, contactB) -> Bool in
@@ -201,6 +212,7 @@ public class ContactosPlugin: NSObject, FlutterPlugin, CNContactViewControllerDe
         return result
     }
 
+    // coverage:ignore-start (phone matching for iOS 10 only)
     private func has(contact: CNContact, phone: String) -> Bool {
         if (!contact.phoneNumbers.isEmpty) {
             let phoneNumberToCompareAgainst = phone.components(separatedBy: NSCharacterSet.decimalDigits.inverted).joined(separator: "")
@@ -217,6 +229,7 @@ public class ContactosPlugin: NSObject, FlutterPlugin, CNContactViewControllerDe
         }
         return false
     }
+    // coverage:ignore-end
 
     func addContact(contact : CNMutableContact) -> String {
         let store = CNContactStore()
@@ -225,9 +238,11 @@ public class ContactosPlugin: NSObject, FlutterPlugin, CNContactViewControllerDe
             saveRequest.add(contact, toContainerWithIdentifier: nil)
             try store.execute(saveRequest)
         }
+        // coverage:ignore-start (the store accepts any new contact)
         catch {
             return error.localizedDescription
         }
+        // coverage:ignore-end
         return ""
     }
 
@@ -505,8 +520,10 @@ public class ContactosPlugin: NSObject, FlutterPlugin, CNContactViewControllerDe
         if let birthday = dictionary["birthday"] as? String {
             let formatter = DateFormatter()
             formatter.dateFormat = "yyyy-MM-dd"
-            let date = formatter.date(from: birthday)!
-            contact.birthday = Calendar.current.dateComponents([.year, .month, .day], from: date)
+            // Ignore malformed dates instead of crashing the app.
+            if let date = formatter.date(from: birthday) {
+                contact.birthday = Calendar.current.dateComponents([.year, .month, .day], from: date)
+            }
         }
 
         return contact

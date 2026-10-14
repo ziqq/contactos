@@ -11,6 +11,13 @@ import 'package:meta/meta.dart';
 @internal // ignore: invalid_internal_annotation
 typedef JSON = Map<Object?, Object?>;
 
+/// Reads an optional string value, keeping `null` instead of `'null'`.
+String? _string(Object? value) => switch (value) {
+  null => null,
+  String string => string,
+  _ => value.toString(),
+};
+
 /// Android account types
 enum AndroidAccountType {
   /// The contact is associated with a Facebook account.
@@ -82,20 +89,20 @@ class Contact {
     }
 
     return Contact(
-      identifier: json['identifier'].toString(),
-      displayName: json['displayName'].toString(),
-      givenName: json['givenName'].toString(),
-      middleName: json['middleName'].toString(),
-      prefix: json['prefix'].toString(),
-      suffix: json['suffix'].toString(),
-      familyName: json['familyName'].toString(),
-      company: json['company'].toString(),
-      jobTitle: json['jobTitle'].toString(),
+      identifier: _string(json['identifier']),
+      displayName: _string(json['displayName']),
+      givenName: _string(json['givenName']),
+      middleName: _string(json['middleName']),
+      prefix: _string(json['prefix']),
+      suffix: _string(json['suffix']),
+      familyName: _string(json['familyName']),
+      company: _string(json['company']),
+      jobTitle: _string(json['jobTitle']),
       androidAccountType: AndroidAccountType.fromString(
-        json['androidAccountType'].toString(),
+        _string(json['androidAccountType']),
       ),
-      androidAccountTypeRaw: json['androidAccountType'].toString(),
-      androidAccountName: json['androidAccountName'].toString(),
+      androidAccountTypeRaw: _string(json['androidAccountType']),
+      androidAccountName: _string(json['androidAccountName']),
       emails: (json['emails'] as List?)
           ?.map((e) => Contact$Field.fromJson(e as JSON))
           .toList(),
@@ -354,12 +361,12 @@ class Contact$PostalAddress {
   /// Creates a [Contact$PostalAddress] from a `Map<String, Object?>`.
   /// {@macro postal_address}
   factory Contact$PostalAddress.fromJson(JSON json) => Contact$PostalAddress(
-    label: json['label'].toString(),
-    street: json['street'].toString(),
-    city: json['city'].toString(),
-    postcode: json['postcode'].toString(),
-    region: json['region'].toString(),
-    country: json['country'].toString(),
+    label: _string(json['label']),
+    street: _string(json['street']),
+    city: _string(json['city']),
+    postcode: _string(json['postcode']),
+    region: _string(json['region']),
+    country: _string(json['country']),
   );
 
   /// The label of the postal address (e.g., "home", "work")
@@ -470,8 +477,8 @@ class Contact$Field {
   /// Creates an [Contact$Field] from a `Map<String, Object?>`.
   /// {@macro item}
   factory Contact$Field.fromJson(JSON json) => Contact$Field(
-    label: json['label'].toString(),
-    value: json['value'].toString(),
+    label: _string(json['label']),
+    value: _string(json['value']),
   );
 
   /// The label of the item (e.g., "home", "work")

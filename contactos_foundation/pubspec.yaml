@@ -43,6 +43,12 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
+  # Utilities
+  collection: ^1.19.1
+
+  # Logging
+  l: ^5.0.1
+
   # Linting
   flutter_lints: ^6.0.0
 

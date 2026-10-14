@@ -1,0 +1,47 @@
+coverage:
+  status:
+    project:
+      # Dart packages keep their coverage relative to the base branch.
+      default:
+        target: auto
+        threshold: 1%
+        flags:
+          - contactos
+          - contactos_platform_interface
+          - contactos_android
+          - contactos_foundation
+      # Native coverage is reported but does not block pull requests yet.
+      native:
+        informational: true
+        flags:
+          - android
+          - ios
+
+flags:
+  contactos:
+    paths:
+      - contactos/lib/
+    carryforward: true
+  contactos_platform_interface:
+    paths:
+      - contactos_platform_interface/lib/
+    carryforward: true
+  contactos_android:
+    paths:
+      - contactos_android/lib/
+    carryforward: true
+  contactos_foundation:
+    paths:
+      - contactos_foundation/lib/
+    carryforward: true
+  android:
+    paths:
+      - contactos_android/android/src/main/java/
+    carryforward: true
+  ios:
+    paths:
+      - contactos_foundation/darwin/contactos_foundation/Sources/
+    carryforward: true
+
+comment:
+  layout: "diff, flags, files"
