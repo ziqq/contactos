@@ -1,6 +1,10 @@
 # Changelog
 
 
+## 2.1.1
+- **ADDED**: Added example screenshots to the pub.dev package gallery.
+- **CHANGED**: Updated the usage guide, platform support and permission documentation, and corrected the app-facing API documentation.
+
 ## 2.1.0
 - **CHANGED**: Updated the Android implementation dependency to the built-in Kotlin release.
 - **CHANGED**: Raised the minimum supported Dart SDK to `3.12.0` and Flutter SDK to `3.44.0`.
