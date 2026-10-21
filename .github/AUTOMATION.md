@@ -3,6 +3,44 @@
 This repository uses reusable actions pinned to
 `ziqq/actions@ccd1a799683cd461a45d9303ac6fcb2792f8f5d2`.
 
+## CI
+
+`.github/workflows/checkout.yml` runs on pushes to `main`, pull requests to
+`main` and manual dispatch. The toolchain comes from `mise.toml` through
+`jdx/mise-action`, so CI uses the same Flutter and Java as local development.
+
+| Job | What it checks |
+|---|---|
+| `Package (<name>)` | For each package: format (`make format-check`), analyzer with fatal infos for the package and its example, `dependency_validator`, `pub publish --dry-run`, unit tests with a test report and Codecov upload (flag = package name) |
+| `Android build` | Builds the `contactos_android` example APK and runs the JVM tests with JaCoCo coverage (flag `android`) |
+| `iOS build (CocoaPods)` / `iOS build (SPM)` | Builds the `contactos_foundation` example for the simulator with each dependency manager and runs XCTest with Swift coverage (flag `ios`) |
+| `Notify CI result` | Sends the result to Discord and Telegram (see below) |
+
+Codecov flags and their paths are defined in `codecov.yml`.
+
+## Publishing
+
+`.github/workflows/publish.yml` runs when a package tag is pushed:
+`contactos-v<version>`, `contactos-android-v<version>`,
+`contactos-foundation-v<version>` or `contactos-platform-interface-v<version>`.
+
+1. `prepare` maps the tag to the package directory and requires the tag, the
+   pubspec version and the first `CHANGELOG.md` entry to match.
+2. `publish` validates format, analyzer, tests and a pana score of at least
+   `MIN_PANA_SCORE` (150), then publishes with pub.dev automated publishing.
+   Authentication uses the GitHub OIDC token from `dart-lang/setup-dart`; no
+   pub credentials are stored in the repository secrets.
+3. `release` creates a GitHub release named `<package> <version>` with the
+   CHANGELOG entry as notes.
+4. `complete-issues` applies the `release-completed` label transition, because
+   releases created with `GITHUB_TOKEN` do not trigger the labels workflow.
+5. `notify` reports the result with `.github/notify/templates/release.md`.
+
+One-time setup on pub.dev for every package: **Admin → Automated publishing →
+Enable publishing from GitHub Actions**, repository `ziqq/contactos`, tag
+pattern `<tag prefix>{{version}}` (for example `contactos-android-v{{version}}`).
+The old `PUB_CREDENTIAL_JSON` secret is no longer used and can be deleted.
+
 ## Semantic labels
 
 `.github/labels.json` is the repository-owned source of truth. Automation uses

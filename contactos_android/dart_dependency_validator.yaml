@@ -1,4 +1,5 @@
 ignore:
+  - flutter
   - dart_code_metrics
   - integration_test
   - flutter_lints
