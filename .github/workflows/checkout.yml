@@ -71,7 +71,7 @@ jobs:
         working-directory: ${{ matrix.package }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
 
       - name: Check package content
         run: |
@@ -80,7 +80,7 @@ jobs:
           done
 
       - name: Install pinned toolchain
-        uses: jdx/mise-action@v4
+        uses: jdx/mise-action@c2a87611a18de5b3828c5652fe268e992400cb5c # v4
         with:
           version: ${{ env.MISE_VERSION }}
           install_args: flutter
@@ -150,7 +150,7 @@ jobs:
         id: upload_test_report
         if: ${{ !cancelled() && hashFiles(format('{0}/reports/tests.json', matrix.package)) != '' }}
         timeout-minutes: 1
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
           name: test-results-${{ matrix.package }}
           path: ${{ matrix.package }}/reports/tests.json
@@ -163,7 +163,7 @@ jobs:
           (github.event_name != 'pull_request' ||
           github.event.pull_request.head.repo.full_name == github.repository)
         timeout-minutes: 1
-        uses: dorny/test-reporter@v2
+        uses: dorny/test-reporter@df6247429542221bc30d46a036ee47af1102c451 # v2
         with:
           artifact: test-results-${{ matrix.package }}
           name: Test report (${{ matrix.package }})
@@ -190,10 +190,10 @@ jobs:
         working-directory: contactos_android
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
 
       - name: Install pinned toolchain
-        uses: jdx/mise-action@v4
+        uses: jdx/mise-action@c2a87611a18de5b3828c5652fe268e992400cb5c # v4
         with:
           version: ${{ env.MISE_VERSION }}
           install_args: flutter java
@@ -213,7 +213,7 @@ jobs:
 
       - name: Upload Android native test reports
         if: ${{ !cancelled() }}
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
           name: android-native-tests
           path: |
@@ -244,10 +244,10 @@ jobs:
         working-directory: contactos_foundation
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
 
       - name: Install pinned toolchain
-        uses: jdx/mise-action@v4
+        uses: jdx/mise-action@c2a87611a18de5b3828c5652fe268e992400cb5c # v4
         with:
           version: ${{ env.MISE_VERSION }}
           install_args: flutter
@@ -281,7 +281,7 @@ jobs:
 
       - name: Upload iOS native test reports
         if: ${{ !cancelled() }}
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
           name: ios-native-tests-${{ matrix.swift-package-manager && 'spm' || 'cocoapods' }}
           path: |
