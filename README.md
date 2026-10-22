@@ -14,8 +14,6 @@ to open the native contact form and picker on Android and iOS.
 
 <img src="contactos/screenshots/2_contacts_list.png" width="240" alt="Contacts list"> <img src="contactos/screenshots/3_contact_details.png" width="240" alt="Contact details"> <img src="contactos/screenshots/4_add_contact.png" width="240" alt="Add a contact">
 
-![Example](.github/images/example.gif "Example app")
-
 **Usage, permissions and the API reference are in the
 [`contactos` README](contactos/README.md).**
 
