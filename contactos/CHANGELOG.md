@@ -1,7 +1,7 @@
 # Changelog
 
 
-## 2.1.1
+## 2.2.0
 - **ADDED**: Added example screenshots to the pub.dev package gallery.
 - **CHANGED**: Updated the usage guide, platform support and permission documentation, and corrected the app-facing API documentation.
 
