@@ -4,6 +4,7 @@
 ## 2.2.0
 - **ADDED**: Added example screenshots to the pub.dev package gallery.
 - **CHANGED**: Updated the usage guide, platform support and permission documentation, and corrected the app-facing API documentation.
+- **CHANGED**: Expanded platform dependency ranges to support `contactos_android` 0.2.x and `contactos_foundation` 0.1.x.
 
 ## 2.1.0
 - **CHANGED**: Updated the Android implementation dependency to the built-in Kotlin release.

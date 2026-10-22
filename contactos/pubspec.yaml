@@ -38,11 +38,11 @@ dependencies:
   flutter:
     sdk: flutter
 
-  contactos_android: '^0.1.0'
+  contactos_android: '>=0.1.0 <0.3.0'
   # contactos_android:
   #   path: ../contactos_android
 
-  contactos_foundation: '^0.0.5'
+  contactos_foundation: '>=0.0.5 <0.2.0'
   # contactos_foundation:
   #   path: ../contactos_foundation
 

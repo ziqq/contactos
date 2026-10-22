@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.0.6
+## 0.1.0
 - **FIXED**: Resolved the root view controller for apps using the UIScene lifecycle.
 - **FIXED**: Ignored malformed contact birthdays instead of crashing during date parsing.
 - **FIXED**: Corrected the CocoaPods privacy manifest resource path and aligned the podspec version with the package version.

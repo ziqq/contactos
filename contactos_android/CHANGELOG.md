@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.1.1
+## 0.2.0
 - **CHANGED**: Updated the native JVM test setup and JaCoCo coverage tooling.
 - **CHANGED**: Excluded generated example files, native tests and development tooling from the published archive.
 
