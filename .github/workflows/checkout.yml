@@ -19,17 +19,6 @@ on:
   pull_request:
     branches:
       - "main"
-    paths:
-      - ".github/workflows/checkout.yml"
-      - "contactos/**"
-      - "contactos_android/**"
-      - "contactos_foundation/**"
-      - "contactos_platform_interface/**"
-      - "contactos_test/**"
-      - "codecov.yml"
-      - "Makefile"
-      - "mise.toml"
-      - "tool/**"
 
 permissions:
   contents: read
@@ -297,6 +286,24 @@ jobs:
           flags: ios
           token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: false
+
+  repository-checks:
+    name: Repository checks
+    needs: [package, android, ios]
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      PACKAGE_RESULT: ${{ needs.package.result }}
+      ANDROID_RESULT: ${{ needs.android.result }}
+      IOS_RESULT: ${{ needs.ios.result }}
+    steps:
+      - name: Require all checks to succeed
+        run: |
+          if [[ "$PACKAGE_RESULT" != "success" || "$ANDROID_RESULT" != "success" || "$IOS_RESULT" != "success" ]]; then
+            echo "::error::Required jobs did not all succeed: package=$PACKAGE_RESULT, android=$ANDROID_RESULT, ios=$IOS_RESULT"
+            exit 1
+          fi
 
   notify:
     name: Notify CI result
