@@ -200,12 +200,27 @@ jobs:
       NOTIFY_TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
       NOTIFY_TELEGRAM_TARGETS: ${{ secrets.TELEGRAM_TARGETS }}
     steps:
+      - name: Report missing notification secrets
+        if: >-
+          env.NOTIFY_DISCORD_WEBHOOKS == '' ||
+          env.NOTIFY_TELEGRAM_BOT_TOKEN == '' ||
+          env.NOTIFY_TELEGRAM_TARGETS == ''
+        run: echo "::warning::Release notification skipped because notification secrets are not fully configured."
+
       - name: Checkout trusted notification template
+        if: >-
+          env.NOTIFY_DISCORD_WEBHOOKS != '' &&
+          env.NOTIFY_TELEGRAM_BOT_TOKEN != '' &&
+          env.NOTIFY_TELEGRAM_TARGETS != ''
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           persist-credentials: false
 
       - name: Notify Discord and Telegram
+        if: >-
+          env.NOTIFY_DISCORD_WEBHOOKS != '' &&
+          env.NOTIFY_TELEGRAM_BOT_TOKEN != '' &&
+          env.NOTIFY_TELEGRAM_TARGETS != ''
         uses: ziqq/actions/notify@ccd1a799683cd461a45d9303ac6fcb2792f8f5d2
         with:
           providers: discord,telegram
