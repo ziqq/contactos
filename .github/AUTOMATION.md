@@ -14,7 +14,12 @@ This repository uses reusable actions pinned to
 | `Package (<name>)` | For each package: format (`make format-check`), analyzer with fatal infos for the package and its example, `dependency_validator`, `pub publish --dry-run`, unit tests with a test report and Codecov upload (flag = package name) |
 | `Android build` | Builds the `contactos_android` example APK and runs the JVM tests with JaCoCo coverage (flag `android`) |
 | `iOS build (CocoaPods)` / `iOS build (SPM)` | Builds the `contactos_foundation` example for the simulator with each dependency manager and runs XCTest with Swift coverage (flag `ios`) |
+| `Repository checks` | Passes only when every package, Android and iOS job succeeds; failed, canceled or skipped jobs fail this check |
 | `Notify CI result` | Sends the result to Discord and Telegram (see below) |
+
+Every pull request to `main` runs CI, including documentation-only changes.
+After this workflow is merged, require `Repository checks` in the protection
+rules for `main`. Push path filters do not affect the pull request check.
 
 Codecov flags and their paths are defined in `codecov.yml`.
 
