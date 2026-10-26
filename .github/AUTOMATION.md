@@ -128,6 +128,11 @@ secrets to them. CI delivery is best-effort and cannot change the result of the
 actual checks. A whole workflow canceled by concurrency may stop before the
 notification job starts.
 
+Release notifications require all three secrets below. If any secret is
+missing, the release workflow emits a warning and skips notification delivery.
+When all are present, configuration and delivery errors still fail the notify
+job (`failure-policy: required`), including malformed JSON or empty target lists.
+
 Configure these repository Actions secrets:
 
 | Secret | Value |
